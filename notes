@@ -1,0 +1,26 @@
+Need to create controllers.
+Need to create connection with db at start.
+
+Setups:
+Couchbase
+  Make Connection - done
+  Check Connection - 
+  Create Buckets if necessary
+Vainglory
+  Check API key is correct
+  Try fetching 
+
+
+
+todo:
+function to loop on all pages given date as argument and return all matches
+function to connect with this above and save all player status
+fix matches function. no need to input createdAt if it already exist. Always grab latest unless patch given
+we need to make an array with patch start and end dates
+
+filters for stats and matches:
+specific gamemode
+specific patches
+
+404 handler
+update redis 
