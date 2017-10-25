@@ -1,11 +1,9 @@
-import * as lodash from "lodash";
-import PlayerLookupModel  from "src/models/vg_player_lookup";
-import PlayerStatsModel   from "src/models/vg_player_Stats";
+import * as lodash from 'lodash';
+import PlayerLookupModel from './../models/vg_player_lookup';
+import PlayerStatsModel from './../models/vg_player_stats';
 
 
 class PlayerController {
-
-
   lookupName(playerName) {
     return PlayerLookupModel.getByName(playerName);
   }
@@ -24,7 +22,6 @@ class PlayerController {
 
     return stats;
   }
-
 }
 
 export default new PlayerController();
