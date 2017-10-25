@@ -15,7 +15,7 @@ class VGMatches {
     return `matches:${playerId}:${region}:${lastMatch}`;
   }
 
-  async getAllMatches(playerId, region, lastCreatedAt, endAt) {
+  static async getAllMatches(playerId, region, lastCreatedAt, endAt) {
     // Convert lastCreatedAt to ms
     const milliseconds = Date.parse(lastCreatedAt);
     // determine amount of 28 days to loop
@@ -31,6 +31,13 @@ class VGMatches {
       dates[i] = newDate.toISOString();
       // add 28 days for the next loop
       newDate += ms28Days;
+    }
+    for (let i = 0; i < dates.length; i++) {
+      // If it is the last loop provide no end
+      if (i === dates.length) VaingloryService.queryMatchesTimed(playerId, region, dates[i]);
+      // Start is createdAt and end is the next loops start createdAt
+      else VaingloryService.queryMatchesTimed(playerId, region, dates[i], dates[i + 1]);
+      // TODO: Store this data
     }
 
     const get = async (initialPages = 0, endAt) => {
