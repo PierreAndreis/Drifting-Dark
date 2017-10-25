@@ -15,6 +15,17 @@ class VaingloryService {
     return vainglory.status();
   }
 
+  async getRegion(playerName) {
+    // TODO: Check if playername is in redis and get region
+    // TODO: Check if playername is in COUCHBASE and get region
+    const regions = ['na', 'eu', 'ea', 'sg', 'cn', 'sg'];
+    for (let i = 0; i < regions.length; i++) {
+      const data = await queryPlayerByName(regions[i], playerName);
+      if (data.errors) continue;
+      return regions[i];
+    }
+  }
+
   queryMatches(region, options) {
     return vainglory.setRegion(region).matches.collection(options);
   }
@@ -40,7 +51,6 @@ class VaingloryService {
         playerIds: [playerId],
       },
     };
-
     if (start) searchFilter.filter['createdAt-start'] = start;
     if (end) searchFilter.filter['createdAt-end'] = end;
     return this.queryMatches(region, lodash.defaults(Config.VAINGLORY.DEFAULT_OPTION, searchFilter));
@@ -54,10 +64,10 @@ class VaingloryService {
     return vainglory.players.getById(playerId);
   }
 
-  queryPlayerByName(region, playerNames) {
+  queryPlayerByName(region, players) {
+    let playerNames;
     // It requires it to be in an array
-    if (typeof playerNames !== 'object') playerNames = [playerNames];
-
+    if (typeof players !== 'object') playerNames = [players];
     return vainglory.setRegion(region).players.getByName(playerNames);
   }
 }
