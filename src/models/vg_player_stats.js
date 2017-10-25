@@ -38,11 +38,12 @@ class VGPlayersStats extends BaseCouchbase {
       // New Player in the system. We will query all last 28 days of matches :D
       const matches = await MatchesModel.getAllMatches(id, region);
       stats = PlayerTransform.create(matches, id);
-    }
+    } else {
     // Old player in the system. Let's check if he has new matches then merge
-    const matches = await VaingloryService.queryMatchesTimed(id, region, lastMatch);
-    const statsNew = PlayerTransform.create(matches, id);
-    stats = merge(oldStats, statsNew);
+      const matches = await VaingloryService.queryMatchesTimed(id, region, lastMatch);
+      const statsNew = PlayerTransform.create(matches, id);
+      stats = merge(oldStats, statsNew);
+    }
     return stats;
   }
 }
