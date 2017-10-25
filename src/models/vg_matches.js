@@ -26,19 +26,29 @@ class VGMatches {
     const dates = {
       0: lastCreatedAt,
     };
-    for (let i = 1; i < necessaryLoops + 1; i++) {
-      // New key value for every loop
-      dates[i] = newDate.toISOString();
-      // add 28 days for the next loop
-      newDate += ms28Days;
+
+    async function getLoopsAmount() {
+      for (let i = 1; i < necessaryLoops + 1; i++) {
+        // New key value for every loop
+        dates[i] = newDate.toISOString();
+        // add 28 days for the next loop
+        newDate += ms28Days;
+      }
     }
-    for (let i = 0; i < dates.length; i++) {
-      // If it is the last loop provide no end
-      if (i === dates.length) VaingloryService.queryMatchesTimed(playerId, region, dates[i]);
-      // Start is createdAt and end is the next loops start createdAt
-      else VaingloryService.queryMatchesTimed(playerId, region, dates[i], dates[i + 1]);
-      // TODO: Store this data
+    async function getAllData() {
+      for (let i = 0; i < dates.length; i++) {
+        // If it is the last loop provide no end
+        if (i === dates.length) VaingloryService.queryMatchesTimed(playerId, region, dates[i]);
+        // Start is createdAt and end is the next loops start createdAt
+        else VaingloryService.queryMatchesTimed(playerId, region, dates[i], dates[i + 1]);
+        // TODO: Store this data
+      }
     }
+    // First get the amount of loops necessary
+    await getLoopsAmount();
+    // Then get the data with those loops
+    await getAllData();
+    // 28 DAY LOOP FUNCTION TERMINATES HERE. NOT SURE WHAT THE BOTTOM IS FOR
 
     const get = async (initialPages = 0, endAt) => {
       const queries = [];
