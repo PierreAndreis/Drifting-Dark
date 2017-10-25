@@ -1,5 +1,5 @@
 import * as lodash from 'lodash';
-import Vg from 'vainglory';
+import VG from 'vainglory';
 
 import Config from '../config';
 
@@ -8,7 +8,7 @@ import Config from '../config';
  * verify region
  */
 
-const vainglory = new Vg(Config.VAINGLORY.API_KEY, Config.VAINGLORY.SETUP_CONFIG);
+const vainglory = new VG(Config.VAINGLORY.API_KEY, Config.VAINGLORY.SETUP_CONFIG);
 
 class VaingloryService {
   getStatus() {
