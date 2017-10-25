@@ -1,38 +1,38 @@
 export default [
   {
-    name: "ESLA",
-    region: "tournament-na",
+    name: 'ESLA',
+    region: 'tournament-na',
     players: [
       {
-        name: "Vain1",
-        position: "captain"
+        name: 'Vain1',
+        position: 'captain',
       },
       {
-        name: "Vain2",
-        position: "jungler"
+        name: 'Vain2',
+        position: 'jungler',
       },
       {
-        name: "Vain3",
-        position: "carry"
+        name: 'Vain3',
+        position: 'carry',
       },
-    ]
+    ],
   },
   {
-    name: "ESLB",
-    region: "tournament-na",
+    name: 'ESLB',
+    region: 'tournament-na',
     players: [
       {
-        name: "Glory1",
-        position: "captain"
+        name: 'Glory1',
+        position: 'captain',
       },
       {
-        name: "Glory2",
-        position: "carry"
+        name: 'Glory2',
+        position: 'carry',
       },
       {
-        name: "Glory3",
-        position: "jungler"
+        name: 'Glory3',
+        position: 'jungler',
       },
-    ]
+    ],
   },
 ];
