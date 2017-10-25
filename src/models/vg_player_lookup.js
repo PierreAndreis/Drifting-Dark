@@ -14,6 +14,17 @@ class VGPlayerLookup {
     return `${Config.CACHE.PREFIXES.PLAYERNAME}:${playerName}`
   }
 
+  async getRegion(playerName) {
+    // TODO: Check if playername is in redis and get region
+    // TODO: Check if playername is in COUCHBASE and get region
+    const regions = ['na', 'eu', 'ea', 'sg', 'cn', 'sg'];
+    for (let i = 0; i < regions.length; i++) {
+      const data = await queryPlayerByName(regions[i], playerName);
+      if (data.errors) continue;
+      return regions[i];
+    }
+  }
+
   async findPlayerAPI(playerName) {
     
     const foundRegions = [];
@@ -58,6 +69,7 @@ class VGPlayerLookup {
       if (!res) return {};
       return res;
     }
+    
 
     return await CacheService.preferCache(key, get, {expireSeconds: Config.CACHE.REDIS_LOOKUP_CACHE_EXPIRE});
     } catch (error) {

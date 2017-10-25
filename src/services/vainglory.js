@@ -15,17 +15,6 @@ class VaingloryService {
     return vainglory.status();
   }
 
-  async getRegion(playerName) {
-    // TODO: Check if playername is in redis and get region
-    // TODO: Check if playername is in COUCHBASE and get region
-    const regions = ['na', 'eu', 'ea', 'sg', 'cn', 'sg'];
-    for (let i = 0; i < regions.length; i++) {
-      const data = await queryPlayerByName(regions[i], playerName);
-      if (data.errors) continue;
-      return regions[i];
-    }
-  }
-
   queryMatches(region, options) {
     return vainglory.setRegion(region).matches.collection(options);
   }
