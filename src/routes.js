@@ -1,22 +1,22 @@
-import {Router}     from "express";  // WebServer
+import { Router } from 'express'; // WebServer
 
-import {playerFind, playerStats}    from "./routers/players.router";
-import {latestMatches, test}        from "./routers/matches.router";
-import * as Tournament from "./routers/tournament.router";
+import { playerFind, playerStats } from './routers/players.router';
+import { latestMatches, test } from './routers/matches.router';
+import * as Tournament from './routers/tournament.router';
 
 const routes = Router();
 
 /** PlayerLookup Routers */
-routes.get("/player/:name/find", playerFind);
+routes.get('/player/:name/find', playerFind);
 
 /** PlayerLookup Routers */
-routes.get("/player/:name/stats", playerStats);
+routes.get('/player/:name/stats', playerStats);
 
 /** Matches Routers */
-routes.get("/matches/:name", latestMatches);
+routes.get('/matches/:name', latestMatches);
 
 /** Matches Routers */
-routes.get("/test/:name", test);
+routes.get('/test/:name', test);
 
 /** Tournament Routers */
 // routes.get("/tourney_entry/:region/:matchId",  Tournament.EntryRoute);
