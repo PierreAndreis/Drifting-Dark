@@ -17,7 +17,7 @@ class MatchesController {
     return matches;
   }
 
-  async getMatchesByName(playerName, page) { // Question: What is page for?
+  async getMatchesByName(playerName, page) {
     const playerObj = await this.getPlayerId(playerName);
 
     const matches = await this.getMatchesById(playerObj);
