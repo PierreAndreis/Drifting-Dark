@@ -1,7 +1,7 @@
 export default[
   {
     name: 'Team SoloMid',
-    region: 'tournament-na',
+    region: 'na',
     players: [
       {
         name: 'FlashX',
@@ -19,7 +19,7 @@ export default[
     ],
   }, {
     name: 'GankStars',
-    region: 'tournament-na',
+    region: 'na',
     players: [
       {
         name: 'MackDaddyB',
@@ -37,7 +37,7 @@ export default[
     ],
   }, {
     name: 'Hammers',
-    region: 'tournament-na',
+    region: 'na',
     players: [
       {
         name: 'Chicken',
@@ -58,7 +58,7 @@ export default[
     ],
   }, {
     name: 'Cloud9',
-    region: 'tournament-na',
+    region: 'na',
     players: [
       {
         name: 'gabevizzle',
@@ -79,7 +79,7 @@ export default[
     ],
   }, {
     name: 'Tribe Gaming',
-    region: 'tournament-na',
+    region: 'na',
     players: [
       {
         name: 'MaxGreen',
@@ -100,7 +100,7 @@ export default[
     ],
   }, {
     name: 'Tempo Storm',
-    region: 'tournament-na',
+    region: 'na',
     players: [
       {
         name: 'LostBoyToph',
@@ -121,7 +121,7 @@ export default[
     ],
   }, {
     name: 'Nova Esports',
-    region: 'tournament-na',
+    region: 'na',
     players: [
       {
         name: 'starboi',
@@ -142,7 +142,7 @@ export default[
     ],
   }, {
     name: 'Rogue',
-    region: 'tournament-na',
+    region: 'na',
     players: [
       {
         name: 'eVoL',
@@ -160,7 +160,7 @@ export default[
     ],
   }, {
     name: 'mousesports',
-    region: 'tournament-eu',
+    region: 'eu',
     players: [
       {
         name: 'justman00',
@@ -181,7 +181,7 @@ export default[
     ],
   }, {
     name: 'SK Gaming',
-    region: 'tournament-eu',
+    region: 'eu',
     players: [
       {
         name: 'Raph',
@@ -202,7 +202,7 @@ export default[
     ],
   }, {
     name: 'Team Qlash',
-    region: 'tournament-eu',
+    region: 'eu',
     players: [
       {
         name: 'HellsDevil',
@@ -223,7 +223,7 @@ export default[
     ],
   }, {
     name: 'G2 Esports',
-    region: 'tournament-eu',
+    region: 'eu',
     players: [
       {
         name: 'KeanuNakoa',
@@ -244,7 +244,7 @@ export default[
     ],
   }, {
     name: 'FNATIC',
-    region: 'tournament-eu',
+    region: 'eu',
     players: [
       {
         name: 'TetnoJJ',
@@ -262,7 +262,7 @@ export default[
     ],
   }, {
     name: 'SaltyPotatoes',
-    region: 'tournament-eu',
+    region: 'eu',
     players: [
       {
         name: 'KLast',
@@ -283,7 +283,7 @@ export default[
     ],
   }, {
     name: 'Dynasty',
-    region: 'tournament-eu',
+    region: 'eu',
     players: [
       {
         name: 'Mowglie',
@@ -304,7 +304,7 @@ export default[
     ],
   }, {
     name: 'Calamity Reborn',
-    region: 'tournament-eu',
+    region: 'eu',
     players: [
       {
         name: 'AeOn',
