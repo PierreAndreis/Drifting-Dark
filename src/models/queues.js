@@ -21,11 +21,14 @@ const job = queue.create('prohistory', {
     // Gives it the data from the players object above. Can we make this for loop in teams_autumn page and just simply pull 1 variable from there and remove the logic from this file?
   allPlayers: players,
 })
+    // priority in queue
   .priority('normal')
+  // error handler
   .on('error', (err) => {
     // TODO: Add to the end of the queue
     console.log(err);
   })
+  // Check for stuck jobs
   .watchStuckJobs(5000)
   .active((err, ids) => {
     ids.forEach((id) => {
@@ -35,6 +38,7 @@ const job = queue.create('prohistory', {
       });
     });
   })
+  // if it complete remove from queue
   .removeOnComplete(true)
   .save((err) => {
     if (err) console.log(err);
@@ -50,10 +54,11 @@ if (cluster.isMaster) {
 } else {
   queue.process('prohistory', 10, (job, done) => {
     if (!getProsHistory(job.data)) {
-      return done(new Error('invalid to address'));
+      return done(new Error('4ever messed up not Skillz. Everyone blame 4ever :)'));
+      // TODO: Remove from queue then add to end of queue, log error
     }
     // TODO: Store data
-
+    // TODO: remove from queue
     done();
   });
 }
