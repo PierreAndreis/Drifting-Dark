@@ -1,4 +1,4 @@
-import vainglory from "./vainglory";
+import vainglory from './vainglory';
 
 
 /**

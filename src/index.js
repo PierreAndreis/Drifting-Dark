@@ -1,5 +1,5 @@
-import app from "src/app";
+import app from './app';
 
-const {PORT = 8080} = process.env;
+const { PORT = 8080 } = process.env;
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`)); // eslint-disable-line no-console

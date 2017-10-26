@@ -1,12 +1,10 @@
-import * as lodash from "lodash";
-import PlayerLookupModel  from "src/models/vg_player_lookup";
-import PlayerStatsModel   from "src/models/vg_player_Stats";
+import * as lodash from 'lodash';
+import PlayerLookupModel from '../models/vg_player_lookup';
+import PlayerStatsModel from '../models/vg_player_stats';
 
 
 class PlayerController {
-
-
-  lookupName(playerName) {
+  static lookupName(playerName) {
     return PlayerLookupModel.getByName(playerName);
   }
 
@@ -14,9 +12,7 @@ class PlayerController {
     const player = await this.lookupName(playerName);
     // todo: 404 not found
     if (lodash.isEmpty(player)) return {};
-
     const playerOldStats = await PlayerStatsModel.get(player.id);
-
     const stats = await PlayerStatsModel.update(player, playerOldStats);
 
     PlayerStatsModel.upsert(player.id, stats);
@@ -24,7 +20,6 @@ class PlayerController {
 
     return stats;
   }
-
 }
 
 export default new PlayerController();

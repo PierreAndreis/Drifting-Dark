@@ -1,4 +1,4 @@
-import * as lodash    from "lodash";
+import * as lodash from 'lodash';
 
 /**
  * Merge two objects, summing the values if it is a number, otherwise it will replace with the newer value
@@ -6,35 +6,29 @@ import * as lodash    from "lodash";
  * @param {object} addition
  */
 export const merge = (orig, addition) => {
+  if (typeof orig === 'undefined' || orig === false) return addition;
+  else if (typeof addition === 'undefined' || addition === false) return orig;
+  return lodash.mergeWith(orig, addition, (origChild, additionChild) => {
+    if (lodash.isObject(origChild)) return merge(origChild, additionChild);
 
-       if (typeof orig     === "undefined" || orig     === false) return addition;
-  else if (typeof addition === "undefined" || addition === false) return orig;
-  else return lodash.mergeWith(orig, addition, (origChild, additionChild) => {
-      if (lodash.isObject(origChild)) return merge(origChild, additionChild);
-      else {
-        if (typeof additionChild === "number")  return origChild + additionChild;
-        else                                    return additionChild;
-      }
-    });
-}
+    if (typeof additionChild === 'number') return origChild + additionChild;
+    return additionChild;
+  });
+};
 
-export const sortBy = (array, desc, field, fn = function(x){return x}) => {
-  return array.sort((a, b) => {
+export const sortBy = (array, desc, field, fn = function (x) { return x; }) => array.sort((a, b) => {
+  let fieldA;
+  let fieldB;
 
-    let fieldA;
-    let fieldB;
-
-    if (lodash.isObject(a) || lodash.isObject(b)) {
+  if (lodash.isObject(a) || lodash.isObject(b)) {
     fieldA = fn(a[field]);
     fieldB = fn(b[field]);
-    } 
-    else {
+  } else {
     fieldA = fn(a);
     fieldB = fn(b);
-    };
+  }
 
-    /**/ if (fieldA < fieldB) return (desc) ? -1 :  1;
-    else if (fieldA > fieldB) return (desc) ?  1 : -1;
-    else /******************/ return 0;
-  })
-};
+  /**/ if (fieldA < fieldB) return (desc) ? -1 : 1;
+  else if (fieldA > fieldB) return (desc) ? 1 : -1;
+  return 0;
+});

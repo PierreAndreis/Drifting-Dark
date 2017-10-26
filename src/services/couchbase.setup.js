@@ -1,8 +1,8 @@
-import "./couchbase";
+import './couchbase';
 
 
-//todo: couchbase setup, buckets, etc
+// todo: couchbase setup, buckets, etc
 
 
-export default () => {console.log("Couchbase setup: OK")};
+export default () => { console.log('Couchbase setup: OK'); };
 
