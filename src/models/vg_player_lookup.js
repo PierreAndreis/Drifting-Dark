@@ -50,14 +50,21 @@ class VGPlayerLookup {
     }
   }
 
-  async getByName(playerName) {
+  async getPlayerIdWithRegion(playerName, region) {
+    const playerId = await vainglory.queryPlayerByName(region, playerName)
+      // TODO: return playerID
+  }
+
+  async getByName(playerName, region) {
     try {
-          const key = this.createCacheKey(playerName);
-    const get = async () => {
-      const res = await this.findPlayerAPI(playerName);
-      if (!res) return {};
-      return res;
-    }
+      const key = this.createCacheKey(playerName);
+      const get = async () => {
+        let res;
+        if (!region) res = await this.findPlayerAPI(playerName);
+        else res = await this.getPlayerIdWithRegion(playerName, region);
+        if (!res) return {};
+        return res;
+      }
 
     return await CacheService.preferCache(key, get, {expireSeconds: Config.CACHE.REDIS_LOOKUP_CACHE_EXPIRE});
     } catch (error) {
