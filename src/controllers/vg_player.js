@@ -6,8 +6,9 @@ import PlayerStatsModel   from "src/models/vg_player_Stats";
 class PlayerController {
 
 
-  lookupName(playerName) {
-    return PlayerLookupModel.getByName(playerName);
+  lookupName(playerName, region) {
+    if (!region) return PlayerLookupModel.getByName(playerName);
+    return PlayerLookupModel.getByName(playerName, region)
   }
 
   async getStats(playerName) {
