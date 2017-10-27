@@ -1,6 +1,7 @@
 import kue from "kue";
 import Redis from "ioredis";
 import lodash from "lodash";
+import cache from "./cache"
 import cluster from 'cluster';
 import allPros from '../resources/vg8_teams/teams_autumn_1';
 import matches from '../models/vg_matches';
@@ -18,8 +19,7 @@ const REDIS = {
 const players = {};
 for (let i = 0; i < allPros.length; i++) {
   // For each player in the team add their playerID and region to players
-  players[i].id = await PlayerController.lookupName(allPros[i].players.name);
-  players[i].region = allPros[i].players.region;
+  players[i].id = PlayerController.lookupName(allPros[i].players.name);
 }
 
 const q = kue.createQueue({
