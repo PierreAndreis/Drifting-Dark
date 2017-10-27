@@ -88,8 +88,8 @@ if (cluster.isMaster) {
   });
   // If the queue gets over 1 thousand send an alert
   q.inactiveCount( function( err, total ) {
-    if( total > 1000 ) {
-      console.log('The Queue is getting over 1K, something is wrong.');
+    if( total > 100 ) {
+      console.log('The Queue is getting over 100, something is wrong.');
     }
   });
 }
