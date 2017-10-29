@@ -80,10 +80,9 @@ if (cluster.isMaster) {
     // Calls the player matches AND stores in redis
     const prosData = matches.getMatches(allPlayers.playerID, allPlayers.region, allPlayers.lastMatch); // TODO:(NOT DONE) Figure out how to give it the correct ID, REGION, Date for each time the queue runs. Exmaple player[0].id, second queue uses player[1].id
     if (!prosData) {
-      // TODO: Add to end of queue
+      // TODO: Some error happened, Add to end of queue
       return done(new Error('4ever messed up not Skillz. Everyone blame 4ever :)'));
     }
-    console.log(``);
     done();
   });
   // If the queue gets over 1 thousand send an alert
