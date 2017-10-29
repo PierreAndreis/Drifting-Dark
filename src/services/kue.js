@@ -50,6 +50,7 @@ process.once('SIGTERM', (sig) => {
 const job = q.create('prohistory', {
   allPlayers: "allPros" // TODO: Get Data from redis queue list. Create a queue list in redis
 })
+
   // priority in queue
   .priority('normal')
   // Check for stuck jobs
@@ -77,10 +78,10 @@ if (cluster.isMaster) {
 } else {
   q.process('prohistory', 10, (job, done) => {
     const allPlayers = job.data; // job.data declared above from redis queue
-    // Calls the player matches AND stores in redis
-    const prosData = matches.getMatches(allPlayers.playerID, allPlayers.region, allPlayers.lastMatch); // TODO:(NOT DONE) Figure out how to give it the correct ID, REGION, Date for each time the queue runs. Exmaple player[0].id, second queue uses player[1].id
+    // Calls the player matches AND stores in redis into the list called pros
+    const prosData = matches.getMatches(allPlayers.playerID, allPlayers.region, allPlayers.lastMatch, "pros"); // TODO:(NOT DONE) Figure out how to give it the correct ID, REGION, Date for each time the queue runs. Exmaple player[0].id, second queue uses player[1].id
     if (!prosData) {
-      // TODO: Some error happened, Add to end of queue
+      // TODO: Some error happened, Add to end of queue in redis
       return done(new Error('4ever messed up not Skillz. Everyone blame 4ever :)'));
     }
     done();

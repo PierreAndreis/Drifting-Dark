@@ -53,7 +53,7 @@ class VGMatches {
     return res;
   }
 
-  async getMatches(playerId, region, lastMatch) {
+  async getMatches(playerId, region, lastMatch, category) {
     const key = this.createCacheKey(playerId, region, lastMatch);
 
     const get = async () => {
@@ -63,8 +63,11 @@ class VGMatches {
       const res = matches.match.map(match => MatchTransform(match))
       return res;
     }
-
-    return await CacheService.preferCache(key, get, {expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE, category: "matches"});
+    let categ;
+    if (category) categ = { category };
+    else categ = { category: "matches" };
+    
+    return CacheService.preferCache(key, get, { expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE, categ });
 
   }
 
