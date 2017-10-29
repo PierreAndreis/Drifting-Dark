@@ -26,7 +26,7 @@ const q = kue.createQueue({
   redis: {
     // kue makes 2 instances
     // http://stackoverflow.com/questions/30944960/kue-worker-with-with-createclientfactory-only-subscriber-commands-may-be-used
-    createClientFactory: function() {
+    createClientFactory: function () {
       return new Redis({
         port: REDIS.PORT,
         host: REDIS.KUE_HOST
@@ -35,12 +35,12 @@ const q = kue.createQueue({
   }
 });
 
-q.on('error', function(err) {
+q.on('error', (err) => {
   return console.log(err);
 });
 
-process.once('SIGTERM', function(sig) {
-  return q.shutdown(KUE_SHUTDOWN_TIME_MS, function(err) {
+process.once('SIGTERM', (sig) => {
+  return q.shutdown(KUE_SHUTDOWN_TIME_MS, function (err) {
     console.log('Kue shutdown: ', err || '');
     return process.exit(0);
   });
@@ -87,8 +87,8 @@ if (cluster.isMaster) {
     done();
   });
   // If the queue gets over 1 thousand send an alert
-  q.inactiveCount( function( err, total ) {
-    if( total > 100 ) {
+  q.inactiveCount((err, total) => {
+    if (total > 100) {
       console.log('The Queue is getting over 100, something is wrong.');
     }
   });
