@@ -1,11 +1,11 @@
 import kue from "kue";
 import Redis from "ioredis";
 import lodash from "lodash";
-import cache from "./cache"
+import cache from "./cache";
 import cluster from 'cluster';
 import allPros from '../resources/vg8_teams/teams_autumn_1';
 import matches from '../models/vg_matches';
-import PlayerController from "../controllers/vg_player"
+import PlayerController from "../controllers/vg_player";
 
 const KUE_SHUTDOWN_TIME_MS = 2000;
 const clusterWorkerSize = require('os').cpus().length;
@@ -48,26 +48,26 @@ process.once('SIGTERM', function(sig) {
 
 // Creates a queue called prohistory
 const job = q.create('prohistory', {
-  allPlayers: "allPros"// TODO: Get Data from redis queue list. Create a queue list in redis
+  allPlayers: "allPros" // TODO: Get Data from redis queue list. Create a queue list in redis
 })
   // priority in queue
   .priority('normal')
   // Check for stuck jobs
   .watchStuckJobs(5000)
   .active((err, ids) => {
-  ids.forEach((id) => {
-    kue.Job.get(id, (err, job) => {
+    ids.forEach((id) => {
+      kue.Job.get(id, (err, job) => {
       // Your application should check if job is a stuck one
-      job.inactive();
+        job.inactive();
+      });
     });
-  });
-})
-// if it complete remove from queue
+  })
+  // if it complete remove from queue
   .removeOnComplete(true)
   .save((err) => {
     if (err) console.log(err);
     else console.log(job.id);
-});
+  });
 
 if (cluster.isMaster) {
   kue.app.listen(3000);
@@ -76,14 +76,14 @@ if (cluster.isMaster) {
   }
 } else {
   q.process('prohistory', 10, (job, done) => {
-    const allPlayers = job.data // job.data declared above from redis queue
+    const allPlayers = job.data; // job.data declared above from redis queue
     // Calls the player matches AND stores in redis
-    const prosData = getMatches(allPlayers.playerID, allPlayers.region, allPlayers.lastMatch) // TODO:(NOT DONE) Figure out how to give it the correct ID, REGION, Date for each time the queue runs. Exmaple player[0].id, second queue uses player[1].id
+    const prosData = matches.getMatches(allPlayers.playerID, allPlayers.region, allPlayers.lastMatch); // TODO:(NOT DONE) Figure out how to give it the correct ID, REGION, Date for each time the queue runs. Exmaple player[0].id, second queue uses player[1].id
     if (!prosData) {
       // TODO: Add to end of queue
       return done(new Error('4ever messed up not Skillz. Everyone blame 4ever :)'));
     }
-    console.log(``)
+    console.log(``);
     done();
   });
   // If the queue gets over 1 thousand send an alert
