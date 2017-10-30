@@ -60,3 +60,4 @@ typings/
 
 deploy
 ecosystem.config.js
+.DS_Store
