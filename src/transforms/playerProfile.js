@@ -22,20 +22,18 @@ const findRegionByPatch = (patchVersion) => {
 
 export const createPlayer = (p) => {
   
-  const player = {...p.raw};
+  const player = {...p.player[0].raw};
 
   let patch = player.attributes.patchVersion;
 
   let season = findRegionByPatch(patch);
-
-  console.log(season, patch);
 
   return {
     id:            player.id,
     name:          player.attributes.name,
     region:        player.attributes.shardId,
     lastMatch:     player.attributes.createdAt,
-    skillTier:     player.attributes.skillTier,
+    // skillTier:     player.attributes.skillTier,
     lastPatch:     patch,
     lastSeason:    season,
   }

@@ -9,11 +9,10 @@ const API_CACHE_TIME = moment().add(5, "m").format("X");
 class PlayerStats {
 
   create(m, playerId) {
-
-    if (m.errors) return {};
+    console.log("matches", m, playerId)
+    if (!m || m.errors) return {};
     
     const matches = (m.match) ? m.match.map(m => MatchesTransform(m)) : m;
-    
     const lastMatch = matches[0];
     const player = lastMatch.players[playerId];
 

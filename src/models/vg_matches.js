@@ -59,7 +59,7 @@ class VGMatches {
     const get = async () => {
       const matches = await VaingloryService.queryMatchesOlder(playerId, region, lastMatch);
       if (!matches) return {};
-      return matches;
+      // return matches; // start here
       const res = matches.match.map(match => MatchTransform(match))
       return res;
     }

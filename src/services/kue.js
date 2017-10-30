@@ -15,12 +15,7 @@ const REDIS = {
   KUE_HOST: "localhost"
 };
 
-// Run a loop depending on how many teams there are
-const players = {};
-for (let i = 0; i < allPros.length; i++) {
-  // For each player in the team add their playerID and region to players
-  players[i].id = PlayerController.lookupName(allPros[i].players.name);
-}
+// console.log("lol");
 
 const q = kue.createQueue({
   redis: {
@@ -35,6 +30,11 @@ const q = kue.createQueue({
   }
 });
 
+// q.on('job enqueue', function(id, type){
+//   console.log( 'Job %s got queued of type %s', id, type );
+
+// })
+
 q.on('error', (err) => {
   return console.log(err);
 });
@@ -46,52 +46,65 @@ process.once('SIGTERM', (sig) => {
   });
 });
 
-// Creates a queue called prohistory
-const job = q.create('prohistory', {
-  allPlayers: "allPros" // TODO: Get Data from redis queue list. Create a queue list in redis
-})
+// Run a loop depending on how many teams there are
+// const players = [];
 
-  // priority in queue
-  .priority('normal')
-  // Check for stuck jobs
-  .watchStuckJobs(5000)
-  .active((err, ids) => {
-    ids.forEach((id) => {
-      kue.Job.get(id, (err, job) => {
-      // Your application should check if job is a stuck one
-        job.inactive();
-      });
-    });
-  })
-  // if it complete remove from queue
-  .removeOnComplete(true)
-  .save((err) => {
-    if (err) console.log(err);
-    else console.log(job.id);
-  });
+// for (let i = 0; i < allPros.length; i++) {
+//   // For each player in the team add their playerID and region to players
+//   // players.push(PlayerController.lookupName(allPros[i].players.name));
+// }
 
-if (cluster.isMaster) {
-  kue.app.listen(3000);
-  for (let i = 0; i < clusterWorkerSize; i++) {
-    cluster.fork();
-  }
-} else {
-  q.process('prohistory', 10, (job, done) => {
-    const allPlayers = job.data; // job.data declared above from redis queue
-    // Calls the player matches AND stores in redis into the list called pros
-    const prosData = matches.getMatches(allPlayers.playerID, allPlayers.region, allPlayers.lastMatch, "pros"); // TODO:(NOT DONE) Figure out how to give it the correct ID, REGION, Date for each time the queue runs. Exmaple player[0].id, second queue uses player[1].id
-    if (!prosData) {
-      // TODO: Some error happened, Add to end of queue in redis
-      return done(new Error('4ever messed up not Skillz. Everyone blame 4ever :)'));
-    }
-    done();
-  });
-  // If the queue gets over 1 thousand send an alert
-  q.inactiveCount((err, total) => {
-    if (total > 100) {
-      console.log('The Queue is getting over 100, something is wrong.');
-    }
-  });
-}
+// // Creates a queue called prohistory
+// const job = q.create('prohistory', {
+//   allPlayers: "allPros" // TODO: Get Data from redis queue list. Create a queue list in redis
+// })
+
+//   // priority in queue
+//   .priority('normal')
+//   // Check for stuck jobs
+//   // .watchStuckJobs(5000)
+//   // .active((err, players) => {
+//   //   // console.log(arguments);
+//   //   // ids.forEach((id) => {
+//   //   //   kue.Job.get(id, (err, job) => {
+//   //   //   // Your application should check if job is a stuck one
+//   //   //     job.inactive();
+//   //   //   });
+//   //   // });
+//   // })
+//   // if it complete remove from queue
+//   .removeOnComplete(true)
+//   .save((err) => {
+//     if (err) console.log(err);
+//     else console.log(job.id);
+//   });
+
+
+kue.app.listen(3000);
+// // if (cluster.isMaster) {
+// //   kue.app.listen(3000);
+// //   for (let i = 0; i < clusterWorkerSize; i++) {
+// //     cluster.fork();
+// //   }
+// // } else {
+//   q.process('prohistory', 10, (job, done) => {
+
+//     // const allPlayers = job.data; // job.data declared above from redis queue
+//     // // Calls the player matches AND stores in redis into the list called pros
+//     // const prosData = matches.getMatches(allPlayers.playerID, allPlayers.region, allPlayers.lastMatch, "pros"); // TODO:(NOT DONE) Figure out how to give it the correct ID, REGION, Date for each time the queue runs. Exmaple player[0].id, second queue uses player[1].id
+//     console.log("cool!");
+//     // if (!prosData) {
+//     //   // TODO: Some error happened, Add to end of queue in redis
+//     //   return failed(new Error('4ever messed up not Skillz. Everyone blame 4ever :)'));
+//     // }
+//     done();
+//   });
+//   // If the queue gets over 1 thousand send an alert
+//   q.inactiveCount((err, total) => {
+//     if (total > 100) {
+//       console.log('The Queue is getting over 100, something is wrong.');
+//     }
+//   });
+// // }
 
 export default q;

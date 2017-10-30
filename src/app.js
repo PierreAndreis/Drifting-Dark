@@ -4,6 +4,8 @@ import helmet     from "helmet";
 import bodyParser from "body-parser";
 import responseTime from "response-time";
 
+import {createJob} from "./services/kue.create";
+
 import Cors         from "cors";     // Cross Request
 
 import routes     from "src/routes";

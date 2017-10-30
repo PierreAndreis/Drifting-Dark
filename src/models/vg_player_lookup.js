@@ -20,7 +20,7 @@ class VGPlayerLookup {
     const regionsCalls = [];
   
     // Add all the regions that we are going to search;
-    Config.VAINGLORY.REGIONS.forEach(r => regionsCalls.push(vainglory.queryPlayerByName(r, playerName)));
+    Config.VAINGLORY.REGIONS.forEach(r => regionsCalls.push(vainglory.queryPlayerByName(playerName, r)));
   
     const result = await Promise.all(regionsCalls);
     
@@ -28,18 +28,20 @@ class VGPlayerLookup {
       let players = result[i];
       // TODO: handle all other errors, maybe make a util function to handle all other errors except 404
       // https://github.com/seripap/vainglory/blob/master/src/Errors.js
-      if (players.errors && players.messages === Config.VAINGLORY.RESPONSES.REPLY_404_MSG) continue;
-      players.player.forEach(player => {
-        foundRegions.push(createPlayer(player));
-      });
+      if (players.errors || players.messages === Config.VAINGLORY.RESPONSES.REPLY_404_MSG) continue;
+      foundRegions.push(players);
+      // players.player.forEach(player => {
+      //   foundRegions.push(createPlayer(player));
+      // });
+
     }
   
     if (foundRegions.length == 1) return foundRegions[0];
     else {
   
       const sorted = foundRegions.sort((a, b) => {
-        var date = moment(a.lastMatch)
-        var now  = moment(b.lastMatch);
+        var date = moment(a.players.createdAt)
+        var now  = moment(b.players.createdAt);
         
         if (now > date) return 1;
         if (date < now) return -1;
@@ -50,20 +52,19 @@ class VGPlayerLookup {
     }
   }
 
-  async getPlayerIdWithRegion(playerName, region) {
-    const playerId = await vainglory.queryPlayerByName(region, playerName)
-      // TODO: return playerID
-  }
-
   async getByName(playerName, region) {
     try {
       const key = this.createCacheKey(playerName);
+
       const get = async () => {
         let res;
+
         if (!region) res = await this.findPlayerAPI(playerName);
-        else res = await this.getPlayerIdWithRegion(playerName, region);
-        if (!res) return {};
-        return res;
+        else res = await vainglory.queryPlayerByName(playerName, region);
+
+        if (!res || res.errors) return {};
+
+        return createPlayer(res);
       }
 
     return await CacheService.preferCache(key, get, {expireSeconds: Config.CACHE.REDIS_LOOKUP_CACHE_EXPIRE});
