@@ -1,0 +1,8 @@
+{
+    "extends": "airbnb",
+    "rules": {
+        "quotes": ["warn", "double"],
+        "no-plusplus": "off",
+        "class-methods-use-this": "off"
+    }
+}
