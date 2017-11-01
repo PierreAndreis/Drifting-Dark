@@ -15,15 +15,11 @@ class VGPlayerLookup {
   }
 
   async findPlayerAPI(playerName) {
-    
     const foundRegions = [];
     const regionsCalls = [];
-  
     // Add all the regions that we are going to search;
-    Config.VAINGLORY.REGIONS.forEach(r => regionsCalls.push(vainglory.queryPlayerByName(playerName, r)));
-  
+    await Config.VAINGLORY.REGIONS.forEach(r => regionsCalls.push(vainglory.queryPlayerByName(playerName, r)));
     const result = await Promise.all(regionsCalls);
-    
     for (let i = 0; i < result.length; i++) {
       let players = result[i];
       // TODO: handle all other errors, maybe make a util function to handle all other errors except 404
@@ -35,8 +31,7 @@ class VGPlayerLookup {
       // });
 
     }
-  
-    if (foundRegions.length == 1) return foundRegions[0];
+    if (foundRegions.length === 1) return foundRegions[0];
     else {
   
       const sorted = foundRegions.sort((a, b) => {
@@ -61,7 +56,6 @@ class VGPlayerLookup {
 
         if (!region) res = await this.findPlayerAPI(playerName);
         else res = await vainglory.queryPlayerByName(playerName, region);
-
         if (!res || res.errors) return {};
 
         return createPlayer(res);

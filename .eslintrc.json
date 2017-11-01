@@ -3,6 +3,7 @@
     "rules": {
         "quotes": ["warn", "double"],
         "no-plusplus": "off",
-        "class-methods-use-this": "off"
+        "class-methods-use-this": "off",
+        "no-continue":"off"
     }
 }

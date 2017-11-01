@@ -8,7 +8,7 @@ class PlayerController {
 
   lookupName(playerName, region) {
     if (!region) return PlayerLookupModel.getByName(playerName);
-    return PlayerLookupModel.getByName(playerName, region)
+    return PlayerLookupModel.getByName(playerName, region);
   }
 
   async getStats(playerName) {
