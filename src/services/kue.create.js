@@ -11,7 +11,6 @@ const PRO_HISTORY = [];
 let counter = 0;
 
 const ProQueue = async () => {
-  console.log('inside the queue')
   // const playersFetch = [];
   const player = Pros[counter];
   let oldest;
