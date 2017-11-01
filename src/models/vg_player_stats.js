@@ -1,20 +1,19 @@
-import moment       from "moment";
+import moment from 'moment';
 
-import BaseCouchbase from "src/lib/BaseCouchbase";
+import BaseCouchbase from '../lib/BaseCouchbase';
 
-import CacheService      from "src/services/cache";
-import CouchbaseService  from "src/services/couchbase";
-import VaingloryService  from "src/services/vainglory";
-import PlayerTransform   from "src/transforms/playerStats.js";
+import CacheService from '../services/cache';
+import CouchbaseService from '../services/couchbase';
+import VaingloryService from '../services/vainglory';
+import PlayerTransform from '../transforms/playerStats';
 
-import MatchesModel   from "src/models/vg_matches";
+import MatchesModel from '../models/vg_matches';
 
-import { merge } from "src/lib/utils";
+import { merge } from '../lib/utils';
 
-const PLAYERDB = new CouchbaseService("players");
+const PLAYERDB = new CouchbaseService('players');
 
 class VGPlayersStats extends BaseCouchbase {
-
   createKey(playerId) {
     return `${playerId}`;
   }
@@ -24,7 +23,6 @@ class VGPlayersStats extends BaseCouchbase {
 
     const stats = await this.find(key);
     return stats;
-
   }
 
   async create(playerId, doc) {
@@ -33,28 +31,21 @@ class VGPlayersStats extends BaseCouchbase {
     return this.insert(key, doc);
   }
 
-  async update({id, region, lastMatch}, oldStats) {
-
+  async update({ id, region, lastMatch }, oldStats) {
     let stats;
-    
+
     if (!oldStats) {
       // New Player in the system. We will query all last 28 days of matches :D
       const matches = await MatchesModel.getAllMatches(id, region);
       stats = PlayerTransform.create(matches, id);
-    }
-    else {
-      // Old player in the system. Let's check if he has new matches then merge
-      const matches = await VaingloryService.queryMatchesNewer(id, region, lastMatch);
+    } else {
+    // Old player in the system. Let's check if he has new matches then merge
+      const matches = await VaingloryService.queryMatchesTimed(id, region, lastMatch);
       const statsNew = PlayerTransform.create(matches, id);
       stats = merge(oldStats, statsNew);
     }
-
     return stats;
-
   }
-
-
-
 }
 
 export default new VGPlayersStats(PLAYERDB);

@@ -1,5 +1,4 @@
 class CouchbaseModel {
-
   constructor(conn) {
     this.conn = conn;
   }
@@ -13,11 +12,8 @@ class CouchbaseModel {
   }
 
   upsert(key, doc) {
-    if (!key) 
-      throw new Error('Missing id parametter');
-    if (!doc) 
-      throw new Error('Missing doc parametter');
-    
+    if (!key) throw new Error('Missing id parametter');
+    if (!doc) throw new Error('Missing doc parametter');
     return this.conn.upsert(key, doc);
   }
 }
