@@ -49,6 +49,7 @@ const ProQueue = async () => {
   // Don't worry about redis either, we worry about that later. Pretend PRO_HISTORY is redis
 
   // Reset counter so it goes back to the first loop
+  counter++;
   if (counter === Pros.length) counter = 0;
 
   // This will make it loop
