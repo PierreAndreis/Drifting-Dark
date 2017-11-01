@@ -31,11 +31,11 @@ class VGMatches {
 
       for (let i = 0; i < BATCHAPI_PAGES_PER_TRY ; i++) {
         const page = initialPages + i;
-        queries.push(VaingloryService.queryMatchesPage(playerId, region, endAt, page))
+        queries.push(VaingloryService.queryMatchesPage(playerId, region, endAt, page));
       }
 
       return await Promise.all(queries);
-    }
+    };
 
 
     let done  = false;
@@ -46,7 +46,7 @@ class VGMatches {
       pagesRes.forEach(pg => {
         if (pg.errors) done = true;
         else res.push(...pg.match.map(match => MatchTransform(match)));
-      })
+      });
       pages++;
     }
 
@@ -59,10 +59,21 @@ class VGMatches {
     const get = async () => {
       const matches = await VaingloryService.queryMatchesOlder(playerId, region, lastMatch);
       if (!matches) return {};
+      for (let i = 0; i < matches.match.length; i++) {
+        // For every match create a loop depending on how many players in that match
+        for (let j = 0; i < matches.match[i].matchRoster.length; i++) {
+          // Get the data from the match
+          const { data } = matches.match[i].matchRoster[i].rosterParticipants[j].participantPlayer;
+          const { id } = data;
+          const { name } = data.attributes;
+          // TODO: Check couchbase if this name exists for this player ID. If not add it to the db.
+        }
+      }
       return matches;
-      const res = matches.match.map(match => MatchTransform(match))
+      
+      const res = matches.match.map(match => MatchTransform(match));
       return res;
-    }
+    };
 
     return await CacheService.preferCache(key, get, {expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE, category: "matches"});
 
