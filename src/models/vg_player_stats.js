@@ -62,9 +62,8 @@ class VGPlayersStats extends BaseCouchbase {
         const { name } = data.attributes;
         // TODO: Check couchbase if this name exists for this player ID. If not add it to the db.
       }
+    }
   }
 }
-
-
 
 export default new VGPlayersStats(PLAYERDB);
