@@ -24,6 +24,7 @@ const ProQueue = async () => {
     const matchTime = Date.parse(matches[i].createdAt);
     // If the createdAt is older then the oldest match in the array skip to next loop
     if (matchTime < oldest) continue;
+    if (PRO_HISTORY.includes(matches[i])) continue;
     // Remove the oldest if 50 matches
     if (PRO_HISTORY.length === 50) PRO_HISTORY.pop();
     // Add this match to the beginning of the array
