@@ -1,6 +1,6 @@
 import * as lodash    from "lodash";
 import moment         from "moment";
-import { merge }      from "src/lib/utils";
+import { merge }      from "~/lib/utils";
 
 import MatchesTransform from "./matches";
 
@@ -9,11 +9,9 @@ const API_CACHE_TIME = moment().add(5, "m").format("X");
 class PlayerStats {
 
   create(m, playerId) {
-
-    if (m.errors) return {};
+    if (!m || m.errors) return {};
     
     const matches = (m.match) ? m.match.map(m => MatchesTransform(m)) : m;
-    
     const lastMatch = matches[0];
     const player = lastMatch.players[playerId];
 

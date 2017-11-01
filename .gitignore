@@ -60,3 +60,6 @@ typings/
 # dotenv environment variables file
 .env
 
+deploy
+ecosystem.config.js
+.DS_Store

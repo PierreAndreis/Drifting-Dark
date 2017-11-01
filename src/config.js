@@ -42,7 +42,7 @@ export default {
     },
 
     API_PLAYERSTATS_CACHE: minutes(10),
-    REDIS_LOOKUP_CACHE_EXPIRE: days(2),
+    REDIS_LOOKUP_CACHE_EXPIRE: minutes(1),
     REDIS_MATCHES_CACHE_EXPIRE: minutes(10),
   }
 

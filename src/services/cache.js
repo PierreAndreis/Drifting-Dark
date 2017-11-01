@@ -32,7 +32,8 @@ class CacheService {
     key = REDIS.PREFIX + ':' + key;
     return RedisService.get(key).then(function(value) {
       try {
-        return JSON.parse(value);
+        if (value) return JSON.parse(value)
+        return [];
       } 
       catch (error) {
         console.warn(error);

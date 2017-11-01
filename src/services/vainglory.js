@@ -1,7 +1,7 @@
 import * as lodash from "lodash";
 import vg          from "vainglory";
 
-import Config from "src/config";
+import Config from "~/config";
 
 /**
  * todoschema,
@@ -64,7 +64,7 @@ class VaingloryService {
     return vainglory.players.getById(playerId);
   }
   
-  queryPlayerByName(region, playerNames) {
+  queryPlayerByName(playerNames, region) {
     // It requires it to be in an array
     if (typeof playerNames !== "object") playerNames = [playerNames];
 

@@ -1,5 +1,5 @@
 import couchbase            from "couchbase-promises";
-import Config from "src/config";
+import Config from "~/config";
 
 const cluster = new couchbase.Cluster(`couchbase://${Config.COUCHBASE.HOST}:${Config.COUCHBASE.PORT}`);
 

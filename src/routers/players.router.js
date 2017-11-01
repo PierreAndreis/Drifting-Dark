@@ -1,4 +1,4 @@
-import PlayerController from "src/controllers/vg_player";
+import PlayerController from "~/controllers/vg_player";
 
 /**
  * todo:

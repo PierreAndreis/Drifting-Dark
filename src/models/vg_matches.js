@@ -1,14 +1,14 @@
 import moment       from "moment";
 
-import Config from "src/config";
+import Config from "~/config";
 
-import CacheService     from "src/services/cache";
-import VaingloryService from "src/services/vainglory";
+import CacheService     from "~/services/cache";
+import VaingloryService from "~/services/vainglory";
 
-import MatchTransform from "src/transforms/matches.js";
+import MatchTransform from "~/transforms/matches.js";
 
 const BATCHAPI_PAGES_PER_TRY = 3;
-const BATCHAPI_DATE_DEEP_TRY = 2; // We will try 3 dates deep down (28 * 2 = 56 days worth of data)
+// const BATCHAPI_DATE_DEEP_TRY = 2; // We will try 3 dates deep down (28 * 2 = 56 days worth of data)
 
 class VGMatches {
 
@@ -20,21 +20,20 @@ class VGMatches {
     /**
      * notes:
      * I gave up trying to make it batch more than just last 28 days
-     * and I don't think this data will be important. 
+     * and I don't think this data will be important.
      * for now, it will just try to fetch all the data from that page
      */
     const res = [];
 
-    const get = async (initialPages = 0, endAt) => {
-
+    const get = async (initialPages = 0, endDate) => {
       const queries = [];
 
-      for (let i = 0; i < BATCHAPI_PAGES_PER_TRY ; i++) {
+      for (let i = 0; i < BATCHAPI_PAGES_PER_TRY; i++) {
         const page = initialPages + i;
-        queries.push(VaingloryService.queryMatchesPage(playerId, region, endAt, page))
+        queries.push(VaingloryService.queryMatchesPage(playerId, region, endDate, page));
       }
 
-      return await Promise.all(queries);
+      return Promise.all(queries);
     }
 
 
@@ -43,7 +42,7 @@ class VGMatches {
 
     while (!done) {
       const pagesRes = await get(pages);
-      pagesRes.forEach(pg => {
+      pagesRes.forEach((pg) => {
         if (pg.errors) done = true;
         else res.push(...pg.match.map(match => MatchTransform(match)));
       })
@@ -53,19 +52,33 @@ class VGMatches {
     return res;
   }
 
-  async getMatches(playerId, region, lastMatch) {
+  async getMatches(playerId, region, lastMatch, category) {
     const key = this.createCacheKey(playerId, region, lastMatch);
 
     const get = async () => {
       const matches = await VaingloryService.queryMatchesOlder(playerId, region, lastMatch);
-      if (!matches) return {};
-      return matches;
+      if (!matches || matches.errors) return {};
       const res = matches.match.map(match => MatchTransform(match))
       return res;
     }
+    let categ;
+    if (category) categ = { category };
+    else categ = { category: "matches" };
+    
+    return CacheService.preferCache(key, get, { expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE, categ });
 
-    return await CacheService.preferCache(key, get, {expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE, category: "matches"});
+  }
 
+  getProHistory() {
+    const key = `prohistory`;
+
+    return CacheService.get(key) || {};
+  }
+
+  setProHistory(value) {
+    const key = `prohistory`;
+
+    return CacheService.set(key, value);
   }
 
 }
