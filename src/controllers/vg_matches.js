@@ -20,8 +20,18 @@ class MatchesController {
     const playerObj = await this.getPlayerId(playerName);
     // TODO: Add playerID to pros.js in resources IF this function is called by prohistory loop
     const matches = await this.getMatchesById(playerObj);
-    
-    return matches;
+    // If a filter is provided run this
+    if (!page) return matches;
+
+    const filteredMatches = [];
+
+    for (let i = 0; i < matches.length; i++) {
+      // For each match if the gameMode is not requested in the filters skip
+      if (!page.includes(matches[i].data.attributes.gameMode)) continue;
+      // If this gameMode is requested add it to the filtered matches
+      filteredMatches.push(matches[i]);
+    }
+    return filteredMatches;
   }
 
   async getAllPages(playerName) {
