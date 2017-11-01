@@ -15,8 +15,7 @@
             "preLaunchTask": null,
             "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/babel-node",
             "runtimeArgs": [
-              "--nolazy",
-              "--r dotenv/config"
+              "--nolazy"
             ],
             "env": {
               "NODE_ENV": "development"
@@ -24,6 +23,12 @@
             "console": "internalConsole",
             "sourceMaps": true,
             "outFiles": []
+          },
+          {
+            "name": "Attach to server",
+            "type": "node",
+            "request": "attach",
+            "port": 9229
           }
     ]
 }

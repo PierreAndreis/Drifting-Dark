@@ -1,4 +1,4 @@
-import MatchesModel from "src/models/vg_matches";
+import MatchesModel from "~/models/vg_matches";
 import * as lodash from "lodash";
 import PlayerController from "./vg_player";
 
@@ -29,6 +29,10 @@ class MatchesController {
 
     const matches = await MatchesModel.getAllMatches(id, region);
     return matches;
+  }
+
+  async ProMatches() {
+    return await MatchesModel.getProHistory();
   }
 }
 

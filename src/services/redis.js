@@ -1,7 +1,7 @@
 import Redis from "ioredis";
 import lodash from "lodash";
 
-import Config from "src/config";
+import Config from "~/config";
 
 const client = new Redis({
   port: Config.REDIS.PORT,

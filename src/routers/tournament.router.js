@@ -1,8 +1,8 @@
 
-// import Tournament        from "src/api/vgpro/matches_tournament"
-// import VGPROTournament   from "src/api/vgpro/tournament";
-// import MatchesTournament from "src/api/vgpro/matches_tournament"
-// import VGPROVG8        from "src/api/vgpro/vg8";
+// import Tournament        from "~/api/vgpro/matches_tournament"
+// import VGPROTournament   from "~/api/vgpro/tournament";
+// import MatchesTournament from "~/api/vgpro/matches_tournament"
+// import VGPROVG8        from "~/api/vgpro/vg8";
 
 
 // const tournament = new VGPROVG8();

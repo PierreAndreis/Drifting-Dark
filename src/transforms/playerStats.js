@@ -1,6 +1,6 @@
 import * as lodash    from "lodash";
 import moment         from "moment";
-import { merge }      from "src/lib/utils";
+import { merge }      from "~/lib/utils";
 
 import MatchesTransform from "./matches";
 

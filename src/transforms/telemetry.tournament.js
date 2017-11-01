@@ -4,7 +4,7 @@
  */
 
 import * as lodash   from "lodash";
-import { merge, GETSEASON }     from "src/utils/utils";
+import { merge, GETSEASON }     from "~/utils/utils";
 
 const PROFILING = true;
 

@@ -1,7 +1,7 @@
 import * as lodash from "lodash";
 import vg          from "vainglory";
 
-import Config from "src/config";
+import Config from "~/config";
 
 /**
  * todoschema,

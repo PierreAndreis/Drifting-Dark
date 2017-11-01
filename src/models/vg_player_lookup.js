@@ -1,11 +1,11 @@
 import moment       from "moment";
 
-import Config from "src/config";
+import Config from "~/config";
 
-import CacheService     from "src/services/cache";
-import vainglory        from "src/services/vainglory";
+import CacheService     from "~/services/cache";
+import vainglory        from "~/services/vainglory";
 
-import {createPlayer} from "src/transforms/playerProfile.js";
+import {createPlayer} from "~/transforms/playerProfile.js";
 
 
 class VGPlayerLookup {

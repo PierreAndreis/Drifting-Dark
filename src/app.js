@@ -4,11 +4,13 @@ import helmet     from "helmet";
 import bodyParser from "body-parser";
 import responseTime from "response-time";
 
-import {createJob} from "./services/kue.create";
+// todo: cron service
+import ProHistory from "~/services/prohistory";
+// ProHistory.start();
 
 import Cors         from "cors";     // Cross Request
 
-import routes     from "src/routes";
+import routes     from "~/routes";
 
 const app = express();
 
