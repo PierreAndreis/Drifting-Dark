@@ -1,7 +1,11 @@
+import lodash from "lodash";
+
 import Pros from "../resources/pro";
 
 import MatchController from "../controllers/vg_matches";
 import MatchModel from "../models/vg_matches";
+
+import ProTransform from "../transforms/prohistory";
 
 const PROS_PER_QUEUE = 10;
 // const PROS_QUEUE_TIME = 60000 // 1 minute.
@@ -20,39 +24,36 @@ class ProHistory {
 
   async fetch() {
 
-    const proHistory = await MatchModel.getProHistory();
+    let proHistory = await MatchModel.getProHistory();
     const player = Pros[this.counter];
-
     // Create a date for the oldest match if none exists or else give it the value of the oldest match in the array
-    if (proHistory.length === 0) this.oldest = 1507913623000;
+    if (proHistory.length === 0) this.oldest = null;
     else this.oldest = Date.parse(proHistory[proHistory.length - 1].createdAt);
 
+    // todo: after commiting filters, only search for ranked matches
     const matches = await MatchController.getMatchesByName(player.name);
     
     for (let i = 0; i < matches.length; i++) {
 
+      let m = matches[i];
       // Turn the date into the ms number
-      const matchTime = Date.parse(matches[i].createdAt);
+      const matchTime = Date.parse(m.createdAt);
 
       // If the createdAt is older then the oldest match in the array skip to next loop
-      if (matchTime < this.oldest || proHistory.includes(matches[i])) continue;
+      // and if 
+      const thisMatch = proHistory.find(m => m.matchId === m.id);
+      if (matchTime < this.oldest || !!thisMatch) continue;
         
       // Remove the oldest if 50 matches
       if (proHistory.length === 50) proHistory.pop();
 
       // Add this match to the beginning of the array
-      proHistory.unshift(matches[i]);
+      proHistory.unshift(ProTransform.create(m, player));
     }
 
     // After the loop resort everything.
-    await proHistory.sort((a, b) => {
-      const date = new Date(a.players.createdAt);
-      const now = new Date(b.players.createdAt);
-
-      if (now > date) return 1;
-      if (date < now) return -1;
-      return 0;
-    });
+    proHistory = lodash.sortBy(proHistory, ({createdAt}) => { return Date.parse(createdAt) });
+    proHistory.reverse();
 
 
     MatchModel.setProHistory(proHistory);

@@ -6,7 +6,7 @@ import responseTime from "response-time";
 
 // todo: cron service
 import ProHistory from "~/services/prohistory";
-// ProHistory.start();
+ProHistory.start();
 
 import Cors         from "cors";     // Cross Request
 
