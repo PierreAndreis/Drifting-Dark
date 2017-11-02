@@ -3,10 +3,16 @@ import vg          from "vainglory";
 
 import Config from "~/config";
 
+const RESULT_PER_PAGE = 50;
 /**
  * todoschema,
  * verify region
  */
+
+const generateOpt = (options) => lodash.defaultsDeep(
+    Config.VAINGLORY.DEFAULT_OPTIONS, 
+    {filter: options, page: {limit: RESULT_PER_PAGE}}
+  );
 
 const vainglory = new vg(Config.VAINGLORY.API_KEY, Config.VAINGLORY.SETUP_CONFIG);
 
@@ -20,17 +26,23 @@ class VaingloryService {
     return vainglory.setRegion(region).matches.collection(options);
   }
   
-  queryMatchesOlder(playerId, region, lastMatch) {
-    return this.queryMatches(region, lodash.defaultsDeep(Config.VAINGLORY.DEFAULT_OPTIONS, {
-      filter: {
-        "createdAt-end": lastMatch,
-        playerIds: [playerId],
-      },
-    }));
+  queryMatchesOlder(playerId, region, {lastMatch, patch, gameMode, page}) {
+
+    let options = {
+      playerIds: [playerId],
+      "createdAt-end": lastMatch
+    }
+
+    if (gameMode) options.gameMode = gameMode;
+    if (patch) options = options //todo. it should overwrite the createdAt-end and createdAt-start
+    options = generateOpt(options);
+    if (page) options.page = {offset: RESULT_PER_PAGE * page}
+
+    return this.queryMatches(region, options);
   }
 
   queryMatchesPage(playerId, region, endAt = new Date().toISOString(), page = 0) {
-    const offSet  = 50;
+    const offSet  = RESULT_PER_PAGE;
 
 
     const options = lodash.defaultsDeep({
