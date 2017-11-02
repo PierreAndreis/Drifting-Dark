@@ -10,7 +10,7 @@ const RESULT_PER_PAGE = 50;
  */
 
 const generateOpt = (options) => lodash.defaultsDeep(
-    Config.VAINGLORY.DEFAULT_OPTIONS, 
+    Config.VAINGLORY.DEFAULT_OPTION, 
     {filter: options, page: {limit: RESULT_PER_PAGE}}
   );
 
