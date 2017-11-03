@@ -1,11 +1,5 @@
 import PlayerController from "~/controllers/vg_player";
 
-/**
- * todo:
- * 1- quick lookup. Store it in redis with expiry
- * 2- tbd
- */
-
  /** /playerFind/:name */
 export const playerFind = async (req, res, next) => {
   const {name} = req.params;

@@ -8,10 +8,6 @@ const RESULT_PER_PAGE = 50;
  * todoschema,
  * verify region
  */
-const generateOpt = (options) => lodash.defaultsDeep(
-    Config.VAINGLORY.DEFAULT_OPTION, 
-    {filter: options, page: {limit: RESULT_PER_PAGE}}
-  );
 
 const vainglory = new vg(Config.VAINGLORY.API_KEY, Config.VAINGLORY.SETUP_CONFIG);
 
@@ -24,15 +20,23 @@ class VaingloryService {
   queryMatches(region, options) {
     return vainglory.setRegion(region).matches.collection(options);
   }
+
+  generateOpt(options) {
+    return {
+      filter: options,
+      ...Config.VAINGLORY.DEFAULT_OPTION, 
+    };
+  }
   
-  async queryMatchesOlder(playerId, region, { lastMatch, patch, gameMode, page }) {
+  queryMatchesOlder(playerId, region, { lastMatch, patch, gameMode, page }) {
     let options = {
       playerIds: [playerId],
-      "createdAt-end": lastMatch,
-    };
+      "createdAt-end": lastMatch
+    }
     if (gameMode) options.gameMode = gameMode;
+
     const patchData = [];
-    if (patch) {
+    /*if (patch) {
       patch = patch.sort((a, b) => {
         if (a > b) return 1;
         if (b < a) return -1;
@@ -50,9 +54,10 @@ class VaingloryService {
         })
         return await Promise.all(patchData)
     }// todo. it should overwrite the createdAt-end and createdAt-start
-    options = generateOpt(options);
-    if (page) options.page = { offset: RESULT_PER_PAGE * page };
-
+    */
+    options = this.generateOpt(options);
+    if (page) options.page = {offset: RESULT_PER_PAGE * page};
+    
     return this.queryMatches(region, options);
   }
 

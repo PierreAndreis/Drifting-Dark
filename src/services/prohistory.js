@@ -1,7 +1,11 @@
+import lodash from "lodash";
+
 import Pros from "../resources/pro";
 
 import MatchController from "../controllers/vg_matches";
 import MatchModel from "../models/vg_matches";
+
+import ProTransform from "../transforms/prohistory";
 
 const PROS_PER_QUEUE = 10;
 // const PROS_QUEUE_TIME = 60000 // 1 minute.
@@ -12,7 +16,6 @@ const PROS_LIMIT_HISTORY = 50;
 class ProHistory {
   constructor() {
     this.counter = 0;
-    this.oldest = 0;
 
     this.started = false;
     this.loop = null;
@@ -20,57 +23,49 @@ class ProHistory {
 
   async fetch() {
 
-    const proHistory = await MatchModel.getProHistory();
+    let proHistory = await MatchModel.getProHistory();
     const player = Pros[this.counter];
 
-    // Create a date for the oldest match if none exists or else give it the value of the oldest match in the array
-    if (proHistory.length === 0) this.oldest = 1507913623000;
-    else this.oldest = Date.parse(proHistory[proHistory.length - 1].createdAt);
-
-    const matches = await MatchController.getMatchesByName(player.name);
-    
-    for (let i = 0; i < matches.length; i++) {
-
-      // Turn the date into the ms number
-      const matchTime = Date.parse(matches[i].createdAt);
-
-      // If the createdAt is older then the oldest match in the array skip to next loop
-      if (matchTime < this.oldest || proHistory.includes(matches[i])) continue;
-        
-      // Remove the oldest if 50 matches
-      if (proHistory.length === 50) proHistory.pop();
-
-      // Add this match to the beginning of the array
-      proHistory.unshift(matches[i]);
-    }
-
-    // After the loop resort everything.
-    await proHistory.sort((a, b) => {
-      const date = new Date(a.players.createdAt);
-      const now = new Date(b.players.createdAt);
-
-      if (now > date) return 1;
-      if (date < now) return -1;
-      return 0;
-    });
-
-
-    MatchModel.setProHistory(proHistory);
-
-
-    // Reset counter so it goes back to the first loop
+    // Reset the counter before searching, so if we run this function in parallel it won't search same user
     this.counter++;
     if (this.counter === Pros.length) this.counter = 0;
+
+    // todo: after commiting filters, only search for ranked matches
+    const matches = await MatchController.getMatchesByName(player.name, {gameMode: "ranked"});
+
+    console.log(`ProHistory: Found ${matches.length} matches from ${player.name} `)
+
+    for (let i = 0; i < matches.length; i++) {
+      let m = matches[i];
+
+      const thisMatch = proHistory.find(({matchId, proInfo}) => (matchId === m.id && proInfo.name === player.name));
+      if (!!thisMatch) continue;
+
+      // Add this match to the beginning of the array
+      const match = ProTransform.create(m, player);
+      // Somehow some matches are coming without the user we want.. Maybe name change?
+      if (match) proHistory.push(match);
+    }
+    // After the loop resort everything.
+    proHistory = lodash.sortBy(proHistory, ({createdAt}) => { return Date.parse(createdAt) });
+    proHistory.reverse();
+
+    // Cut down the array to how many matches we want
+    proHistory = proHistory.slice(0, PROS_LIMIT_HISTORY);
+
+    MatchModel.setProHistory(proHistory);
+    // create new loop
+    this.loop = (this.started) ? setTimeout(() => this.fetch(), PROS_QUEUE_TIME) : null;
   }
 
   start() {
     this.started = true;
-    this.loop = setInterval(() => this.fetch(), PROS_QUEUE_TIME)
+    this.loop = setTimeout(() => this.fetch(), PROS_QUEUE_TIME)
   }
 
   stop() {
     this.started = false;
-    clearInterval(this.loop);
+    clearTimeout(this.loop);
     this.loop = null;
   }
 
