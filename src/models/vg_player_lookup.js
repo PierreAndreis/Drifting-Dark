@@ -18,8 +18,10 @@ class VGPlayerLookup {
     const foundRegions = [];
     const regionsCalls = [];
     // Add all the regions that we are going to search;
-    await Config.VAINGLORY.REGIONS.forEach(r => regionsCalls.push(vainglory.queryPlayerByName(playerName, r)));
+    Config.VAINGLORY.REGIONS.forEach(r => regionsCalls.push(vainglory.queryPlayerByName(playerName, r)));
+    
     const result = await Promise.all(regionsCalls);
+    
     for (let i = 0; i < result.length; i++) {
       let players = result[i];
       // TODO: handle all other errors, maybe make a util function to handle all other errors except 404
