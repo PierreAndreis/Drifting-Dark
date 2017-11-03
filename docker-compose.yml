@@ -1,0 +1,43 @@
+version: "3"
+services:
+  node:
+    build: ./
+    image: node:8.8.1-alpine
+    depends_on:
+      - couchbase
+      - redis
+    environment:
+      - COUCHBASE_URL=couchbase://couchbase:8091/
+      - REDIS_URL=redis://redis:6379/0
+      - NODE_ENV=production
+    ports:
+      - "8080:8080"
+      - "127.0.0.1:9229:9229" # V8 inspector for tools/run.js
+    volumes:
+      - ./:/home/node/app
+    networks:
+      - backend
+    command: npm run start # or, `node --inspect=0.0.0.0:9229 tools/run.js`
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    networks:
+      - backend
+    volumes:
+      - redis-data:/data
+  couchbase:
+    image: arungupta/couchbase
+    networks:
+      - backend
+    ports:
+      - 8091:8091
+      - 8092:8092
+      - 8093:8093
+      - 8094:8094
+      - 11210:11210
+networks: 
+  backend:
+volumes:
+  redis-data:
+  

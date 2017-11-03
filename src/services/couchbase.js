@@ -1,7 +1,8 @@
 import couchbase            from "couchbase-promises";
 import Config from "~/config";
 
-const cluster = new couchbase.Cluster(`couchbase://${Config.COUCHBASE.HOST}:${Config.COUCHBASE.PORT}`);
+const cluster = new couchbase.Cluster(Config.COUCHBASE.HOST);
+
 
 class CouchBase {
 
