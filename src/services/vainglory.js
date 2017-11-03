@@ -26,17 +26,22 @@ class VaingloryService {
     return vainglory.setRegion(region).matches.collection(options);
   }
   
-  queryMatchesOlder(playerId, region, {lastMatch, patch, gameMode, page}) {
-
+  async queryMatchesOlder(playerId, region, { lastMatch, patch, gameMode, page }) {
     let options = {
       playerIds: [playerId],
-      "createdAt-end": lastMatch
-    }
-
+      "createdAt-end": lastMatch,
+    };
     if (gameMode) options.gameMode = gameMode;
-    if (patch) options = options //todo. it should overwrite the createdAt-end and createdAt-start
+    if (patch) {
+      const patches = Config.VAINGLORY.PATCH_DATES.keys();
+      await patch.forEach((r) => {
+        options[createdAt-start] = Date.parse(Config.VAINGLORY.PATCH_DATES[r]).toISOString();
+        const index = patches.indexOf(r) + 1;
+        options[createdAt-end] = Date.parse(Config.VAINGLORY.PATCH_DATES[index]).toISOString();
+      })
+    }// todo. it should overwrite the createdAt-end and createdAt-start
     options = generateOpt(options);
-    if (page) options.page = {offset: RESULT_PER_PAGE * page}
+    if (page) options.page = { offset: RESULT_PER_PAGE * page };
 
     return this.queryMatches(region, options);
   }
