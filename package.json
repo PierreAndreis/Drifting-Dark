@@ -1,7 +1,7 @@
 {
   "name": "vgpro.gg",
   "version": "0.0.1",
-  "description": "Using latest JavaScript features on the server",
+  "description": "Drifting Dark",
   "author": "Pierre Ortega",
   "main": "dist/index.js",
   "engines": {
@@ -14,7 +14,6 @@
     "dev": "nodemon src/index.js --exec \"node --inspect -r dotenv/config -r babel-register\" --trace-warnings ",
     "clean": "rimraf dist",
     "build": "npm run clean && mkdir -p dist && babel src -s -D -d dist",
-    "test": "jest --watch",
     "lint": "esw -w src test",
     "precommit": "lint-staged"
   },
@@ -41,10 +40,8 @@
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-eslint": "^8.0.1",
-    "babel-plugin-module-resolver": "^2.7.1",
-    "babel-plugin-resolver": "^1.1.0",
     "babel-plugin-root-import": "^5.1.0",
-    "babel-plugin-transform-object-rest-spread": "^6.23.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.0",
     "babel-register": "^6.24.1",
     "bithound": "^1.7.0",
@@ -97,8 +94,5 @@
         "never"
       ]
     }
-  },
-  "jest": {
-    "testEnvironment": "node"
   }
 }
