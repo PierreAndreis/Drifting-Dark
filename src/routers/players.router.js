@@ -1,10 +1,4 @@
-import PlayerController from "src/controllers/vg_player";
-
-/**
- * todo:
- * 1- quick lookup. Store it in redis with expiry
- * 2- tbd
- */
+import PlayerController from "~/controllers/vg_player";
 
  /** /playerFind/:name */
 export const playerFind = async (req, res, next) => {

@@ -1,40 +1,41 @@
+import MatchesModel from "~/models/vg_matches";
 import * as lodash from "lodash";
 import PlayerController from "./vg_player";
 
-import MatchesModel   from "src/models/vg_matches";
 
 class MatchesController {
-
   async getPlayerId(playerName) {
-
     const player = await PlayerController.lookupName(playerName);
     // todo: 404 not found
     if (lodash.isEmpty(player)) return {};
-    else return player;
+    return player;
   }
 
-  async getMatchesById({id, region, lastMatch}) {
-    const matches = await MatchesModel.getMatches(id, region, lastMatch);
-
+  async getMatchesById({ id, region, lastMatch }, context) {
+    const matches = await MatchesModel.getMatches(id, region, lastMatch, context);
     return matches;
   }
 
-  async getMatchesByName(playerName, page) {
+  async getMatchesByName(playerName, context) {
     const playerObj = await this.getPlayerId(playerName);
-    
-    const matches = await this.getMatchesById(playerObj);
+    // TODO: Add playerID to pros.js in resources IF this function is called by prohistory loop
+    // if it's a array, let's join with comma
+    if (typeof context.gameMode == "object") context.gameMode = context.gameMode.join(",");
 
-    return matches;
+    return this.getMatchesById(playerObj, context);
+    
   }
 
   async getAllPages(playerName) {
-    const {id, region} = await this.getPlayerId(playerName);
-    
+    const { id, region } = await this.getPlayerId(playerName);
+
     const matches = await MatchesModel.getAllMatches(id, region);
     return matches;
   }
 
-
+  async ProMatches() {
+    return await MatchesModel.getProHistory();
+  }
 }
 
 export default new MatchesController();

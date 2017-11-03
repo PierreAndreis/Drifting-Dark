@@ -1,10 +1,10 @@
 import moment         from "moment";
 
-import teams_split1   from "src/resources/vg8_teams/teams_split1";
-import teams_split2   from "src/resources/vg8_teams/teams_split2";
-import teams_summer   from "src/resources/vg8_teams/teams_summer";
-import teams_esl_test from "src/resources/vg8_teams/teams_esl_test";
-import teams_autumn_1 from "src/resources/vg8_teams/teams_autumn_1";
+import teams_split1   from "~/resources/vg8_teams/teams_split1";
+import teams_split2   from "~/resources/vg8_teams/teams_split2";
+import teams_summer   from "~/resources/vg8_teams/teams_summer";
+import teams_esl_test from "~/resources/vg8_teams/teams_esl_test";
+import teams_autumn_1 from "~/resources/vg8_teams/teams_autumn_1";
 
 const SEASONS = [
   {

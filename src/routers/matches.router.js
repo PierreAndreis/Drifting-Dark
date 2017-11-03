@@ -1,9 +1,10 @@
-import MatchesController    from "src/controllers/vg_matches.js";
+import MatchesController    from "~/controllers/vg_matches.js";
 
 // matches/:name
 export const latestMatches = async (req, res, next) => {
   const {name} = req.params;
-  const reply = await MatchesController.getMatchesByName(name);
+  const {patch, gameMode, page} = req.query
+  const reply = await MatchesController.getMatchesByName(name, {patch, gameMode, page});
   res.json(reply);
 }
 
@@ -11,5 +12,10 @@ export const latestMatches = async (req, res, next) => {
 export const test = async (req, res, next) => {
   const {name} = req.params;
   const reply = await MatchesController.getAllPages(name);
+  res.json(reply);
+}
+
+export const ProHistory = async (req, res, next) => {
+  const reply = await MatchesController.ProMatches();
   res.json(reply);
 }

@@ -1,72 +1,89 @@
 import * as lodash from "lodash";
 import vg          from "vainglory";
 
-import Config from "src/config";
+import Config from "~/config";
 
+const RESULT_PER_PAGE = 50;
 /**
  * todoschema,
  * verify region
  */
 
+const generateOpt = (options) => {
+  return {
+    filter: options,
+    ...Config.VAINGLORY.DEFAULT_OPTION, 
+  };
+}
+
 const vainglory = new vg(Config.VAINGLORY.API_KEY, Config.VAINGLORY.SETUP_CONFIG);
 
 class VaingloryService {
   
-  getStatus() {
+  status() {
     return vainglory.status();
   }
   
-  queryMatches(region, options) {
+  matches (region, options) {
     return vainglory.setRegion(region).matches.collection(options);
   }
-  
-  queryMatchesOlder(playerId, region, lastMatch) {
-    return this.queryMatches(region, lodash.defaultsDeep(Config.VAINGLORY.DEFAULT_OPTIONS, {
-      filter: {
-        "createdAt-end": lastMatch,
-        playerIds: [playerId],
-      },
-    }));
-  }
 
-  queryMatchesPage(playerId, region, endAt = new Date().toISOString(), page = 0) {
-    const offSet  = 50;
-
-
-    const options = lodash.defaultsDeep({
-      filter: {
-        "createdAt-end": endAt,
-        playerIds: [playerId],
-      },
-      page: {
-        offset: offSet * page
-      }
-    }, Config.VAINGLORY.DEFAULT_OPTIONS);
-
-    return this.queryMatches(region, options);
-
-  }
-  
-  queryMatchesNewer(playerId, region, lastMatch) {
-    return this.queryMatches(region, lodash.defaults(Config.VAINGLORY.DEFAULT_OPTION, {
-      filter: {
-        "createdAt-start": lastMatch, 
-        playerIds: [playerId],
-      },
-    }));
-  }
-  
-  queryMatch(matchId) {
+  match (matchId) {
     return vainglory.matches.single(matchId);
   }
-  
-  queryPlayerById(playerId) {
-    return vainglory.players.getById(playerId);
+
+  getPlayer({playerId, playerName, region}) {
+
+    const vg = vainglory;
+
+    if (region) vg.setRegion(region);
+
+    if (playerName) {
+      if (typeof playerName !== "object") playerName = [playerName];
+      return vg.players.getByName(playerName);
+    }
+
+    return vg.players.getById(playerId);
   }
+
+  getMatches(playerId, region, { startMatch, lastMatch, gameMode, page }) {
+    let options = {
+      playerIds: [playerId]
+    }
+
+    if (lastMatch)  options["createdAt-end"] = lastMatch;
+    if (startMatch) options["createdAt-start"] = startMatch;
+    if (gameMode) options.gameMode = gameMode;
+
+    options = generateOpt(options);
+    if (page) options.page = {offset: RESULT_PER_PAGE * page};
+    
+    return this.matches(region, options);
+  }
+
+  get(method, ...args) {
+    switch (method){
+      case "matches":
+        return this.getMatches(...args);
+      case "match":
+        return this.getMatch(...args);
+
+      case "playerByName":
+        return this.getPlayerByName(...args);
+      case "playerById":
+        return this.getPlayerById(...args);
+
+      default:
+        throw new Error("Sorry, wrong method")
+
+    }
+  }
+
   
-  queryPlayerByName(region, playerNames) {
+  
+  
+  queryPlayerByName(playerNames, region) {
     // It requires it to be in an array
-    if (typeof playerNames !== "object") playerNames = [playerNames];
 
     return vainglory.setRegion(region).players.getByName(playerNames);
   }

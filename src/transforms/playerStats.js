@@ -1,6 +1,6 @@
 import * as lodash    from "lodash";
 import moment         from "moment";
-import { merge }      from "src/lib/utils";
+import { merge }      from "~/lib/utils";
 
 import MatchesTransform from "./matches";
 
@@ -9,16 +9,15 @@ const API_CACHE_TIME = moment().add(5, "m").format("X");
 class PlayerStats {
 
   create(m, playerId) {
-
-    if (m.errors) return {};
+    if (!m || m.errors) return {};
     
     const matches = (m.match) ? m.match.map(m => MatchesTransform(m)) : m;
-    
     const lastMatch = matches[0];
-    const player = lastMatch.players[playerId];
 
+    const player = lastMatch.players.find(p => p.id === playerId);
+    
     return {
-      id:        player.uid,
+      id:        player.id,
       name:      player.name,
       region:    player.shardId,
       tier:      "" + player.tier,
@@ -52,7 +51,7 @@ class PlayerStats {
   }
 
   generateTotal(match, playerId) {
-    const p      = match.players[playerId];
+    const p      = match.players.filter(p => p.id === playerId);
     const winner = (p.winner             ) ? 1 : 0;
     const afk    = (p.firstAfkTime !== -1) ? 1 : 0;
 
@@ -71,38 +70,33 @@ class PlayerStats {
 
   // Run once per match
   generateHeroes(match, playerId) {
-    
-    let stats = {};
 
-    lodash.forEach(match.players, (p) => {
-      
-      if (!playerId === p.id) return;
+    const p = match.players.find(p => p.id === playerId);
 
-      const winner = (p.winner             ) ? 1 : 0;
-      const afk    = (p.firstAfkTime !== -1) ? 1 : 0;
+    const winner = (p.winner             ) ? 1 : 0;
+    const afk    = (p.firstAfkTime !== -1) ? 1 : 0;
 
-      stats = {
-        [match.gameMode]: {
-          "Heroes": {
-            [p.actor]: {
-              hero:           p.actor,
-              wins:           winner, 
-              krakencap:      p.krakenCaptures,
-              aces:           p.aces,
-              games:          1,
-              afk:            afk,
-              kills:          p.kills,
-              deaths:         p.deaths,
-              assists:        p.assists,
-              farm:           p.farm,
-              turretCaptures: p.turretCaptures,
-              duration:       match.duration,
-              gold:           p.gold,
-            },
+    let stats = {
+      [match.gameMode]: {
+        "Heroes": {
+          [p.actor]: {
+            hero:           p.actor,
+            wins:           winner, 
+            krakencap:      p.krakenCaptures,
+            aces:           p.aces,
+            games:          1,
+            afk:            afk,
+            kills:          p.kills,
+            deaths:         p.deaths,
+            assists:        p.assists,
+            farm:           p.farm,
+            turretCaptures: p.turretCaptures,
+            duration:       match.duration,
+            gold:           p.gold,
           },
         },
-      };  
-    });
+      },
+    };
 
     return stats;
   }
@@ -110,7 +104,7 @@ class PlayerStats {
   // Run once per match
   generateGameModes(match, playerId) {
 
-    const p      = match.players[playerId];
+    const p      = match.players.find(p => p.id === playerId);
     const winner = (p.winner             ) ? 1 : 0;
     const afk    = (p.firstAfkTime !== -1) ? 1 : 0;
 

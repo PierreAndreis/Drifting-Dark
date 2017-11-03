@@ -18,12 +18,17 @@
               "--nolazy"
             ],
             "env": {
-              "NODE_ENV": "development",
-              "API_KEY": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIzMjhiYmViMC02ZjAwLTAxMzUtOTIxNS02Mjc3YWFkYjY5Y2QiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNTA0MDIyMDQwLCJwdWIiOiJzZW1jIiwidGl0bGUiOiJ2YWluZ2xvcnkiLCJhcHAiOiI4YjNjMGY2MC1kYzYyLTAxMzQtNWQ3Ny0wMjQyYWMxMTAwMDQiLCJzY29wZSI6ImNvbW11bml0eSIsImxpbWl0IjoxNTB9.aEmHHceKtFDhfF5G7GUrE3f-f0cGEl-wSBCjmldSLhY"
+              "NODE_ENV": "development"
             },
             "console": "internalConsole",
             "sourceMaps": true,
             "outFiles": []
+          },
+          {
+            "name": "Attach to server",
+            "type": "node",
+            "request": "attach",
+            "port": 9229
           }
     ]
 }
