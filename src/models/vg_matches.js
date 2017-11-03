@@ -61,20 +61,19 @@ class VGMatches {
 
   async getMatches(playerId, region, lastMatch, context) {
     const key = this.createCacheKey(playerId, region, {lastMatch, ...context});
-
     // todo: verify if gameMode is valid using /resources/gamemodes.js
     // also limit the max page
 
     const get = async () => {
       const matches = await VaingloryService.queryMatchesOlder(playerId, region, {lastMatch, ...context});
-      if (!matches || matches.errors) return {};
+      if (!matches || matches.errors) return [];
 
       const res = matches.match.map(match => MatchTransform(match));
       return res;
     }
-    
+
     return CacheService.preferCache(key, get, { 
-      expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE, 
+      expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE,
       category: "matches"
     });
 

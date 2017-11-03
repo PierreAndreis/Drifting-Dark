@@ -9,15 +9,15 @@ class ProStats {
   create(match, proInfo) {
 
     const playerName = proInfo.name;
-    const playerStats = match.players.find(p => p.name === playerName)
-    // console.log(match.players);
-
-    if (!playerStats) return false;
+    const playerStats = match.players.find(p => p.name === playerName);
     
+    if (!playerStats) return false;
+
     return {
       createdAt: match.createdAt,
       matchId:   match.id,
-      ...proInfo,
+      proInfo,
+      actor:    playerStats.actor,
       tier:     playerStats.tier,
       skilName: playerStats.skilName,
       winner:   playerStats.winner,
