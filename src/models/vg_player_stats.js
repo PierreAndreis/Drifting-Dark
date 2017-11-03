@@ -44,7 +44,7 @@ class VGPlayersStats extends BaseCouchbase {
     }
     else {
       // Old player in the system. Let's check if he has new matches then merge
-      const matches = await VaingloryService.queryMatchesNewer(id, region, lastMatch);
+      const matches = await VaingloryService.getMatches(id, region, {startMatch: lastMatch});
       const statsNew = PlayerTransform.create(matches, id);
       stats = merge(oldStats, statsNew);
     }

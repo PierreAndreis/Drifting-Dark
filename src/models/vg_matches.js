@@ -37,7 +37,7 @@ class VGMatches {
 
       for (let i = 0; i < BATCHAPI_PAGES_PER_TRY; i++) {
         const page = initialPages + i;
-        queries.push(VaingloryService.queryMatchesPage(playerId, region, endDate, page));
+        queries.push(VaingloryService.getMatches(playerId, region, {lastMatch: endDate, page}));
       }
 
       return Promise.all(queries);
@@ -65,7 +65,7 @@ class VGMatches {
     // also limit the max page
 
     const get = async () => {
-      const matches = await VaingloryService.queryMatchesOlder(playerId, region, {lastMatch, ...context});
+      const matches = await VaingloryService.getMatches(playerId, region, {lastMatch, ...context});
       if (!matches || matches.errors) return [];
 
       const res = matches.match.map(match => MatchTransform(match));
