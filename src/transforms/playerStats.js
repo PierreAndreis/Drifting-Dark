@@ -1,10 +1,18 @@
 import * as lodash    from "lodash";
 import moment         from "moment";
-import { merge }      from "~/lib/utils";
+import { merge}      from "~/lib/utils";
 
 import MatchesTransform from "./matches";
 
 const API_CACHE_TIME = moment().add(5, "m").format("X");
+
+const nowTime = () => new Date();
+
+const addMinutes = (date, minutes) => {
+  date.setMinutes(date.getMinutes() + minutes);
+  return date;
+}
+
 
 class PlayerStats {
 
@@ -21,11 +29,28 @@ class PlayerStats {
       name:      player.name,
       region:    player.shardId,
       tier:      "" + player.tier,
-      lastCache: "" + moment().format("X"),
-      nextCache: "" + API_CACHE_TIME,
+      lastCache: nowTime(),
+      nextCache: addMinutes(nowTime(), 5),
+      AKA:       this.generateAKA(matches, playerId),
       stats:     this.generateStats(matches, playerId),
     }
     
+  }
+
+  generateAKA(matches, playerId) {
+    let aka = new Set();
+    
+    lodash.forEach(matches, (match) => {
+
+      const player = match.players.find(p => p.id === playerId);
+      console.log(player.name);
+      aka.add(player.name);
+      
+
+    });
+
+    return aka;
+
   }
 
   // Distribute the matches
