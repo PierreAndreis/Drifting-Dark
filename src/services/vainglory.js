@@ -33,12 +33,21 @@ class VaingloryService {
     };
     if (gameMode) options.gameMode = gameMode;
     if (patch) {
-      const patches = Config.VAINGLORY.PATCH_DATES.keys();
-      await patch.forEach((r) => {
-        options[createdAt-start] = Date.parse(Config.VAINGLORY.PATCH_DATES[r]).toISOString();
-        const index = patches.indexOf(r) + 1;
-        options[createdAt-end] = Date.parse(Config.VAINGLORY.PATCH_DATES[index]).toISOString();
-      })
+      patch = patch.sort((a, b) => {
+        if (a > b) return 1;
+        if (b < a) return -1;
+        return 0;
+      });
+        const patches = Config.VAINGLORY.PATCH_DATES.keys();
+        patch.forEach((r) => {
+          options[createdAt-start] = Date.parse(Config.VAINGLORY.PATCH_DATES[r]).toISOString();
+          const index = patches.indexOf(r) + 1;
+          options[createdAt-end] = Date.parse(Config.VAINGLORY.PATCH_DATES[index]).toISOString();
+          options = generateOpt(options)
+          if (page) options.page = { offset: RESULT_PER_PAGE * page };
+          patchData.push(this.queryMatches(region, options))
+        })
+        return await Promise.all(patchData)
     }// todo. it should overwrite the createdAt-end and createdAt-start
     options = generateOpt(options);
     if (page) options.page = { offset: RESULT_PER_PAGE * page };
