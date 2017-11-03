@@ -12,15 +12,8 @@ const BATCHAPI_PAGES_PER_TRY = 3;
 
 class VGMatches {
 
-  createCacheKey(playerId, region, {lastMatch, patch, gameMode, page}) {
-
-    let key = `matches:${playerId}:${region}`;
-    if (lastMatch) key += `:${lastMatch}`;
-    if (patch)     key += `:${patch}`;
-    if (gameMode)  key += `:${gameMode}`;
-    if (page)      key += `:${page}`;
-
-    return key;
+  createCacheKey(playerId, region, lastMatch) {
+    return `matches:${playerId}:${region}:${lastMatch}`;
   }
 
   async getAllMatches(playerId, region, endAt) {
@@ -59,24 +52,20 @@ class VGMatches {
     return res;
   }
 
-  async getMatches(playerId, region, lastMatch, context) {
-    const key = this.createCacheKey(playerId, region, {lastMatch, ...context});
-
-    // todo: verify if gameMode is valid using /resources/gamemodes.js
-    // also limit the max page
+  async getMatches(playerId, region, lastMatch, category) {
+    const key = this.createCacheKey(playerId, region, lastMatch);
 
     const get = async () => {
-      const matches = await VaingloryService.queryMatchesOlder(playerId, region, {lastMatch, ...context});
+      const matches = await VaingloryService.queryMatchesOlder(playerId, region, lastMatch);
       if (!matches || matches.errors) return {};
-
-      const res = matches.match.map(match => MatchTransform(match));
+      const res = matches.match.map(match => MatchTransform(match))
       return res;
     }
+    let categ;
+    if (category) categ = { category };
+    else categ = { category: "matches" };
     
-    return CacheService.preferCache(key, get, { 
-      expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE, 
-      category: "matches"
-    });
+    return CacheService.preferCache(key, get, { expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE, categ });
 
   }
 
