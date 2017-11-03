@@ -28,8 +28,8 @@ function generateTelemetry(telemetry) {
   };
 }
 
-function generateRosters(rosters) {
-  const teams = [];
+function generateRosters(r) {
+  const rosters = [];
   const players = [];
 
   const names = {
@@ -37,40 +37,39 @@ function generateRosters(rosters) {
     "right/red": "Red",
   };
   // Let's separate the rosters
-  lodash.forEach(rosters, (roster) => {
-    teams[names[roster.stats.side]] = {
-      ...roster.stats,
-    };
+  lodash.forEach(r, (roster) => {
+    
+    rosters.push(roster.stats);
 
     // Now, lets create the players for this roster
-    players.push({ ...generatePlayers(roster.participants, roster) });
+    players.push(...generatePlayers(roster.participants, roster));
+
   });
 
   return {
-    players: {
-      ...players[0],
-      ...players[1]
-    },
-    rosters: { ...teams },
+   players: players,
+   rosters
   };
 }
 
 function generatePlayers(players, roster) {
-  const p = [];
+
+  let p = [];
 
   lodash.forEach(players, (player) => {
     delete player.data.attributes.itemGrants;
 
-    p[player.player.id] = {
-      uid: player.player.id,
-      name: player.player.name,
-      shardId: player.player.shardId,
-      tier: player._stats.skillTier,
-      actor: player.actor,
-      side: roster.stats.side,
-      aces: roster.stats.acesEarned,
-      ...player.stats,
-    };
+    p.push({
+      id:       player.player.id,
+      name:     player.player.name,
+      shardId:  player.player.shardId,
+      tier:     player._stats.skillTier,
+      actor:    player.actor,
+      side:     roster.stats.side,
+      aces:     roster.stats.acesEarned,
+        ...player.stats,
+    });
+
   });
   return p;
 }
