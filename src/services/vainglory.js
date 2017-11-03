@@ -40,9 +40,9 @@ class VaingloryService {
       });
         const patches = Config.VAINGLORY.PATCH_DATES.keys();
         patch.forEach((r) => {
-          options[createdAt-start] = Date.parse(Config.VAINGLORY.PATCH_DATES[r]).toISOString();
+          options["createdAt-start"] = Date.parse(Config.VAINGLORY.PATCH_DATES[r]).toISOString();
           const index = patches.indexOf(r) + 1;
-          options[createdAt-end] = Date.parse(Config.VAINGLORY.PATCH_DATES[index]).toISOString();
+          options["createdAt-end"] = Date.parse(Config.VAINGLORY.PATCH_DATES[index]).toISOString();
           options = generateOpt(options)
           if (page) options.page = { offset: RESULT_PER_PAGE * page };
           patchData.push(this.queryMatches(region, options))
