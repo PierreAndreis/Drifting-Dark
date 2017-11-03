@@ -1,6 +1,6 @@
 import KueService from "./kue";
 
-export const createJob = (name, data) => { // TODO: Make this the default export
+export const createJob = (name, data) => { 
   const job = KueService.create(name, {
     title: name,
     ...data,
