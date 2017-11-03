@@ -11,16 +11,20 @@ class MatchesController {
     return player;
   }
 
-  async getMatchesById({ id, region, lastMatch }) {
-    const matches = await MatchesModel.getMatches(id, region, lastMatch);
+  async getMatchesById({ id, region, lastMatch }, context) {
+    const matches = await MatchesModel.getMatches(id, region, lastMatch, context);
     return matches;
   }
 
-  async getMatchesByName(playerName, page) {
+  async getMatchesByName(playerName, context) {
     const playerObj = await this.getPlayerId(playerName);
-    const matches = await this.getMatchesById(playerObj);
+    // TODO: Add playerID to pros.js in resources IF this function is called by prohistory loop
+
+    // if it's a array, let's join with comma
+    if (typeof context.gameMode == "object") context.gameMode = context.gameMode.join(",");
+
+    return this.getMatchesById(playerObj, context);
     
-    return matches;
   }
 
   async getAllPages(playerName) {

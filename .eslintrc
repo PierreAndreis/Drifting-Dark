@@ -6,7 +6,8 @@
         "class-methods-use-this": "off",
         "no-continue":"off",
         "import/no-extraneous-dependencies": "off",
-        "import/resolver": "off"
+        "import/resolver": "off",
+        "max-len":"off"
     },
     "settings": {
         "import/resolver": "babel-plugin-root-import"
