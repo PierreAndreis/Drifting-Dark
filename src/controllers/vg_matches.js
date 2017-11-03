@@ -18,7 +18,6 @@ class MatchesController {
 
   async getMatchesByName(playerName, page) {
     const playerObj = await this.getPlayerId(playerName);
-    // TODO: Add playerID to pros.js in resources IF this function is called by prohistory loop
     const matches = await this.getMatchesById(playerObj);
     
     return matches;
