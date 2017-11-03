@@ -33,6 +33,7 @@
     "body-parser": "^1.17.2",
     "cors": "^2.8.4",
     "couchbase-promises": "^4.2.0",
+    "debug": "^2.6.8",
     "express": "^4.15.3",
     "helmet": "^3.8.0",
     "ioredis": "^3.1.4",
