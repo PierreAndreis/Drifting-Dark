@@ -51,24 +51,6 @@ class VGPlayersStats extends BaseCouchbase {
     
     return stats;
   }
-
-  async checkAKA(matches) {
-    for (let i = 0; i < matches.match.length; i++) {
-      let match = matches.match[i]
-      // For every match create a loop depending on how many players in that match
-      for (let j = 0; j < match.matchRoster.length; j++) {
-        match = match.matchRoster[j]
-        for (let k = 0; k < match.rosterParticipants.length; k++) {
-          match = match.rosterParticipants[k]
-          // Get the data from the match
-          const { data } = match.participantPlayer;
-          const { id } = data;
-          const { name } = data.attributes;
-        // TODO: Check couchbase if this name exists for this player ID. If not add it to the db.
-        }
-      }
-    }
-  }
 }
 
 export default new VGPlayersStats(PLAYERDB);

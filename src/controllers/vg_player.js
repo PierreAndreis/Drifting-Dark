@@ -18,7 +18,7 @@ class PlayerController {
 
     const stats = await PlayerStatsModel.update(player, playerOldStats);
 
-    // PlayerStatsModel.upsert(player.id, stats);
+    PlayerStatsModel.upsert(player.id, stats);
     // todo: update redis player obj
 
     return stats;

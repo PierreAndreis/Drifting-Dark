@@ -32,26 +32,25 @@ export const merge = (orig, add) => {
   /**/ if (origType === "undefined" || orig === false) return add;
   else if (addType  === "undefined" || add  === false) return orig;
   else {
-    
     switch (addType){
       case "object":
        if (Array.isArray(add)) {
-          // ... check if orig is as well, if it is, we will concat and remove duplicates
-          if (Array.isArray(orig)) return removeDuplicatesArray(orig.concat(add));
-          // otherwise substite with the array
-          else return add;
-        }
+        // ... check if orig is as well, if it is, we will concat and remove duplicates
+        if (Array.isArray(orig)) return removeDuplicatesArray([...orig, ...add]);
+        // otherwise substite with the array
+        else return add;
+      }
 
       // If add is a Date, return timestamp of the date
-      if (add instanceof Date) return add.valueof();
+      if (add instanceof Date) return add;
 
       // null returns null, duh
       if (add === null) return null;
       
       let res = {};
 
-      for (let attrname in orig) { res[attrname] = merge_two(orig[attrname], add[attrname]) }
-      for (let attrname in add)  { res[attrname] = merge_two(orig[attrname], add[attrname]) }
+      for (let attrname in orig) { res[attrname] = merge(orig[attrname], add[attrname]) }
+      for (let attrname in add)  { res[attrname] = merge(orig[attrname], add[attrname]) }
 
       return res;
 

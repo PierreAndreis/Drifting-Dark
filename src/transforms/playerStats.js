@@ -17,7 +17,14 @@ const addMinutes = (date, minutes) => {
 class PlayerStats {
 
   create(m, playerId) {
-    if (!m || m.errors) return {};
+
+    let res = {
+      id: playerId,
+      lastCache: nowTime(),
+      nextCache: addMinutes(nowTime(), 5),
+    }
+
+    if (lodash.isEmpty(m) || m.errors) return res;
     
     const matches = (m.match) ? m.match.map(m => MatchesTransform(m)) : m;
     const lastMatch = matches[0];
@@ -25,13 +32,11 @@ class PlayerStats {
     const player = lastMatch.players.find(p => p.id === playerId);
     
     return {
-      id:        player.id,
+      ...res,
       name:      player.name,
       region:    player.shardId,
       tier:      "" + player.tier,
-      lastCache: nowTime(),
-      nextCache: addMinutes(nowTime(), 5),
-      AKA:       this.generateAKA(matches, playerId),
+      aka:       this.generateAKA(matches, playerId),
       stats:     this.generateStats(matches, playerId),
     }
     
@@ -41,15 +46,12 @@ class PlayerStats {
     let aka = new Set();
     
     lodash.forEach(matches, (match) => {
-
       const player = match.players.find(p => p.id === playerId);
-      console.log(player.name);
       aka.add(player.name);
-      
 
     });
 
-    return aka;
+    return [...aka];
 
   }
 
