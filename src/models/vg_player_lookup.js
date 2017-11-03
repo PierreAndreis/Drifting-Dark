@@ -3,7 +3,7 @@ import moment       from "moment";
 import Config from "~/config";
 
 import CacheService     from "~/services/cache";
-import vainglory        from "~/services/vainglory";
+import VaingloryService from "~/services/vainglory";
 
 import {createPlayer} from "~/transforms/playerProfile.js";
 
@@ -18,7 +18,7 @@ class VGPlayerLookup {
     const foundRegions = [];
     const regionsCalls = [];
     // Add all the regions that we are going to search;
-    Config.VAINGLORY.REGIONS.forEach(r => regionsCalls.push(vainglory.queryPlayerByName(playerName, r)));
+    Config.VAINGLORY.REGIONS.forEach(r => regionsCalls.push(VaingloryService.getPlayer({playerName, region: r})));
     
     const result = await Promise.all(regionsCalls);
 
@@ -59,7 +59,7 @@ class VGPlayerLookup {
         let res;
 
         if (!region) res = await this.findPlayerAPI(playerName);
-        else res = await vainglory.queryPlayerByName(playerName, region);
+        else res = await vainglory.getPlayer({playerName, region});
         if (!res || res.errors) return {};
 
         return createPlayer(res);
