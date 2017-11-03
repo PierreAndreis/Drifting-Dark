@@ -46,7 +46,7 @@ class VaingloryService {
     return vg.players.getById(playerId);
   }
 
-  getMatches(playerId, region, { startMatch, lastMatch,  patch, gameMode, page }) {
+  getMatches(playerId, region, { startMatch, lastMatch, gameMode, page }) {
     let options = {
       playerIds: [playerId]
     }
@@ -55,26 +55,6 @@ class VaingloryService {
     if (startMatch) options["createdAt-start"] = startMatch;
     if (gameMode) options.gameMode = gameMode;
 
-    // const patchData = [];
-    /*if (patch) {
-      patch = patch.sort((a, b) => {
-        if (a > b) return 1;
-        if (b < a) return -1;
-        return 0;
-      });
-        const patches = Object.keys(Config.VAINGLORY.PATCH_DATES);
-        patch.forEach((r) => {
-          options["createdAt-start"] = new Date(Date.parse(Config.VAINGLORY.PATCH_DATES[r])).toISOString();
-          const index = patches.indexOf(r) + 1;
-          console.log(r)
-          options["createdAt-end"] = new Date(Date.parse(Config.VAINGLORY.PATCH_DATES[patches[index]])).toISOString();
-          options = generateOpt(options)
-          if (page) options.page = { offset: RESULT_PER_PAGE * page };
-          patchData.push(this.queryMatches(region, options))
-        })
-        return await Promise.all(patchData)
-    }// todo. it should overwrite the createdAt-end and createdAt-start
-    */
     options = generateOpt(options);
     if (page) options.page = {offset: RESULT_PER_PAGE * page};
     
