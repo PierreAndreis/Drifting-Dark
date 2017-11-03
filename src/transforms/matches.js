@@ -1,30 +1,28 @@
 import * as lodash from "lodash";
 
 function generateMatch(match) {
-  const gameMode = (match.gameMode === "Battle Royal"
-           || match.gameMode === "Private Battle Royal"
-  ) ? `${match.gameMode}e` : match.gameMode;
+  const gameMode = (match.gameMode === "Battle Royal" || match.gameMode === "Private Battle Royal") ? `${match.gameMode}e` : match.gameMode;
 
   return {
-    id: match.data.id,
+    id:      match.data.id,
     shardId: match.shardId,
     gameMode,
     endGameReason: match.data.attributes.stats.endGameReason,
-    createdAt: match.createdAt,
-    duration: match.duration,
-    patchVersion: match.patchVersion,
+    createdAt:     match.createdAt,
+    duration:      match.duration,
+    patchVersion:  match.patchVersion,
     // We will generate Rosters + Players
-    ...generateRosters(match.rosters),
+            ...generateRosters(match.rosters),
     telemetry: generateTelemetry(...match.assets),
   };
 }
 
 function generateTelemetry(telemetry) {
   return {
-    name: "telemetry",
-    createdAt: telemetry.createdAt,
+    name:       "telemetry",
+    createdAt:   telemetry.createdAt,
     contentType: telemetry.contentType,
-    URL: telemetry.URL,
+    URL:         telemetry.URL,
   };
 }
 
@@ -47,7 +45,7 @@ function generateRosters(r) {
   });
 
   return {
-   players: players,
+   players,
    rosters
   };
 }

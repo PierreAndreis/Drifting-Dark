@@ -9,12 +9,11 @@ class ProStats {
   create(match, proInfo) {
 
     const playerName = proInfo.name;
-    
-    // let playerStats;
-
     const playerStats = match.players.find(p => p.name === playerName)
     // console.log(match.players);
 
+    if (!playerStats) return false;
+    
     return {
       createdAt: match.createdAt,
       matchId:   match.id,

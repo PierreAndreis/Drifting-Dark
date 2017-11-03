@@ -31,7 +31,7 @@ class ProHistory {
     else this.oldest = Date.parse(proHistory[proHistory.length - 1].createdAt);
 
     // todo: after commiting filters, only search for ranked matches
-    const matches = await MatchController.getMatchesByName(player.name);
+    const matches = await MatchController.getMatchesByName(player.name, {gameMode: "ranked"});
     
     for (let i = 0; i < matches.length; i++) {
 
@@ -48,7 +48,10 @@ class ProHistory {
       if (proHistory.length === 50) proHistory.pop();
 
       // Add this match to the beginning of the array
-      proHistory.unshift(ProTransform.create(m, player));
+      const match = ProTransform.create(m, player);
+
+      // Somehow some matches are coming without the user we want.. Maybe name change?
+      if (match) proHistory.unshift(match);
     }
 
     // After the loop resort everything.
