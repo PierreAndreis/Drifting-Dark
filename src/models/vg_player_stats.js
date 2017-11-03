@@ -48,13 +48,9 @@ class VGPlayersStats extends BaseCouchbase {
       const statsNew = PlayerTransform.create(matches, id);
       stats = merge(oldStats, statsNew);
     }
-
+    
     return stats;
-
   }
-
-
-
 }
 
 export default new VGPlayersStats(PLAYERDB);

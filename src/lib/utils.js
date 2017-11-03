@@ -5,7 +5,7 @@ import Config from "../config";
  * @param {object} orig
  * @param {object} addition
  */
-export const merge = (orig, addition) => {
+export const merge_two = (orig, addition) => {
 
        if (typeof orig     === "undefined" || orig     === false) return addition;
   else if (typeof addition === "undefined" || addition === false) return orig;
@@ -16,6 +16,59 @@ export const merge = (orig, addition) => {
         else                                    return additionChild;
       }
     });
+  }
+  
+const removeDuplicatesArray = (arrArg) => {
+  return arrArg.filter((elem, pos, arr) => {
+    return arr.indexOf(elem) == pos;
+  });
+}
+
+export const merge = (orig, add) => {
+
+  const origType = typeof orig;
+  const addType  = typeof add;
+
+  /**/ if (origType === "undefined" || orig === false) return add;
+  else if (addType  === "undefined" || add  === false) return orig;
+  else {
+    switch (addType){
+      case "object":
+       if (Array.isArray(add)) {
+        // ... check if orig is as well, if it is, we will concat and remove duplicates
+        if (Array.isArray(orig)) return removeDuplicatesArray([...orig, ...add]);
+        // otherwise substite with the array
+        else return add;
+      }
+
+      // If add is a Date, return timestamp of the date
+      if (add instanceof Date) return add;
+
+      // null returns null, duh
+      if (add === null) return null;
+      
+      let res = {};
+
+      for (let attrname in orig) { res[attrname] = merge(orig[attrname], add[attrname]) }
+      for (let attrname in add)  { res[attrname] = merge(orig[attrname], add[attrname]) }
+
+      return res;
+
+      break;
+
+      case "number":
+        if (origType === "number") return orig + add;
+        else return add;
+      break;
+
+      case "string":
+      case "boolean":
+      default:
+        return add;
+      break;
+    }
+  };
+
 }
 
 export const sortBy = (array, desc, field, fn = function(x){return x}) => {

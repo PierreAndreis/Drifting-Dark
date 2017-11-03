@@ -52,7 +52,7 @@ class VGMatches {
       pagesRes.forEach((pg) => {
         if (pg.errors) done = true;
         else res.push(...pg.match.map(match => MatchTransform(match)));
-      })
+      });
       pages++;
     }
 
@@ -65,12 +65,24 @@ class VGMatches {
     // also limit the max page
 
     const get = async () => {
+      
       const matches = await VaingloryService.getMatches(playerId, region, {lastMatch, ...context});
       if (!matches || matches.errors) return [];
 
+      /* for (let i = 0; i < matches.match.length; i++) {
+        // For every match create a loop depending on how many players in that match
+        for (let j = 0; i < matches.match[i].matchRoster.length; i++) {
+          // Get the data from the match
+          const { data } = matches.match[i].matchRoster[i].rosterParticipants[j].participantPlayer;
+          const { id } = data;
+          const { name } = data.attributes;
+          // TODO: Check couchbase if this name exists for this player ID. If not add it to the db.
+        }
+      }*/
       const res = matches.match.map(match => MatchTransform(match));
+      
       return res;
-    }
+    };
 
     return CacheService.preferCache(key, get, { 
       expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE,
