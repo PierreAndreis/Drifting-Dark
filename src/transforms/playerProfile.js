@@ -32,8 +32,6 @@ export const createPlayer = (p) => {
     id:            player.id,
     name:          player.attributes.name,
     region:        player.attributes.shardId,
-    lastMatch:     player.attributes.createdAt,
-    // skillTier:     player.attributes.skillTier,
     lastPatch:     patch,
     lastSeason:    season,
   }

@@ -8,8 +8,8 @@ import MatchModel from "../models/vg_matches";
 import ProTransform from "../transforms/prohistory";
 
 const PROS_PER_QUEUE = 10;
-const PROS_QUEUE_TIME = 60000 // 1 minute.
-// const PROS_QUEUE_TIME = 2000; // 2 seconds for development
+// const PROS_QUEUE_TIME = 30000 // 30 seconds
+const PROS_QUEUE_TIME =10000; // 10 seconds for development
 const PROS_LIMIT_HISTORY = 50;
 
 

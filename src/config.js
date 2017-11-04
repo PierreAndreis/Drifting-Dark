@@ -5,7 +5,7 @@ const days    = (day)     => (hours(24) * day);
 export default {
 
   COUCHBASE: {
-    HOST: "couchbase://localhost:8091",
+    HOST:     process.env.COUCHBASE_HOST     || "couchbase://localhost:8091",
     PASSWORD: process.env.COUCHBASE_PASSWORD || "",
   },
 
@@ -50,8 +50,8 @@ export default {
       PLAYERNAME: "playerName",
     },
 
-    API_PLAYERSTATS_CACHE: minutes(10),
-    REDIS_LOOKUP_CACHE_EXPIRE: minutes(1),
+    API_PLAYERSTATS_CACHE:      minutes(10),
+    REDIS_LOOKUP_CACHE_EXPIRE:  days(2),
     REDIS_MATCHES_CACHE_EXPIRE: minutes(10),
   }
 

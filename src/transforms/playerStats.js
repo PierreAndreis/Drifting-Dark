@@ -36,6 +36,7 @@ class PlayerStats {
       name:      player.name,
       region:    player.shardId,
       tier:      "" + player.tier,
+      lastMatch: lastMatch.createdAt,
       aka:       this.generateAKA(matches, playerId),
       stats:     this.generateStats(matches, playerId),
     }
