@@ -34,7 +34,7 @@ class VGPlayerLookup {
     
     if (foundRegions.length === 1) return foundRegions[0];
     else {
-      const sorted = sortBy(foundRegions, true, "createdAt", (a) => new Date(a));
+      const sorted = sortBy(foundRegions, false, "createdAt", (a) => new Date(a));
       return sorted[0];
     }
   }
