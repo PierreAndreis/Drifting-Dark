@@ -33,7 +33,7 @@ class ProHistory {
     // todo: after commiting filters, only search for ranked matches
     const matches = await MatchController.getMatchesByName(player.name, {gameMode: "ranked"});
 
-    console.log(`ProHistory: Found ${matches.length} matches from ${player.name} `)
+    // console.log(`ProHistory: Found ${matches.length} matches from ${player.name} `)
 
     for (let i = 0; i < matches.length; i++) {
       let m = matches[i];
