@@ -5,7 +5,7 @@ const days    = (day)     => (hours(24) * day);
 export default {
 
   COUCHBASE: {
-    HOST:     process.env.COUCHBASE_HOST     || "couchbase://localhost:8091",
+    HOST:     process.env.COUCHBASE_HOST     || "couchbase://127.0.0.1:8091",
     PASSWORD: process.env.COUCHBASE_PASSWORD || "",
   },
 

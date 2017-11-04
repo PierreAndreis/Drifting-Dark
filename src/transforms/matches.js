@@ -20,8 +20,6 @@ function generateMatch(match) {
 function generateTelemetry(telemetry) {
   return {
     name:       "telemetry",
-    createdAt:   telemetry.createdAt,
-    contentType: telemetry.contentType,
     URL:         telemetry.URL,
   };
 }
