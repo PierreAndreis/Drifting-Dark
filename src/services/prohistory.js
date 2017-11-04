@@ -1,11 +1,13 @@
 import lodash from "lodash";
 
-import Pros from "../resources/pro";
-
 import MatchController from "../controllers/vg_matches";
-import MatchModel from "../models/vg_matches";
+import MatchModel      from "../models/vg_matches";
 
 import ProTransform from "../transforms/prohistory";
+
+import {sortBy} from "../lib/utils";
+
+import Pros from "../resources/pro";
 
 const PROS_PER_QUEUE = 10;
 // const PROS_QUEUE_TIME = 30000 // 30 seconds
@@ -47,8 +49,7 @@ class ProHistory {
       if (match) proHistory.push(match);
     }
     // After the loop resort everything.
-    proHistory = lodash.sortBy(proHistory, ({createdAt}) => { return Date.parse(createdAt) });
-    proHistory.reverse();
+    proHistory = sortBy(proHistory, false, "createdAt", (a) => Date.parse(a));
 
     // Cut down the array to how many matches we want
     proHistory = proHistory.slice(0, PROS_LIMIT_HISTORY);

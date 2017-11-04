@@ -22,7 +22,7 @@ const findRegionByPatch = (patchVersion) => {
 
 export const createPlayer = (p) => {
   
-  const player = {...p.player[0].raw};
+  const player = {...p.raw};
 
   let patch = player.attributes.patchVersion;
 
