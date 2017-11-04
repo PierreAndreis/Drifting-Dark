@@ -1,6 +1,6 @@
 import * as lodash from "lodash";
 import PlayerLookupModel from "~/models/vg_player_lookup";
-import PlayerStatsModel from "~/models/vg_player_Stats";
+import PlayerStatsModel from "~/models/vg_player_stats";
 
 
 class PlayerController {
