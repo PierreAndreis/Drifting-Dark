@@ -3,7 +3,7 @@ import * as lodash from "lodash";
 const ALLSEASONS = {
   spring07: ["2.2", "2.3", "2.4", "2.5"],
   summer07: ["2.6", "2.7"],
-  autumn07: ["2.8", "2.9"]
+  autumn07: ["2.8", "2.9", "2.10"]
 }
 
 const findRegionByPatch = (patchVersion) => {
