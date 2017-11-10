@@ -13,11 +13,13 @@ function generateMatch(match) {
     patchVersion:  match.patchVersion,
     // We will generate Rosters + Players
             ...generateRosters(match.rosters),
-    telemetry: generateTelemetry(...match.assets),
+    telemetry: generateTelemetry(match, ...match.assets),
   };
 }
 
 function generateTelemetry(telemetry) {
+  if (!telemetry || !telemetry.URL) return {}
+  
   return {
     name:       "telemetry",
     URL:         telemetry.URL,
