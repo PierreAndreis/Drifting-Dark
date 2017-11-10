@@ -36,7 +36,6 @@ class VGPlayersStats extends BaseCouchbase {
   async update({id, region}, oldStats) {
 
     let stats;
-    
     if (!oldStats) {
       // New Player in the system. We will query all last 28 days of matches :D
       const matches = await MatchesModel.getAllMatches(id, region);
@@ -50,7 +49,7 @@ class VGPlayersStats extends BaseCouchbase {
       // check if the last match is set on OldStats, if it is, check if last match was less than 28 days ago
       let lastMatch;
 
-      if (oldStats.lastMatch && new Date(oldStats.lastMatch) < oldestDate ) {
+      if (oldStats.lastMatch && new Date(oldStats.lastMatch) > oldestDate ) {
         lastMatch = oldStats.lastMatch;
       } else lastMatch = oldestDate;
 
