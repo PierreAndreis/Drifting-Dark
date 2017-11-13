@@ -13,6 +13,19 @@ const addMinutes = (date, minutes) => {
   return date;
 }
 
+const findRole = (player) => {
+  let role = "Captain";
+
+  const laneCS   = player.nonJungleMinionKills;
+  const jungleCS = player.jungleKills;
+  const farm     = player.minionKills;
+
+  if (laneCS > jungleCS && farm > 45) role = "Carry";
+  if (laneCS < jungleCS && farm > 45) role = "Jungler";
+
+  return role;
+}
+
 
 class PlayerStats {
 
@@ -31,6 +44,8 @@ class PlayerStats {
 
     const player = lastMatch.players.find(p => p.id === playerId);
     
+    const stats = this.generateStats(matches, playerId);
+
     return {
       ...res,
       name:      player.name,
@@ -39,91 +54,124 @@ class PlayerStats {
       // we add 1 minute to the lastMatch so if we search using createdAt-start, 
       // the last match won't show... we already calculated that.
       lastMatch: addMinutes(new Date(lastMatch.createdAt), 1),
-      aka:       this.generateAKA(matches, playerId),
-      stats:     this.generateStats(matches, playerId),
+      aka:       stats.aka,
+      patches:   stats.patches,
+      info:      stats.info,
     }
     
   }
 
-  generateAKA(matches, playerId) {
-    let aka = new Set();
-    
-    lodash.forEach(matches, (match) => {
-      const player = match.players.find(p => p.id === playerId);
-      aka.add(player.name);
-
-    });
-
-    return [...aka];
-
-  }
-
   // Distribute the matches
   generateStats(matches, playerId) {
-    let allStats = {};
-    
+    let patches = {};
+    let aka     = [];
+    let info    = {};
+
     lodash.forEach(matches, (match) => {
       const pv = match.patchVersion;
 
-      const thismatch = {}
+      const player  = match.players.find(p => p.id === playerId);
+      const roster  = match.rosters.find(r => r.side === player.side);
 
-      const _gameModes = this.generateGameModes(match, playerId);
-      const _heroes    = this.generateHeroes   (match, playerId);
-      const _total     = this.generateTotal    (match, playerId);
+      const _gameModes = this.generateGameModes(match, player, roster);
+      const _roles     = this.generateRoles    (match, player, roster);
+      const _heroes    = this.generateHeroes   (match, player, roster);
+      const _total     = this.generateTotal    (match, player, roster);
+      const _friends   = this.generateFriends  (match, player, roster)
       
-      allStats[pv] = merge(allStats[pv], _total    )
-      allStats[pv] = merge(allStats[pv], _gameModes);
-      allStats[pv] = merge(allStats[pv], _heroes   );
+      patches[pv] = merge(patches[pv], _total    );
+      patches[pv] = merge(patches[pv], _gameModes);
+      patches[pv] = merge(patches[pv], _roles    );
+      patches[pv] = merge(patches[pv], _heroes   );
+      patches[pv] = merge(patches[pv], _friends  );
+
+      aka = merge(aka, [player.name]);
+      
+      info = merge(info, this.generateInfo(match, player, roster))
 
     });
 
-    return allStats;
+    return {patches, aka, info};
   }
 
-  generateTotal(match, playerId) {
-    const p      = match.players.filter(p => p.id === playerId);
-    const winner = (p.winner             ) ? 1 : 0;
-    const afk    = (p.firstAfkTime !== -1) ? 1 : 0;
+  generateTotal(match, player, roster) {
+
+    const winner = (player.winner             ) ? 1 : 0;
+    const afk    = (player.firstAfkTime !== -1) ? 1 : 0;
+
+    const redSide = (player.side !== "left/blue") ? 1 : 0;
 
     return {
       wins:           winner,
       afk:            afk,
       games:          1,
-      kills:          p.kills,
-      deaths:         p.deaths,
-      assists:        p.assists,
-      farm:           p.farm,
-      turretCaptures: p.turretCaptures,
+      redWins:        (redSide)  ? winner : 0,
+      redGames:       (redSide)  ? 1      : 0,
+      blueWins:       (!redSide) ? winner : 0,
+      blueGames:      (!redSide) ? 1      : 0,
+      teamKills:      roster.heroKills,
+      kills:          player.kills,
+      deaths:         player.deaths,
+      assists:        player.assists,
+      farm:           player.farm,
+      gold:           player.gold,
+      minionKills:    player.minionKills,
+      campCSKills:    player.jungleKills,
+      laneCSKills:    player.nonJungleMinionKills,
+      aces:           player.aces,
+      crystalSentry:  player.crystalMineCaptures,
+      turretCaptures: player.turretCaptures,
       duration:       match.duration,
     }
   }
 
+  generateInfo(match, player, roster) {
+    return {
+      skins:      [player.skinKey],
+      itemGrants: player.itemGrants,
+      itemUses:   player.itemUses 
+    }
+  }
+
+  generateRoles(match, player, roster) {
+
+    const role = findRole(player);
+
+    return {
+      [match.gameMode]: {
+        Roles: { 
+          [role]: this.generateTotal(match, player, roster)
+        }
+      }
+    }
+
+  }
+
+  generateFriends(match, player, roster) {
+
+    const playedWith = {};
+    const side = roster.side;
+    const friends = match.players.filter(p => p.side === side);
+
+    friends.forEach((p) => {
+      if (p.name === player.name) return;
+      playedWith[p.id] = {
+        name: [p.name],
+        wins: (p.winner) ? 1 : 0,
+        games: 1,
+      }
+    });
+
+    return {[match.gameMode]: {playedWith}};
+  }
+
   // Run once per match
-  generateHeroes(match, playerId) {
-
-    const p = match.players.find(p => p.id === playerId);
-
-    const winner = (p.winner             ) ? 1 : 0;
-    const afk    = (p.firstAfkTime !== -1) ? 1 : 0;
+  generateHeroes(match, player, roster) {
 
     let stats = {
       [match.gameMode]: {
         "Heroes": {
-          [p.actor]: {
-            hero:           p.actor,
-            wins:           winner, 
-            krakencap:      p.krakenCaptures,
-            aces:           p.aces,
-            games:          1,
-            afk:            afk,
-            kills:          p.kills,
-            deaths:         p.deaths,
-            assists:        p.assists,
-            farm:           p.farm,
-            turretCaptures: p.turretCaptures,
-            duration:       match.duration,
-            gold:           p.gold,
-          },
+          [player.actor]: this.generateTotal(match, player, roster)
         },
       },
     };
@@ -132,11 +180,7 @@ class PlayerStats {
   }
 
   // Run once per match
-  generateGameModes(match, playerId) {
-
-    const p      = match.players.find(p => p.id === playerId);
-    const winner = (p.winner             ) ? 1 : 0;
-    const afk    = (p.firstAfkTime !== -1) ? 1 : 0;
+  generateGameModes(match, player, roster) {
 
     // Small fix for 1.2.0-beta version of Vainglory Package
     // Where there is a misstype on Battle Royale
@@ -146,17 +190,7 @@ class PlayerStats {
                       ) ? `${match.gameMode}e` : match.gameMode;
 
     return {
-      [gameMode]: {
-        wins:           winner,
-        afk:            afk,
-        games:          1,
-        kills:          p.kills,
-        deaths:         p.deaths,
-        assists:        p.assists,
-        farm:           p.farm,
-        turretCaptures: p.turretCaptures,
-        duration:       match.duration,
-      }
+      [gameMode]: this.generateTotal(match, player, roster)
     };
   }
 }

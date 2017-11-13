@@ -55,7 +55,6 @@ function generatePlayers(players, roster) {
   let p = [];
 
   lodash.forEach(players, (player) => {
-    delete player.data.attributes.itemGrants;
 
     p.push({
       id:       player.player.id,
