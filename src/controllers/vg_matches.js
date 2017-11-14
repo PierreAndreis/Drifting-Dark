@@ -16,8 +16,8 @@ class MatchesController {
     return matches;
   }
 
-  async getMatchByMatchId(matchId) {
-    return MatchesModel.getMatchByMatchId(matchId)
+  async getMatchByMatchId(matchId, region) {
+    return MatchesModel.getMatchByMatchId(matchId, region)
   }
 
   async getMatchesByName(playerName, context) {

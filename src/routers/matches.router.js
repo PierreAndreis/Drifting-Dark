@@ -8,10 +8,10 @@ export const latestMatches = async (req, res, next) => {
   res.json(reply);
 }
 
-// matches/:id/details
+// matches/:id/:region/details
 export const details = async (req, res, next) => {
-  const { id } = req.params;
-  let reply = await MatchesController.getMatchByMatchId(id);
+  const { id, region } = req.params;
+  let reply = await MatchesController.getMatchByMatchId(id, region);
   res.json(reply);
 }
 

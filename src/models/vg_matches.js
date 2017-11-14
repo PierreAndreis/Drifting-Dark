@@ -59,8 +59,9 @@ class VGMatches {
     return res;
   }
 
-  async getMatchByMatchId(id) {
-    const match = await VaingloryService.match(id)
+  async getMatchByMatchId(id, region) {
+    const match = await VaingloryService.match(id, region)
+    console.log(match)
     const res = MatchTransform(match)
     return res
   }

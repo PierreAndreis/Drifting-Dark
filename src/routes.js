@@ -16,7 +16,7 @@ routes.get("/player/:name/stats", playerStats);
 /** Matches Routers */
 routes.get("/matches/:name", latestMatches);
 
-routes.get("/matches/:id/details", details)
+routes.get("/matches/:id/:region/details", details)
 
 /** Matches Routers */
 routes.get("/test/:name", test);
