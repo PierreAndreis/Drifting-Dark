@@ -16,6 +16,10 @@ class MatchesController {
     return matches;
   }
 
+  async getMatchByMatchId(matchId) {
+    return MatchesModel.getMatchByMatchId(matchId)
+  }
+
   async getMatchesByName(playerName, context) {
     const playerObj = await this.getPlayerId(playerName);
     // TODO: Add playerID to pros.js in resources IF this function is called by prohistory loop

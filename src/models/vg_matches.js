@@ -59,6 +59,12 @@ class VGMatches {
     return res;
   }
 
+  async getMatchByMatchId(id) {
+    const match = await VaingloryService.match(id)
+    const res = MatchTransform(match)
+    return res
+  }
+  
   async getMatches(playerId, region, lastMatch, context) {
     const key = this.createCacheKey(playerId, region, {lastMatch, ...context});
     // todo: verify if gameMode is valid using /resources/gamemodes.js
