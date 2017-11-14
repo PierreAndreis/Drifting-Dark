@@ -60,10 +60,9 @@ class VGMatches {
   }
 
   async getMatchByMatchId(id, region) {
-    const match = await VaingloryService.match(id, region)
-    console.log(match)
-    const res = MatchTransform(match)
-    return res
+    const match = await VaingloryService.match(id, region);
+    if (match.errors) return {}; // todo error handler
+    return MatchTransform(match);
   }
   
   async getMatches(playerId, region, lastMatch, context) {
@@ -76,16 +75,6 @@ class VGMatches {
       const matches = await VaingloryService.getMatches(playerId, region, {lastMatch, ...context});
       if (!matches || matches.errors) return [];
 
-      /* for (let i = 0; i < matches.match.length; i++) {
-        // For every match create a loop depending on how many players in that match
-        for (let j = 0; i < matches.match[i].matchRoster.length; i++) {
-          // Get the data from the match
-          const { data } = matches.match[i].matchRoster[i].rosterParticipants[j].participantPlayer;
-          const { id } = data;
-          const { name } = data.attributes;
-          // TODO: Check couchbase if this name exists for this player ID. If not add it to the db.
-        }
-      }*/
       const res = matches.match.map(match => MatchTransform(match));
       
       return res;
