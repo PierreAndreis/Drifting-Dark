@@ -28,8 +28,8 @@ class VaingloryService {
     return vainglory.setRegion(region).matches.collection(options);
   }
 
-  match (matchId) {
-    return vainglory.matches.single(matchId);
+  match (matchId, region) {
+    return vainglory.region(region).matches.single(matchId);
   }
 
   getPlayer({playerId, playerName, region}) {

@@ -11,9 +11,13 @@ class MatchesController {
     return player;
   }
 
-  async getMatchesById({ id, region, lastMatch }, context) {
+  async getMatchesByPlayerId({ id, region, lastMatch }, context) {
     const matches = await MatchesModel.getMatches(id, region, lastMatch, context);
     return matches;
+  }
+
+  async getMatchByMatchId(matchId, region) {
+    return MatchesModel.getMatchByMatchId(matchId, region)
   }
 
   async getMatchesByName(playerName, context) {
@@ -22,7 +26,7 @@ class MatchesController {
     // if it's a array, let's join with comma
     if (typeof context.gameMode == "object") context.gameMode = context.gameMode.join(",");
 
-    return this.getMatchesById(playerObj, context);
+    return this.getMatchesByPlayerId(playerObj, context);
     
   }
 
