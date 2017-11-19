@@ -103,7 +103,7 @@ class PlayerStatsInput {
       patches[pv]["gameModes"]  = merge(patches[pv]["gameModes"], _gameModes);
       patches[pv]["gameModes"]  = merge(patches[pv]["gameModes"], _roles    );
       patches[pv]["gameModes"]  = merge(patches[pv]["gameModes"], _heroes   );
-      // patches[pv]["gameModes"]  = merge(patches[pv]["gameModes"], _friends  );
+      patches[pv]["gameModes"]  = merge(patches[pv]["gameModes"], _friends  );
 
       aka = merge(aka, [player.name]);
       
@@ -177,7 +177,7 @@ class PlayerStatsInput {
     friends.forEach((p) => {
       if (p.name === player.name) return;
       playedWith[p.id] = {
-        name: [p.name],
+        name: p.name,
         wins: (p.winner) ? 1 : 0,
         games: 1,
       }
@@ -235,7 +235,6 @@ class PlayerStatsOutput {
       const thisSeason = findSeasonByPatch(patch);
       seasonsAvailable.add(thisSeason);
       Object.keys(data.gameModes).forEach((name) => gameModesAvailable.add(name));
-      // lodash.forEach(data.gameModes, ({}, name) => gameModesAvailable.add(name));
 
       if (!lodash.isEmpty(season) && !season.includes(thisSeason)) return;
 
@@ -262,8 +261,9 @@ class PlayerStatsOutput {
       let res = data;
 
       lodash.forEach(res.gameModes, (gameModeStats, name) => {
-        res.Heroes = merge(res.Heroes, gameModeStats.Heroes);
-        res.Roles = merge(res.Roles, gameModeStats.Roles);
+        res.Heroes     = merge(res.Heroes, gameModeStats.Heroes);
+        res.Roles      = merge(res.Roles, gameModeStats.Roles);
+        res.playedWith = merge(res.playedWith, gameModeStats.playedWith);
       });
 
       delete res.gameModes;
@@ -286,10 +286,14 @@ class PlayerStatsOutput {
     const roles = [];
     lodash.forEach(data.Roles, (roleStats, roleName) => roles.push(this.translateStats(roleStats, roleName)));
 
+    const playedWith = [];
+    lodash.forEach(data.playedWith, (playerWithData, playerId) => playedWith.push(playerWithData));
+
     return {
       ...this.translateStats(data, gameMode),
       Heroes: heroes,
       Roles:  roles,
+      PlayedWith: playedWith,
     }
   }
 
