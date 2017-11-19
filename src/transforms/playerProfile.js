@@ -6,7 +6,7 @@ const ALLSEASONS = {
   autumn07: ["2.8", "2.9", "2.10"]
 }
 
-const findRegionByPatch = (patchVersion) => {
+const findSeasonByPatch = (patchVersion) => {
   let season;
 
   lodash.forEach(ALLSEASONS, (s, name) => {
@@ -26,7 +26,7 @@ export const createPlayer = (p) => {
 
   let patch = player.attributes.patchVersion;
 
-  let season = findRegionByPatch(patch);
+  let season = findSeasonByPatch(patch);
 
   return {
     id:            player.id,

@@ -1,10 +1,9 @@
 import * as lodash    from "lodash";
-import moment         from "moment";
-import { merge}      from "~/lib/utils";
+
+import { merge }                   from "~/lib/utils";
+import { getKDA, getRate, getAvg } from "~/lib/utils_stats";
 
 import MatchesTransform from "./matches";
-
-const API_CACHE_TIME = moment().add(5, "m").format("X");
 
 const nowTime = () => new Date();
 
@@ -26,10 +25,29 @@ const findRole = (player) => {
   return role;
 }
 
+const ALLSEASONS = {
+  spring07: ["2.2", "2.3", "2.4", "2.5"],
+  summer07: ["2.6", "2.7"],
+  autumn07: ["2.8", "2.9", "2.10"]
+}
 
-class PlayerStats {
+const findSeasonByPatch = (patchVersion) => {
+  let season;
 
-  create(m, playerId) {
+  lodash.forEach(ALLSEASONS, (s, name) => {
+    if (s.includes(patchVersion)) {
+      season = name;
+      return false;
+    }
+  })
+
+
+  return season;
+}
+
+class PlayerStatsInput {
+
+  json(m, playerId) {
 
     let res = {
       id: playerId,
@@ -76,14 +94,16 @@ class PlayerStats {
       const _gameModes = this.generateGameModes(match, player, roster);
       const _roles     = this.generateRoles    (match, player, roster);
       const _heroes    = this.generateHeroes   (match, player, roster);
-      const _total     = this.generateTotal    (match, player, roster);
+      const _total     = this.generateTotal    ("total", match, player, roster);
       const _friends   = this.generateFriends  (match, player, roster)
       
-      patches[pv] = merge(patches[pv], _total    );
-      patches[pv] = merge(patches[pv], _gameModes);
-      patches[pv] = merge(patches[pv], _roles    );
-      patches[pv] = merge(patches[pv], _heroes   );
-      patches[pv] = merge(patches[pv], _friends  );
+      patches[pv] = patches[pv] || {};
+
+      patches[pv]               = merge(patches[pv],     _total    );
+      patches[pv]["gameModes"]  = merge(patches[pv]["gameModes"], _gameModes);
+      patches[pv]["gameModes"]  = merge(patches[pv]["gameModes"], _roles    );
+      patches[pv]["gameModes"]  = merge(patches[pv]["gameModes"], _heroes   );
+      // patches[pv]["gameModes"]  = merge(patches[pv]["gameModes"], _friends  );
 
       aka = merge(aka, [player.name]);
       
@@ -94,7 +114,7 @@ class PlayerStats {
     return {patches, aka, info};
   }
 
-  generateTotal(match, player, roster) {
+  generateTotal(type, match, player, roster) {
 
     const winner = (player.winner             ) ? 1 : 0;
     const afk    = (player.firstAfkTime !== -1) ? 1 : 0;
@@ -102,6 +122,7 @@ class PlayerStats {
     const redSide = (player.side !== "left/blue") ? 1 : 0;
 
     return {
+      type:           type,
       wins:           winner,
       afk:            afk,
       games:          1,
@@ -140,7 +161,7 @@ class PlayerStats {
     return {
       [match.gameMode]: {
         Roles: { 
-          [role]: this.generateTotal(match, player, roster)
+          [role]: this.generateTotal("role", match, player, roster)
         }
       }
     }
@@ -171,7 +192,7 @@ class PlayerStats {
     let stats = {
       [match.gameMode]: {
         "Heroes": {
-          [player.actor]: this.generateTotal(match, player, roster)
+          [player.actor]: this.generateTotal("hero", match, player, roster)
         },
       },
     };
@@ -190,9 +211,141 @@ class PlayerStats {
                       ) ? `${match.gameMode}e` : match.gameMode;
 
     return {
-      [gameMode]: this.generateTotal(match, player, roster)
+      [gameMode]: this.generateTotal("gameMode", match, player, roster)
     };
   }
 }
 
-export default new PlayerStats();
+class PlayerStatsOutput {
+
+  json(playerStats, opts = []) {
+
+    const seasonsAvailable = new Set();
+    const gameModesAvailable = new Set();
+    let stats;
+
+    const {season} = opts;
+
+
+    const {id, name, region, tier, aka, patches, info} = playerStats;
+
+    // first we will merge all in one structure that we will always know
+    lodash.forEach(patches, (data, patch) => {
+
+      const thisSeason = findSeasonByPatch(patch);
+      seasonsAvailable.add(thisSeason);
+      Object.keys(data.gameModes).forEach((name) => gameModesAvailable.add(name));
+      // lodash.forEach(data.gameModes, ({}, name) => gameModesAvailable.add(name));
+
+      if (!lodash.isEmpty(season) && !season.includes(thisSeason)) return;
+
+      stats = merge(stats,  this.extractData(data, opts));
+
+    });
+
+    return {
+      id,
+      name,
+      region,
+      tier, 
+      aka,
+      seasonsAvailable,
+      gameModesAvailable,
+      filters: opts,
+      stats: this.outputStats(stats, opts),
+    }
+  }
+
+  extractData(data, {gameMode}) {
+    // if there is no gameMode, we will just merge all the heroes and roles then delete GameMode
+    if (!gameMode) {
+      let res = data;
+
+      lodash.forEach(res.gameModes, (gameModeStats, name) => {
+        res.Heroes = merge(res.Heroes, gameModeStats.Heroes);
+        res.Roles = merge(res.Roles, gameModeStats.Roles);
+      });
+
+      delete res.gameModes;
+      return res;
+    }
+
+    // if there is a gameMode, lets grab the stats from that gameMode and Heroes and Roles
+
+    return (data.gameModes && data.gameModes[gameMode]) || {};
+  }
+
+
+  outputStats(stats, {gameMode}) {
+    let data = stats;
+    if (lodash.isEmpty(stats)) return { errors: "Not found" }; //todo better response error handling
+
+    const heroes = [];
+    lodash.forEach(data.Heroes, (heroStats, heroName) => heroes.push(this.translateStats(heroStats, heroName)));
+
+    const roles = [];
+    lodash.forEach(data.Roles, (roleStats, roleName) => roles.push(this.translateStats(roleStats, roleName)));
+
+    return {
+      ...this.translateStats(data, gameMode),
+      Heroes: heroes,
+      Roles:  roles,
+    }
+  }
+
+
+  translateStats(stats, name) {
+    const {
+      type,
+      kills,
+      deaths,
+      assists,
+      wins,
+      games,
+      farm,
+      teamKills,
+      duration,
+      gold,
+      blueGames,
+      blueWins,
+      redGames,
+      redWins,
+    } = stats;
+
+    const thisKP = kills + assists;
+
+    return {
+      name,
+      type,
+      kda:             getKDA(kills, deaths, assists),
+      games,
+      wins,
+      duration,
+      loss:            games - wins,
+      winRate:         getRate(wins, games),
+      kp:              getRate(thisKP, teamKills),
+      avgKills:        getAvg(kills, games),
+      totalKills:      kills,
+      avgDeaths:       getAvg(deaths, games),
+      totalDeaths:     deaths,
+      avgAssists:      getAvg(assists, games),
+      totalAssists:    assists,
+      avgCS:           getAvg(farm, games),
+      totalCS:         farm,
+      blueGames,
+      blueWins,
+      blueWinRate:     getRate(blueWins, blueGames),
+      redGames,
+      redWins,
+      redWinRate:      getRate(redWins, redGames),
+    }
+  }
+}
+
+
+
+
+export default {
+  input: new PlayerStatsInput(),
+  output: new PlayerStatsOutput()
+}

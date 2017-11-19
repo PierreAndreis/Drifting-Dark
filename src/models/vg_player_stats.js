@@ -39,7 +39,7 @@ class VGPlayersStats extends BaseCouchbase {
     if (!oldStats) {
       // New Player in the system. We will query all last 28 days of matches :D
       const matches = await MatchesModel.getAllMatches(id, region);
-      stats = PlayerTransform.create(matches, id);
+      stats = PlayerTransform.input.json(matches, id);
     }
     else {
       // Old player in the system. Let's check if he has new matches then merge
@@ -54,7 +54,7 @@ class VGPlayersStats extends BaseCouchbase {
       } else lastMatch = oldestDate;
 
       const matches = await VaingloryService.getMatches(id, region, {startMatch: lastMatch});
-      const statsNew = PlayerTransform.create(matches, id);
+      const statsNew = PlayerTransform.input.json(matches, id);
       stats = merge(oldStats, statsNew);
     }
     

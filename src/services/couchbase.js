@@ -25,7 +25,7 @@ class CouchBase {
       //  Passing a new query as argument
       const query_builder  = this.query.fromString(query);
       const [result, meta] = await this.bucket.queryAsync(query_builder);
-
+      // TODO: something with meta
       return result;
 
     }

@@ -10,10 +10,10 @@ const routes = Router();
 /** PlayerLookup Routers */
 routes.get("/player/:name/find", playerFind);
 
-/** PlayerLookup Routers */
+/** PlayerLookup Routers ?gameMode=&season= */
 routes.get("/player/:name/stats", playerStats);
 
-/** Matches Routers */
+/** Matches Routers ?page=&gameMode[]= */
 routes.get("/matches/:name", latestMatches);
 
 routes.get("/matches/:id/:region/details", details)

@@ -27,7 +27,7 @@ class VGPlayerLookup {
       // TODO: handle all other errors, maybe make a util function to handle all other errors except 404
       // https://github.com/seripap/vainglory/blob/master/src/Errors.js
       if (players.errors) continue;
-      foundRegions.push(players.player[0]);
+      foundRegions.push(...players.player);
 
     }
 
