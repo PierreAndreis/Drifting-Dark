@@ -5,26 +5,45 @@ import Config from "../config";
  * @param {object} orig
  * @param {object} addition
  */
-export const merge_two = (orig, addition) => {
+export const merge = (orig, addition) => {
 
-       if (typeof orig     === "undefined" || orig     === false) return addition;
+
+  /**/ if (typeof orig     === "undefined" || orig     === false) return addition;
   else if (typeof addition === "undefined" || addition === false) return orig;
+  else if (lodash.isArray(addition) && lodash.isArray(orig))      return removeDuplicatesArray([...orig, ...addition]);
   else return lodash.mergeWith(orig, addition, (origChild, additionChild) => {
-      if (lodash.isObject(origChild)) return merge(origChild, additionChild);
+      if (typeof origChild === "object") {
+
+        if (lodash.isArray(additionChild)) {
+          // ... check if orig is as well, if it is, we will concat and remove duplicates
+          if (lodash.isArray(origChild)) return removeDuplicatesArray([...origChild, ...additionChild]);
+          // otherwise substite with the array
+          else return additionChild;
+        }
+
+
+        return merge(origChild, additionChild);
+      }
       else {
-        if (typeof additionChild === "number")  return origChild + additionChild;
-        else                                    return additionChild;
+        if (typeof additionChild === "number" && typeof origChild === "number"){
+          return origChild + additionChild;
+        } else return additionChild;
       }
     });
   }
-  
+
 const removeDuplicatesArray = (arrArg) => {
   return arrArg.filter((elem, pos, arr) => {
     return arr.indexOf(elem) == pos;
   });
 }
 
-export const merge = (orig, add) => {
+//  Own Merge x 83.39 ops/sec ±0.82% (71 runs sampled)
+// Lodash Merge x 8,250,012 ops/sec ±1.00% (92 runs sampled)
+// Fastest is Lodash Merge
+
+
+export const merge_two = (orig, add) => {
 
   const origType = typeof orig;
   const addType  = typeof add;

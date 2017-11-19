@@ -104,9 +104,7 @@ class PlayerStatsInput {
       patches[pv]["gameModes"]  = merge(patches[pv]["gameModes"], _roles    );
       patches[pv]["gameModes"]  = merge(patches[pv]["gameModes"], _heroes   );
       patches[pv]["gameModes"]  = merge(patches[pv]["gameModes"], _friends  );
-
-      aka = merge(aka, [player.name]);
-      
+      aka  = merge(aka, [player.name]);
       info = merge(info, this.generateInfo(match, player, roster))
 
     });
