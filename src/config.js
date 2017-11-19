@@ -6,6 +6,7 @@ export default {
 
   COUCHBASE: {
     HOST:     process.env.COUCHBASE_HOST     || "couchbase://127.0.0.1:8091",
+    USERNAME: process.env.COUCHBASE_USERNAME || "Administrator",
     PASSWORD: process.env.COUCHBASE_PASSWORD || "",
   },
 

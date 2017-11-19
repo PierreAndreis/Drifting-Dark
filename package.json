@@ -25,14 +25,16 @@
   },
   "keywords": [],
   "dependencies": {
+    "bluebird": "^3.5.1",
     "body-parser": "^1.17.2",
     "cors": "^2.8.4",
-    "couchbase-promises": "^4.2.0",
+    "couchbase": "^2.4.2",
     "express": "^4.15.3",
     "helmet": "^3.8.0",
     "ioredis": "^3.1.4",
     "kue": "^0.11.6",
     "lodash": "^4.17.4",
+    "mathjs": "^3.16.5",
     "moment": "^2.18.1",
     "response-time": "^2.3.2",
     "vainglory": "^1.3.0"

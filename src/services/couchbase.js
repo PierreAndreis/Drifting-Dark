@@ -1,8 +1,13 @@
-import couchbase            from "couchbase-promises";
+import c       from "couchbase";
+import Promise from "bluebird";
+
 import Config from "~/config";
+
+const couchbase = Promise.promisifyAll(c);
 
 const cluster = new couchbase.Cluster(Config.COUCHBASE.HOST);
 
+cluster.authenticate(Config.COUCHBASE.USERNAME, Config.COUCHBASE.PASSWORD);
 
 class CouchBase {
 
