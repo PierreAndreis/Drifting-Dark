@@ -64,7 +64,19 @@ class PlayerStatsInput {
     
     const stats = this.generateStats(matches, playerId);
 
-    return {
+    // Make a schema check
+    const schema = Joi.object().keys({ 
+      name: Joi.string().min(3).max(16).alphanum().required(),
+      region: Joi.string().min(2).max(3).alphanum().required(),
+      tier: Joi.number().min(-1).max(29).integer().required(),
+      lastMatch: Joi.date().iso().required(),
+      aka: Joi.string().min(3).max(16).alphanum().required(), // TODO: Check the proper way to do this
+      patches: Joi.number().min(0).max(1).integer().required(), // TODO: Check the proper way to do this
+      info: Joi.number().min(0).integer().required(),  // TODO: Check the proper way to do this
+      res // TODO: add schema
+    })
+    
+    const object = {
       ...res,
       name:      player.name,
       region:    player.shardId,
@@ -76,6 +88,14 @@ class PlayerStatsInput {
       patches:   stats.patches,
       info:      stats.info,
     }
+
+    return Joi.validate(object, schema, (err, value) => {
+      if (err) {
+        console.log(err) 
+        return err // TODO: Do we need to do anything else if this errors?
+      }
+      return value
+    })
     
   }
 
@@ -119,7 +139,31 @@ class PlayerStatsInput {
 
     const redSide = (player.side !== "left/blue") ? 1 : 0;
 
-    return {
+    // Make a schema check
+    const schema = Joi.object().keys({ 
+      type:           '', // TODO: How to do this
+      wins:           Joi.number().min(0).max(1).integer().positive().required(),
+      afk:            Joi.number().min(0).max(1).positive().integer().required(),
+      games:          Joi.number().min(1).max(1).positive().integer().required(),
+      redWins:        Joi.number().min(0).max(1).positive().integer().required(),
+      blueWins:       Joi.number().min(0).max(1).positive().integer().required(),
+      blueGames:      Joi.number().min(0).max(1).positive().integer().required(),
+      teamKills:      Joi.number().min(0).max(1).positive().integer().required(),
+      kills:          Joi.number().min(0).positive().integer().required(),
+      deaths:         Joi.number().min(0).positive().integer().required(),
+      assists:        Joi.number().min(0).positive().integer().required(),
+      farm:           Joi.number().min(0).positive().integer().required(),
+      gold:           Joi.number().min(0).positive().integer().required(),
+      minionKills:    Joi.number().min(0).positive().integer().required(),
+      campCSKills:    Joi.number().min(0).positive().integer().required(),
+      laneCSKills:    Joi.number().min(0).positive().integer().required(),
+      aces:           Joi.number().min(0).positive().integer().required(),
+      crystalSentry:  Joi.number().min(0).positive().integer().required(),
+      turretCaptures: Joi.number().min(0).positive().integer().required(),
+      duration:       Joi.number().min(0).positive().integer().required(),
+    })
+
+    const object = {
       type:           type,
       wins:           winner,
       afk:            afk,
@@ -142,14 +186,38 @@ class PlayerStatsInput {
       turretCaptures: player.turretCaptures,
       duration:       match.duration,
     }
+
+    return Joi.validate(object, schema, (err, value) => {
+      if (err) {
+        console.log(err) 
+        return err // TODO: Do we need to do anything else if this errors?
+      }
+      return value
+    })
   }
 
   generateInfo(match, player, roster) {
-    return {
+    // Make a schema check
+    const schema = Joi.object().keys({
+      skins:      '', // TODO: How to do this?
+      itemGrants: '', // TODO: How to do this?
+      itemUses:   '', // TODO: How to do this?
+      games:      '', // TODO: How to do this?
+    })
+
+    const object = {
       skins:      [player.skinKey],
       itemGrants: player.itemGrants,
       itemUses:   player.itemUses 
     }
+
+    return Joi.validate(object, schema, (err, value) => {
+      if (err) {
+        console.log(err) 
+        return err // TODO: Do we need to do anything else if this errors?
+      }
+      return value
+    })
   }
 
   generateRoles(match, player, roster) {
