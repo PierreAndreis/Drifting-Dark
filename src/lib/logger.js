@@ -1,3 +1,5 @@
+import winston from "winston"
+
 const logger = winston.createLogger({
     level: 'silly',
     format: winston.format.json(),

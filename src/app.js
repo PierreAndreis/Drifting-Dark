@@ -3,6 +3,7 @@ import path       from "path";
 import helmet     from "helmet";
 import bodyParser from "body-parser";
 import responseTime from "response-time";
+import logger from "~/lib/logger"
 
 // todo: cron service
 import ProHistory from "~/services/prohistory";
@@ -48,5 +49,7 @@ process.on('unhandledRejection', (reason, p) => {
   console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
   // application specific logging, throwing an error, or other logic here
 });
+
+logger.info('Backend is ready!');
 
 export default app;
