@@ -13,7 +13,22 @@ class ProStats {
     
     if (!playerStats) return false;
 
-    return {
+    // Make a schema check
+    const schema = Joi.object().keys({ 
+      createdAt:    Joi.string().isoDate().required(),
+      matchId:      Joi.string().guid().required(),
+      proInfo:      '', // TODO: How to do this
+      actor:        Joi.string().min(1).alphanum().required(),
+      tier:         Joi.number().min(-1).max(29).integer().required(),
+      skilName:     '', // TODO: How to do this
+      winner:       Joi.number().min(0).max(1).positive().integer().required(),
+      kills:        Joi.number().min(0).positive().integer().required(),
+      deaths:       Joi.number().min(0).positive().integer().required(),
+      assists:      Joi.number().min(0).positive().integer().required(),
+      items:        '' // TODO: how to do this
+    })
+
+    const object = {
       createdAt: match.createdAt,
       matchId:   match.id,
       proInfo,
@@ -26,6 +41,14 @@ class ProStats {
       assists:  playerStats.assists,
       items:    playerStats.items,
     };
+
+    return Joi.validate(object, schema, (err, value) => {
+      if (err) {
+        console.log(err) 
+        return err // TODO: Do we need to do anything else if this errors?
+      }
+      return value
+    })
     
   }
 

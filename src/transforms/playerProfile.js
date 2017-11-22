@@ -1,4 +1,5 @@
 import * as lodash from "lodash";
+import Joi from "joi"
 
 const ALLSEASONS = {
   spring07: ["2.2", "2.3", "2.4", "2.5"],
@@ -28,11 +29,28 @@ export const createPlayer = (p) => {
 
   let season = findSeasonByPatch(patch);
 
-  return {
+  // Make a schema check
+  const schema = Joi.object().keys({ 
+    id:          Joi.string().guid().required(),
+    region:      Joi.string().min(2).alphanum().required(),
+    name:        Joi.string().min(3).max(16).alphanum().required(),
+    lastPatch:   Joi.string().alphanum().required(),
+    lastSeason:  Joi.string().alphanum().required(),
+  })
+
+  const object = {
     id:            player.id,
     name:          player.attributes.name,
     region:        player.attributes.shardId,
     lastPatch:     patch,
     lastSeason:    season,
   }
+
+  return Joi.validate(object, schema, (err, value) => {
+    if (err) {
+      console.log(err) 
+      return err // TODO: Do we need to do anything else if this errors?
+    }
+    return value
+  })
 }
