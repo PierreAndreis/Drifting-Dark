@@ -3,37 +3,17 @@ import moment         from "moment";
 import { merge }      from "~/lib/utils";
 import Config from "~/config"
 import MatchesTransform from "./matches";
-import PlayerController from "~/controllers/vg_player"
+import PlayerController from "~/controllers/vg_player";
+import PlayerStats from "~/transforms/playerStats";
 
 class VPRRating {
 
     async initial(playerName) {
-        const stats = await PlayerController.getStats(playerName);
-        const averageGames = // TODO: need this value
         const averageKdaKpWr = // TODO: need this value
         const season = Config.VAINGLORY.SEASONS[Config.VAINGLORY.previousSeason];
-        const seasonStats = {
-            wins: 0,
-            losses: 0,
-            kills: 0,
-            deaths: 0,
-            assists: 0,
-            teamTotalKill: 0,
-        }
-        for (const patch of season) {
-            seasonStats.wins += stats[patch].wins;
-            seasonStats.losses += stats[patch].games - stats[patch].wins;
-            seasonStats.kills += stats[patch].kills;
-            seasonStats.deaths += stats[patch].deaths;
-            seasonStats.assists += stats[patch].assists;
-            seasonStats.teamTotalKill += stats[patch].teamKills;
-        }
-        const kda = (seasonStats.kills + seasonStats.assists) / seasonStats.deaths;
-        const kp = (seasonStats.kills + seasonStats.assists) / seasonStats.teamTotalKill;
-        const winRatio = seasonStats.wins / (seasonStats.wins + seasonStats.losses);
-        const averageValue = (seasonStats.wins + seasonStats.losses) / averageGames;
+        const seasonStats = PlayerStats.output.json(playerName, { season });
 
-        return (stats.tier + 1) * (-1 * (1 - kda * kp * winRatio / averageKdaKpWr * averageValue * 100))
+        return (stats.tier + 1) * (-1 * (1 - seasonStats.kda * seasonStats.kp * seasonStats.winRatio / averageKdaKpWr * seasonStats.averageValue * 100))
     }
 
     update() {

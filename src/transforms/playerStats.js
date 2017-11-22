@@ -225,14 +225,20 @@ class PlayerStatsOutput {
     const {season} = opts;
 
 
-    const {id, name, region, tier, aka, patches, info} = playerStats;
+    const { id, name, region, tier, aka, patches, wins, games, kills, deaths, assists, teamKills,  info } = playerStats;
+
+    const lost = games - wins;
+    const kda = (kills + assists) / deaths;
+    const kp = (kills + assists) / teamKills;
+    const winRatio = (wins / games) * 100;
+    const averageValue = games / averageGames; // TODO: Get this value in the database
 
     // first we will merge all in one structure that we will always know
     lodash.forEach(patches, (data, patch) => {
 
       const thisSeason = findSeasonByPatch(patch);
       seasonsAvailable.add(thisSeason);
-      Object.keys(data.gameModes).forEach((name) => gameModesAvailable.add(name));
+      Object.keys(data.gameModes).forEach(name => gameModesAvailable.add(name));
 
       if (!lodash.isEmpty(season) && !season.includes(thisSeason)) return;
 
@@ -244,13 +250,23 @@ class PlayerStatsOutput {
       id,
       name,
       region,
-      tier, 
+      tier,
       aka,
+      wins,
+      lost,
+      kills,
+      deaths,
+      assists,
+      teamKills,
+      kda,
+      kp,
+      winRatio,
+      averageValue,
       seasonsAvailable,
       gameModesAvailable,
       filters: opts,
       stats: this.outputStats(stats, opts),
-    }
+    };
   }
 
   extractData(data, {gameMode}) {
