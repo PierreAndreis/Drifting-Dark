@@ -18,6 +18,7 @@ class VPRRating {
 
     update() {
         const avgT = [];
+        const eloScaleFactor = 5;
 
         const getTRatio = (kills, deaths, assists, KP) => {
             const killsPlayer   = kills;
@@ -77,20 +78,97 @@ class VPRRating {
         const avgtRatio = avgT.reduce((c, p) => c += p);
         console.log("avg Team TrueRatio=", avgtRatio);
 
+        let vstSumTeamBlue = 0;
+        let vstSumTeamRed = 0;
+        let scaleSumTeamBlue = 0;
+        let scaleSumTeamRed = 0;
         match.players = match.players.map(p => {
             const relativeTRatio = (p.tRatio / avgtRatio);
             console.log(`${p.name} - relative Team Ratio =`, relativeTRatio);
+            const kpScale = p.relativeTRatio * p.kp;
+            if (p.side === "right/red") vstSumTeamRed += p.tier;
+            else vstSumTeamBlue += p.tier;
             return {
                 ...p,
-                relativeTRatio
+                relativeTRatio,
+                kpScale
             }
-        })
+        });
+
+        match.players = match.players.map(p => {
+            if (p.side === "right/red") {
+                if (p.winner) {
+                    const scale = eloScaleFactor / (vstSumTeamRed / vstSumTeamBlue) * p.kpScale;
+                    scaleSumTeamRed += scale;
+                }
+                else {
+                    const scale = eloScaleFactor / (vstSumTeamBlue / vstSumTeamRed) * p.kpScale;
+                    scaleSumTeamRed += scale;
+                }
+            } else {
+                if (p.winner) {
+                    const scale = eloScaleFactor / (vstSumTeamBlue / vstSumTeamRed) * p.kpScale;
+                    scaleSumTeamBlue += scale;
+                }
+                else {
+                    const scale = eloScaleFactor / (vstSumTeamRed / vstSumTeamBlue) * p.kpScale;
+                    scaleSumTeamBlue += scale;
+                }
+            }
+            return {
+                ...p,
+                scale
+            }
+        });
+
+        let eloGainLossTeamRed = 0, eloGainLossTeamBlue = 0;
+
+        match.players = match.players.map(p => {
+            let relativeKPScale, eloGainLoss, eloGainLossScaled;
+
+            if (p.side === 'right/red') relativeKPScale = p.scale/scaleSumTeamRed;
+            else relativeKPScale = p.scale/scaleSumTeamBlue;
+            if (p.winner) eloGainLoss = eloScaleFactor * relativeKPScale;
+            else eloGainLoss = eloScaleFactor / relativeKPScale;
+            if (p.side === 'right/red') {
+                if (p.winner) eloGainLossScaled = eloGainLoss * (vstSumTeamRed/vstSumTeamBlue);
+                else eloGainLossScaled = eloGainLoss * (vstSumTeamBlue/vstSumTeamRed);
+                eloGainLossTeamRed += eloGainLossScaled;
+            } else {
+                if (p.winner) eloGainLossScaled = eloGainLoss / (vstSumTeamBlue / vstSumTeamRed);
+                else eloGainLossScaled = eloGainLoss / (vstSumTeamRed / vstSumTeamBlue);
+                eloGainLossTeamBlue += eloGainLossScaled;
+            }
+            return {
+                ...p,
+                eloGainLossScaled
+            }
+        });
+
+        match.players = match.players.map(p => {
+            let finalScale, vpr;
+            if (p.side === "right/red") finalScale = p.eloGainLossScaled / (eloGainLossTeamRed * eloScaleFactor * Math.ceil(match.players.size / 2));
+            else finalScale = p.eloGainLossScaled / (eloGainLossTeamBlue * eloScaleFactor * Math.ceil(match.players.size / 2));
+            if (p.side === "right/red") {
+                if (p.winner) vpr = finalScale / (vstSumTeamRed / vstSumTeamBlue)
+                else vpr = finalScale / (vstSumTeamBlue / vstSumTeamRed)
+            } else {
+                if (p.winner) vpr = finalScale / (vstSumTeamBlue / vstSumTeamRed)
+                else vpr = finalScale / (vstSumTeamRed / vstSumTeamBlue)
+            }
+            return {
+                ...p,
+                vpr
+            }
+        });
 
         // relativeTRatioPlayerA = tRatioPlayerA / (average of (tRatioPlayerA, tRatioPlayerB, tRatioPlayerC, tRatioPlayerD, tRatioPlayerE, tRatioPlayerF))
 
         // console.log(avgT);
 
         // const tRatioPlayerA = ((killsPlayerA + assistsPlayerA) / deathsPlayerA) / (3 * killParticipationPlayerA)
+
+        // const kpScale = relativeTRatio * (vstSumTeamRed)
     }
 
 }
