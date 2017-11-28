@@ -23,8 +23,6 @@ class HeroStats {
     for (let j = 0; j < MATCHES_PER_QUEUE; j++) {
       const data = MatchController.getMatchByMatchId(allMatches[j].id, allMatches[j].region);
 
-      if (data.gameMode !== "Ranked") continue;
-
       const heroes = {};
       const { players } = data;
       const playerLength = players.length;
