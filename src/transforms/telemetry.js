@@ -1,10 +1,9 @@
 import fetch from "node-fetch";
 import dictionaries from "~/resources/dictionaries";
 
-async function lyraStyle(url, id, duration) {
+async function lyraStyle(url, id) {
   const telem = await fetch(url)
     .then(result => result.json()).then(json => json);
-  console.log(telem);
 
   const lyra = {
     id,
@@ -21,7 +20,7 @@ async function lyraStyle(url, id, duration) {
   let startTime;
 
   for (const data of telem) {
-    if (data === telem[0]) startTime = data.time;
+    if (data === telem[0]) startTime = Date.parse(data.time);
     const difference = startTime - Date.parse(data.time);
     const team = data.payload.Team === "Left" ? "Blue" : "Red";
     const hero = data.payload.Actor;
