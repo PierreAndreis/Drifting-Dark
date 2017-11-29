@@ -57,14 +57,16 @@ async function lyraStyle(url, id) {
         const heroData = lyra.Facts[team][hero];
         const damage = heroData.Damage;
         const delt = heroData.Delt;
+        if (!heroData.TotalDamage) lyra.Facts[team][hero].TotalDamage = {};
+        if (!heroData.TotalDelt) lyra.Facts[team][hero].TotalDelt = {};
         const totalDamage = heroData.TotalDamage[target];
         const totalDelt = heroData.TotalDelt[target];
+        if (!heroData.ObjectiveDamage) lyra.Facts[team][hero].ObjectiveDamage = 0;
         const objDmg = heroData.ObjectiveDamage[target];
         if (!damage) lyra.Facts[team][hero].Damage = 0;
         if (!delt) lyra.Facts[team][hero].Delt = 0;
         if (!totalDamage) lyra.Facts[team][hero].TotalDamage[target] = 0;
         if (!totalDelt) lyra.Facts[team][hero].TotalDelt[target] = 0;
-        if (!objDmg) lyra.Facts[team][hero].ObjectiveDamage[target] = 0;
         lyra.Facts[team][hero].Damage += data.payload.Damage;
         lyra.Facts[team][hero].Delt += data.payload.Delt;
         lyra.Facts[team][hero].TotalDamage[target] += data.payload.Damage;
@@ -76,7 +78,7 @@ async function lyraStyle(url, id) {
           case "*VainCrystalHome*":
           case "*VainCrystalAway*":
             // TODO: Add gold miner, crystal miner, and kraken
-            lyra.Facts[team][hero].ObjectiveDamage[target] += data.payload.Delt;
+            lyra.Facts[team][hero].ObjectiveDamage += data.payload.Delt;
             break;
           default:
         }
@@ -86,7 +88,7 @@ async function lyraStyle(url, id) {
         const heroData = lyra.Facts[team][hero];
         const targetActor = data.payload.TargetActor;
         const healed = heroData.Healed;
-        if (!lyra.Facts[team][hero].TotalHealed) lyra.Facts[team][hero].TotalHealed = 0;
+        if (!lyra.Facts[team][hero].TotalHealed) lyra.Facts[team][hero].TotalHealed = {};
         const totalHealed = heroData.TotalHealed[targetActor];
         if (!healed) lyra.Facts[team][hero].Healed = 0;
         if (!totalHealed) lyra.Facts[team][hero].TotalHealed[targetActor] = 0;
@@ -96,8 +98,9 @@ async function lyraStyle(url, id) {
       }
       case "KillActor":
         if (data.payload.TargetIsHero === 1) {
-          const killer = hero === data.payload.Actor;
-          lyra.Facts[team][hero][killer ? "Kills" : "Deaths"].push({
+          const killer = hero === data.payload.Actor ? "Kills" : "Deaths";
+          if (!lyra.Facts[team][hero][killer]) lyra.Facts[team][hero][killer] = [];
+          lyra.Facts[team][hero][killer].push({
             Actor: killer ? data.payload.Killed : data.payload.Actor,
             Time: `${Math.floor(difference / 60)}:${difference % 60}`,
             Gold: data.payload.Gold,
