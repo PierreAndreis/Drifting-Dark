@@ -76,7 +76,6 @@ async function lyraStyle(url, id, duration) {
           case "*VainCrystalAway*":
             // TODO: Add gold miner, crystal miner, and kraken
             lyra.Facts[team][hero].ObjectiveDamage[target] += data.payload.Delt;
-
             break;
           default:
         }
