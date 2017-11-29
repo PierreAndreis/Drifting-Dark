@@ -22,89 +22,99 @@ async function lyraStyle(url, id) {
   for (const data of telem) {
     if (data === telem[0]) startTime = Date.parse(data.time);
     const difference = startTime - Date.parse(data.time);
-    const team = data.payload.Team === "Left" ? "Blue" : "Red";
-    const hero = data.payload.Actor;
-    const target = data.payload.Target;
-    if (!lyra.Facts[team][hero]) lyra.Facts[team][hero] = [];
+    const { payload } = data;
+    const team = payload.Team === "Left" ? "Blue" : "Red";
+    const hero = payload.Actor;
+    const target = payload.Target;
+    const factHero = lyra.Facts[team][hero];
+    if (!factHero.Healed) {
+      lyra.Facts[team][hero] = {
+        Healed: 0,
+        TotalHealed: {},
+        TotalDamage: {},
+        TotalDelt: {},
+        ObjectiveDamage: 0,
+        Damage: 0,
+        Delt: 0,
+      };
+    }
+    if (!factHero) lyra.Facts[team][hero] = [];
     switch (data.type) {
       case "HeroBan":
       case "HeroSelect":
         lyra.Draft.push({
           Type: data.type,
-          Hero: data.payload.Hero,
-          Team: data.payload.Team,
+          Hero: payload.Hero,
+          Team: payload.Team,
         });
         break;
       case "UseItemAbility":
-        if (data.payload.Ability !== "Scout Trap" && data.payload.Ability !== "Flare" && data.payload.Ability !== "Contraption" && data.payload.Ability !== "Flaregun") break;
-        lyra.Vision[team].push({
-          Location: data.payload.Position,
-          Name: data.payload.Ability,
-        });
+        switch (payload.Ability) {
+          case "Scout Trap":
+          case "Flare":
+          case "Contraption":
+          case "Flaregun":
+            lyra.Vision[team].push({
+              Location: payload.Position,
+              Name: payload.Ability,
+            });
+            break;
+          default:
+        }
         break;
       case "BuyItem":
-        if (!lyra.Facts[team][hero].Items) lyra.Facts[team][hero].Items = [];
+        if (!factHero.Items) lyra.Facts[team][hero].Items = [];
         lyra.Facts[team][hero].Items.push({
-          Item: data.payload.Item,
+          Item: payload.Item,
           Time: `${Math.floor(difference / 60)}:${difference % 60}`,
         });
         break;
       case "LearnAbility":
-        if (!lyra.Facts[team][hero].Skill) lyra.Facts[team][hero].Skill = [];
-        lyra.Facts[team][hero].Skill.push(dictionaries.cleanAbility(data.payload.Ability));
+        if (!factHero.Skill) lyra.Facts[team][hero].Skill = [];
+        lyra.Facts[team][hero].Skill.push(dictionaries.cleanAbility(payload.Ability));
         break;
       case "DealDamage": {
-        const heroData = lyra.Facts[team][hero];
-        const damage = heroData.Damage;
-        const delt = heroData.Delt;
-        if (!heroData.TotalDamage) lyra.Facts[team][hero].TotalDamage = {};
-        if (!heroData.TotalDelt) lyra.Facts[team][hero].TotalDelt = {};
-        const totalDamage = heroData.TotalDamage[target];
-        const totalDelt = heroData.TotalDelt[target];
-        if (!heroData.ObjectiveDamage) lyra.Facts[team][hero].ObjectiveDamage = 0;
-        const objDmg = heroData.ObjectiveDamage[target];
-        if (!damage) lyra.Facts[team][hero].Damage = 0;
-        if (!delt) lyra.Facts[team][hero].Delt = 0;
-        if (!totalDamage) lyra.Facts[team][hero].TotalDamage[target] = 0;
-        if (!totalDelt) lyra.Facts[team][hero].TotalDelt[target] = 0;
-        lyra.Facts[team][hero].Damage += data.payload.Damage;
-        lyra.Facts[team][hero].Delt += data.payload.Delt;
-        lyra.Facts[team][hero].TotalDamage[target] += data.payload.Damage;
-        lyra.Facts[team][hero].TotalDelt[target] += data.payload.Delt;
-        switch (data.payload.Target) {
+        if (!factHero.TotalDamage[target]) {
+          lyra.Facts[team][hero].TotalDamage[target] = 0;
+          lyra.Facts[team][hero].TotalDelt[target] = 0;
+        }
+        const properties = ["Damage", "Delt", "TotalDamage", "TotalDelt"];
+        for (const prop of properties) {
+          lyra.Facts[team][hero][prop] += payload[prop];
+        }
+        switch (payload.Target) {
           case "*OuterTurret*":
           case "*Turret*":
           case "*VainTurret*":
           case "*VainCrystalHome*":
           case "*VainCrystalAway*":
             // TODO: Add gold miner, crystal miner, and kraken
-            lyra.Facts[team][hero].ObjectiveDamage += data.payload.Delt;
+            lyra.Facts[team][hero].ObjectiveDamage += payload.Delt;
             break;
           default:
         }
       }
         break;
       case "HealTarget": {
-        const heroData = lyra.Facts[team][hero];
-        const targetActor = data.payload.TargetActor;
-        const healed = heroData.Healed;
-        if (!lyra.Facts[team][hero].TotalHealed) lyra.Facts[team][hero].TotalHealed = {};
-        const totalHealed = heroData.TotalHealed[targetActor];
-        if (!healed) lyra.Facts[team][hero].Healed = 0;
-        if (!totalHealed) lyra.Facts[team][hero].TotalHealed[targetActor] = 0;
-        lyra.Facts[team][hero].Healed += data.payload.Healed;
-        lyra.Facts[team][hero].TotalHealed[target] += data.payload.Healed;
+        const { TargetActor } = payload;
+
+        const totalHealed = factHero.TotalHealed[TargetActor];
+        if (!totalHealed) lyra.Facts[team][hero].TotalHealed[TargetActor] = 0;
+        const properties = ["Healed", "TotalHealed"];
+        for (const prop of properties) {
+          lyra.Facts[team][hero][prop] += payload[prop];
+        }
         break;
       }
       case "KillActor":
-        if (data.payload.TargetIsHero === 1) {
-          const killer = hero === data.payload.Actor ? "Kills" : "Deaths";
-          if (!lyra.Facts[team][hero][killer]) lyra.Facts[team][hero][killer] = [];
+        if (payload.TargetIsHero === 1) {
+          const killer = hero === payload.Actor ? "Kills" : "Deaths";
+          if (!factHero[killer]) lyra.Facts[team][hero][killer] = [];
           lyra.Facts[team][hero][killer].push({
-            Actor: killer ? data.payload.Killed : data.payload.Actor,
+            Actor: killer ? payload.Killed : hero,
             Time: `${Math.floor(difference / 60)}:${difference % 60}`,
-            Gold: data.payload.Gold,
-            Position: data.payload.Position,
+            Gold: payload.Gold,
+            Position: payload.Position,
           });
         }
         break;
