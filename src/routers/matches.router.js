@@ -21,8 +21,8 @@ export const telemetry = async (req, res, next) => {
   console.log("hi telem launched");
   const { id, region } = req.params;
   const reply = await MatchesController.getMatchByMatchId(id, region);
-  const telem = await TelemetryTransformer.lyraStyle(reply.telemetry.URL, id);
-  res.json(telem);
+  // const telem = await TelemetryTransformer.lyraStyle(reply.telemetry.URL, id, reply.duration);
+  res.json(reply);
 };
 
 // todo: loop to get more pages... get also at the same time another batch of 28 days before now
