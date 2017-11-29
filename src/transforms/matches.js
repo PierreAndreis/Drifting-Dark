@@ -13,16 +13,16 @@ function generateMatch(match) {
     patchVersion:  match.patchVersion,
     // We will generate Rosters + Players
             ...generateRosters(match.rosters),
-    telemetry: generateTelemetry(match, ...match.assets),
+    telemetry: generateTelemetry(match.assets[0]),
   };
 }
 
 function generateTelemetry(telemetry) {
   if (!telemetry || !telemetry.URL) return {}
-  
+
   return {
     name:       "telemetry",
-    URL:         telemetry.URL,
+    URL:        telemetry.URL,
   };
 }
 
@@ -36,7 +36,7 @@ function generateRosters(r) {
   };
   // Let's separate the rosters
   lodash.forEach(r, (roster) => {
-    
+
     rosters.push(roster.stats);
 
     // Now, lets create the players for this roster
