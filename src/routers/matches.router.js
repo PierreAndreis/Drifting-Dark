@@ -1,5 +1,5 @@
 import MatchesController from "~/controllers/vg_matches.js";
-import TelemetryTransformer from "~/transforms/telemetry";
+import lyraStyle from "~/transforms/telemetry";
 
 // matches/:name
 export const latestMatches = async (req, res, next) => {
@@ -22,7 +22,7 @@ export const telemetry = async (req, res, next) => {
   const { id, region } = req.params;
   const reply = await MatchesController.getMatchByMatchId(id, region);
   console.log(reply.telemetry.URL);
-  const telem = await TelemetryTransformer.lyraStyle(reply.telemetry.URL, id);
+  const telem = await lyraStyle(reply.telemetry.URL, id);
   res.json(telem);
 };
 

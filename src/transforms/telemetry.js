@@ -25,6 +25,7 @@ async function lyraStyle(url, id) {
     const team = data.payload.Team === "Left" ? "Blue" : "Red";
     const hero = data.payload.Actor;
     const target = data.payload.Target;
+    if (!lyra.Facts[team][hero]) lyra.Facts[team][hero] = [];
     switch (data.type) {
       case "HeroBan":
       case "HeroSelect":
@@ -41,14 +42,15 @@ async function lyraStyle(url, id) {
           Name: data.payload.Ability,
         });
         break;
-      case "BuyItem": {
+      case "BuyItem":
+        if (!lyra.Facts[team][hero].Items) lyra.Facts[team][hero].Items = [];
         lyra.Facts[team][hero].Items.push({
           Item: data.payload.Item,
           Time: `${Math.floor(difference / 60)}:${difference % 60}`,
         });
-      }
         break;
       case "LearnAbility":
+        if (!lyra.Facts[team][hero].Skill) lyra.Facts[team][hero].Skill = [];
         lyra.Facts[team][hero].Skill.push(dictionaries.cleanAbility(data.payload.Ability));
         break;
       case "DealDamage": {
@@ -84,6 +86,7 @@ async function lyraStyle(url, id) {
         const heroData = lyra.Facts[team][hero];
         const targetActor = data.payload.TargetActor;
         const healed = heroData.Healed;
+        if (!lyra.Facts[team][hero].TotalHealed) lyra.Facts[team][hero].TotalHealed = 0;
         const totalHealed = heroData.TotalHealed[targetActor];
         if (!healed) lyra.Facts[team][hero].Healed = 0;
         if (!totalHealed) lyra.Facts[team][hero].TotalHealed[targetActor] = 0;
