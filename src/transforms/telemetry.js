@@ -106,6 +106,7 @@ async function lyraStyle(url, id) {
       default:
     }
   }
+  return lyra;
 }
 
 export default lyraStyle;
