@@ -28,6 +28,13 @@ async function lyraStyle(url, id) {
           Team: data.payload.Team,
         });
         break;
+      case "UseItemAbility":
+        if (data.payload.Ability !== "Scout Trap" && data.payload.Ability !== "Flare") break;
+        lyra.Vision[data.payload.Team === "Left" ? "Blue" : "Red"].push({
+          Location: data.payload.Position,
+          Name: data.payload.Ability,
+        });
+        break;
       default:
     }
   }
