@@ -24,9 +24,21 @@ async function lyraStyle(url, id) {
     const { payload } = data;
     const team = payload.Team === "Left" ? "Blue" : "Red";
     const hero = payload.Actor;
+    switch (hero) {
+      case "*JungleMinion_TreeEnt*":
+      case "Unknown":
+      case "*TankMinion*":
+      case "*LeadMinion*":
+      case "*RangedMinion*":
+      case "*JungleMinion_ElderTreeEnt*":
+      case "*OuterTurret*":
+      case "*Kraken_Captured*":
+      case undefined:
+        continue;
+      default:
+    }
     const target = payload.Target;
     const factHero = lyra.Facts[team][hero];
-    if (data.type === "HealTarget") console.log(factHero ? "true" : "false");
     if (!factHero) {
       lyra.Facts[team][hero] = {
         Healed: 0,
@@ -108,19 +120,9 @@ async function lyraStyle(url, id) {
         break;
       case "HealTarget": {
         const { TargetActor } = payload;
-        // if (!factHero) {
-        //   console.log(lyra.Facts[team][hero]);
-        //   console.log('=========')
-        //     console.log(lyra.Facts[team]);
-        //
-        // }
-          if (!factHero) console.log('failed')
-        console.log(lyra.Facts[team][hero].TotalHealed);
-        if (!factHero.TotalHealed[TargetActor]) {
-          lyra.Facts[team][hero].TotalHealed[TargetActor] = 0;
-        }
         lyra.Facts[team][hero].Healed += payload.Healed;
-        lyra.Facts[team][hero].TotalHealed[TargetActor] += payload.Healed;
+        if (isNaN(lyra.Facts[team][hero].TotalHealed[TargetActor])) lyra.Facts[team][hero].TotalHealed[TargetActor] = payload.Healed;
+        else lyra.Facts[team][hero].TotalHealed[TargetActor] += payload.Healed;
         break;
       }
       case "KillActor":
