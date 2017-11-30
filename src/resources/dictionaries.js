@@ -1,4 +1,4 @@
-exports.cleanAbility = async (ability) => {
+export const cleanAbility = async (ability) => {
   const abilities = {
     HERO_ABILITY_ADAGIO_FORTUNES_SMILE_NAME: "adagio_a",
     HERO_ABILITY_ADAGIO_GASOLINE_SOAKED_NAME: "adagio_b",

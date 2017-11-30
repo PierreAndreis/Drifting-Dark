@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import dictionaries from "~/resources/dictionaries";
+import { cleanAbility } from "~/resources/dictionaries";
 
 async function lyraStyle(url, id) {
   const telem = await fetch(url)
@@ -17,13 +17,16 @@ async function lyraStyle(url, id) {
       Red: [],
     },
   };
+  // Get the start time of the match from the first event in telem
   const startTime = Date.parse(telem[0].time);
 
   for (const data of telem) {
+    // Find the difference between the current event and startTime which will be time of the match in game
     const difference = Date.parse(data.time) - startTime;
     const { payload } = data;
     const team = payload.Team === "Left" ? "Blue" : "Red";
     const hero = payload.Actor;
+    // If the actors are objects and not heroes continue to the next loop
     switch (hero) {
       case "*JungleMinion_TreeEnt*":
       case "Unknown":
@@ -39,6 +42,7 @@ async function lyraStyle(url, id) {
     }
     const target = payload.Target;
     const factHero = lyra.Facts[team][hero];
+    // If this heroes doesnt exist in the object above create the base for the hero
     if (!factHero) {
       lyra.Facts[team][hero] = {
         Healed: 0,
@@ -74,17 +78,23 @@ async function lyraStyle(url, id) {
         }
         break;
       case "BuyItem":
+        // If items doesnt already exist in object for this hero then create it first
         if (!factHero.Items) lyra.Facts[team][hero].Items = [];
+        // Find the minutes
         const minutes = Math.floor(difference / 1000 / 60);
+        // Find the seconds
         const seconds = (difference / 1000) % 60;
         lyra.Facts[team][hero].Items.push({
           Item: payload.Item,
+          // If the value is like 5 minutes change it to look like 05: so it looks nicer with the 0
           Time: `${minutes > 9 ? minutes : `0${minutes}`}:${seconds > 9 ? seconds : `0${seconds}`}`,
         });
         break;
       case "LearnAbility":
         if (!factHero.Skill) lyra.Facts[team][hero].Skill = [];
-        lyra.Facts[team][hero].Skill.push(dictionaries.cleanAbility(payload.Ability));
+        cleanAbility(payload.Ability).then((result) => {
+          lyra.Facts[team][hero].Skill.push(result);
+        });
         break;
       case "DealDamage": {
         if (!factHero.TotalDamage[target]) {
