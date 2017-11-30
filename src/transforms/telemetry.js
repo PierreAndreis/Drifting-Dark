@@ -17,28 +17,27 @@ async function lyraStyle(url, id) {
       Red: [],
     },
   };
-  let startTime;
+  const startTime = Date.parse(telem[0].time);
 
   for (const data of telem) {
-    if (data === telem[0]) startTime = Date.parse(data.time);
-    const difference = startTime - Date.parse(data.time);
+    const difference = Date.parse(data.time) - startTime;
     const { payload } = data;
     const team = payload.Team === "Left" ? "Blue" : "Red";
     const hero = payload.Actor;
     const target = payload.Target;
     const factHero = lyra.Facts[team][hero];
-    if (!factHero.Healed) {
+    if (data.type === "HealTarget") console.log(factHero ? "true" : "false");
+    if (!factHero) {
       lyra.Facts[team][hero] = {
         Healed: 0,
         TotalHealed: {},
         TotalDamage: {},
-        TotalDelt: {},
+        TotalDealt: {},
         ObjectiveDamage: 0,
         Damage: 0,
-        Delt: 0,
+        Dealt: 0,
       };
     }
-    if (!factHero) lyra.Facts[team][hero] = [];
     switch (data.type) {
       case "HeroBan":
       case "HeroSelect":
@@ -64,9 +63,11 @@ async function lyraStyle(url, id) {
         break;
       case "BuyItem":
         if (!factHero.Items) lyra.Facts[team][hero].Items = [];
+        const minutes = Math.floor(difference / 1000 / 60);
+        const seconds = (difference / 1000) % 60;
         lyra.Facts[team][hero].Items.push({
           Item: payload.Item,
-          Time: `${Math.floor(difference / 60)}:${difference % 60}`,
+          Time: `${minutes > 9 ? minutes : `0${minutes}`}:${seconds > 9 ? seconds : `0${seconds}`}`,
         });
         break;
       case "LearnAbility":
@@ -76,11 +77,21 @@ async function lyraStyle(url, id) {
       case "DealDamage": {
         if (!factHero.TotalDamage[target]) {
           lyra.Facts[team][hero].TotalDamage[target] = 0;
-          lyra.Facts[team][hero].TotalDelt[target] = 0;
+          lyra.Facts[team][hero].TotalDealt[target] = 0;
         }
-        const properties = ["Damage", "Delt", "TotalDamage", "TotalDelt"];
+        const properties = ["Damage", "Dealt", "TotalDamage", "TotalDealt"];
         for (const prop of properties) {
-          lyra.Facts[team][hero][prop] += payload[prop];
+          switch (prop) {
+            case "Damage":
+            case "Dealt":
+              lyra.Facts[team][hero][prop] += payload[prop];
+              break;
+            case "TotalDamage":
+            case "TotalDealt":
+              lyra.Facts[team][hero][prop][target] += payload[prop === "TotalDamage" ? "Damage" : "Dealt"];
+              break;
+            default:
+          }
         }
         switch (payload.Target) {
           case "*OuterTurret*":
@@ -89,7 +100,7 @@ async function lyraStyle(url, id) {
           case "*VainCrystalHome*":
           case "*VainCrystalAway*":
             // TODO: Add gold miner, crystal miner, and kraken
-            lyra.Facts[team][hero].ObjectiveDamage += payload.Delt;
+            lyra.Facts[team][hero].ObjectiveDamage += payload.Dealt;
             break;
           default:
         }
@@ -97,13 +108,19 @@ async function lyraStyle(url, id) {
         break;
       case "HealTarget": {
         const { TargetActor } = payload;
-
-        const totalHealed = factHero.TotalHealed[TargetActor];
-        if (!totalHealed) lyra.Facts[team][hero].TotalHealed[TargetActor] = 0;
-        const properties = ["Healed", "TotalHealed"];
-        for (const prop of properties) {
-          lyra.Facts[team][hero][prop] += payload[prop];
+        // if (!factHero) {
+        //   console.log(lyra.Facts[team][hero]);
+        //   console.log('=========')
+        //     console.log(lyra.Facts[team]);
+        //
+        // }
+          if (!factHero) console.log('failed')
+        console.log(lyra.Facts[team][hero].TotalHealed);
+        if (!factHero.TotalHealed[TargetActor]) {
+          lyra.Facts[team][hero].TotalHealed[TargetActor] = 0;
         }
+        lyra.Facts[team][hero].Healed += payload.Healed;
+        lyra.Facts[team][hero].TotalHealed[TargetActor] += payload.Healed;
         break;
       }
       case "KillActor":
