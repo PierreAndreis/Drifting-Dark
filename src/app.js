@@ -1,8 +1,9 @@
-import express    from "express";
-import path       from "path";
-import helmet     from "helmet";
-import bodyParser from "body-parser";
+import express      from "express";
+import path         from "path";
+import helmet       from "helmet";
+import bodyParser   from "body-parser";
 import responseTime from "response-time";
+import logger       from "~/lib/logger"
 
 // todo: cron service
 import ProHistory from "~/services/prohistory";
@@ -38,15 +39,17 @@ app.use((req, res, next) => {
 
 // Error handler
 app.use((err, req, res, next) => {
-  console.log("Error:", err.message, req.originalUrl);
+  logger.error("Error:", err.message, req.originalUrl);
   res
     .status(err.status || 500)
     .send({Error: err.message});
 });
 
 process.on('unhandledRejection', (reason, p) => {
-  console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+  // console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+  logger.error(`Unhandled Rejection. Reason: ${reason}. Stack: ${JSON.stringify(reason.stack)}`);
   // application specific logging, throwing an error, or other logic here
 });
+
 
 export default app;
