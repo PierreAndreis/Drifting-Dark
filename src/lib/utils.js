@@ -53,6 +53,16 @@ export const merge_two = (orig, add) => {
   else {
     switch (addType){
       case "object":
+      
+      if ((!!add) && (add.constructor === Object)) {
+        let res = {};
+
+        for (let attrname in orig) { res[attrname] = merge(orig[attrname], add[attrname]) }
+        for (let attrname in add)  { res[attrname] = merge(orig[attrname], add[attrname]) }
+
+        return res;
+      }
+
        if (Array.isArray(add)) {
         // ... check if orig is as well, if it is, we will concat and remove duplicates
         if (Array.isArray(orig)) return removeDuplicatesArray([...orig, ...add]);
@@ -65,13 +75,6 @@ export const merge_two = (orig, add) => {
 
       // null returns null, duh
       if (add === null) return null;
-      
-      let res = {};
-
-      for (let attrname in orig) { res[attrname] = merge(orig[attrname], add[attrname]) }
-      for (let attrname in add)  { res[attrname] = merge(orig[attrname], add[attrname]) }
-
-      return res;
 
       break;
 
