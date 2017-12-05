@@ -1,5 +1,5 @@
-export const cleanAbility = async (ability) => {
-  const abilities = {
+export const cleanAbility = (ability) => {
+  return {
     HERO_ABILITY_ADAGIO_FORTUNES_SMILE_NAME: "adagio_a",
     HERO_ABILITY_ADAGIO_GASOLINE_SOAKED_NAME: "adagio_b",
     HERO_ABILITY_ADAGIO_FRIENDSHIP_NAME: "adagio_c",
@@ -108,6 +108,5 @@ export const cleanAbility = async (ability) => {
     HERO_ABILITY_LORELAI_A_NAME: "lorelai_a",
     HERO_ABILITY_LORELAI_B_NAME: "lorelai_b",
     HERO_ABILITY_LORELAI_C_NAME: "lorelai_c",
-  };
-  return abilities[ability];
+  }[ability] || null;
 };

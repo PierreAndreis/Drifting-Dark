@@ -1,5 +1,4 @@
 import MatchesController from "~/controllers/vg_matches.js";
-import lyraStyle from "~/transforms/telemetry";
 
 // matches/:name
 export const latestMatches = async (req, res, next) => {
@@ -18,12 +17,9 @@ export const details = async (req, res, next) => {
 
 // matches/:id/:region/telem
 export const telemetry = async (req, res, next) => {
-  console.log("hi telem launched");
-  const { id, region } = req.params;
-  const reply = await MatchesController.getMatchByMatchId(id, region);
-  console.log(reply.telemetry.URL);
-  const telem = await lyraStyle(reply.telemetry.URL, id);
-  res.json(telem);
+    const { id, region } = req.params;
+  const reply = await MatchesController.getMatchTelemetry(id, region);
+  res.json(reply);
 };
 
 // todo: loop to get more pages... get also at the same time another batch of 28 days before now
