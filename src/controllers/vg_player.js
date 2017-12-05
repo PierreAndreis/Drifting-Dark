@@ -1,4 +1,6 @@
 import * as lodash from "lodash";
+import logger from "~/lib/logger";
+
 import PlayerLookupModel from "~/models/vg_player_lookup";
 import PlayerStatsModel from "~/models/vg_player_stats";
 

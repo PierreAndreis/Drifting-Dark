@@ -47,7 +47,7 @@ app.use((err, req, res, next) => {
 
 process.on('unhandledRejection', (reason, p) => {
   // console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
-  logger.error(`Unhandled Rejection at: Promise ${p}, reason: ${reason}`);
+  logger.error(`Unhandled Rejection. Reason: ${reason}. Stack: ${JSON.stringify(reason.stack)}`);
   // application specific logging, throwing an error, or other logic here
 });
 
