@@ -27,7 +27,7 @@ class PlayerController {
       console.log(`new cache for ${playerName}`);
 
       stats = await PlayerStatsModel.update(player, playerOldStats);
-      // PlayerStatsModel.upsert(player.id, stats);
+      PlayerStatsModel.upsert(player.id, stats);
     }
 
     // return stats;

@@ -1,5 +1,18 @@
 import * as lodash from "lodash";
 
+const findRole = (player) => {
+  let role = "Captain";
+
+  const laneCS   = player.nonJungleMinionKills;
+  const jungleCS = player.jungleKills;
+  const farm     = player.minionKills;
+
+  if (laneCS > jungleCS && farm > 45) role = "Carry";
+  if (laneCS < jungleCS && farm > 45) role = "Jungler";
+
+  return role;
+}
+
 function generateMatch(match) {
   const gameMode = (match.gameMode === "Battle Royal" || match.gameMode === "Private Battle Royal") ? `${match.gameMode}e` : match.gameMode;
 
@@ -65,6 +78,7 @@ function generatePlayers(players, roster) {
       actor:    player.actor,
       side:     roster.stats.side,
       aces:     roster.stats.acesEarned,
+      role:     findRole(player.stats),
         ...player.stats,
     });
 
