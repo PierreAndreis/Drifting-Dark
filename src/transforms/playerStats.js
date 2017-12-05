@@ -2,6 +2,7 @@ import * as lodash    from "lodash";
 
 import { merge }                   from "~/lib/utils";
 import { getKDA, getRate, getAvg } from "~/lib/utils_stats";
+import Config from "~/config";
 
 import MatchesTransform from "./matches";
 
@@ -12,29 +13,10 @@ const addMinutes = (date, minutes) => {
   return date;
 }
 
-const findRole = (player) => {
-  let role = "Captain";
-
-  const laneCS   = player.nonJungleMinionKills;
-  const jungleCS = player.jungleKills;
-  const farm     = player.minionKills;
-
-  if (laneCS > jungleCS && farm > 45) role = "Carry";
-  if (laneCS < jungleCS && farm > 45) role = "Jungler";
-
-  return role;
-}
-
-const ALLSEASONS = {
-  spring07: ["2.2", "2.3", "2.4", "2.5"],
-  summer07: ["2.6", "2.7"],
-  autumn07: ["2.8", "2.9", "2.10"]
-}
-
 const findSeasonByPatch = (patchVersion) => {
   let season;
 
-  lodash.forEach(ALLSEASONS, (s, name) => {
+  lodash.forEach(Config.VAINGLORY.SEASONS, (s, name) => {
     if (s.includes(patchVersion)) {
       season = name;
       return false;
@@ -154,7 +136,7 @@ class PlayerStatsInput {
 
   generateRoles(match, player, roster) {
 
-    const role = findRole(player);
+    const role = player.role;
 
     return {
       [match.gameMode]: {

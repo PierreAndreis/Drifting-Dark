@@ -1,15 +1,10 @@
 import * as lodash from "lodash";
-
-const ALLSEASONS = {
-  spring07: ["2.2", "2.3", "2.4", "2.5"],
-  summer07: ["2.6", "2.7"],
-  autumn07: ["2.8", "2.9", "2.10"]
-}
+import Config from "../config";
 
 const findSeasonByPatch = (patchVersion) => {
   let season;
 
-  lodash.forEach(ALLSEASONS, (s, name) => {
+  lodash.forEach(Config.VAINGLORY.SEASONS, (s, name) => {
     if (s.includes(patchVersion)) {
       season = name;
       return false;
