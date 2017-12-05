@@ -1,157 +1,181 @@
 import fetch from "node-fetch";
 import { cleanAbility } from "~/resources/dictionaries";
 
-async function lyraStyle(url, id) {
-  const telem = await fetch(url)
-    .then(result => result.json()).then(json => json);
+const NPC = [
+  "*JungleMinion_TreeEnt*",
+  "Unknown",
+  "*TankMinion*",
+  "*LeadMinion*",
+  "*RangedMinion*",
+  "*Petal",
+  "*JungleMinion_ElderTreeEnt*",
+  "*OuterTurret*",
+  "*Kraken_Captured*",
+  "*VainTurret*",
+  "*VainCrystalAway*",
+  "*Turret*",
+  "*PetalMinion*",
+];
 
-  const lyra = {
-    id,
-    Draft: [],
-    Facts: {
-      Blue: {},
-      Red: {},
-    },
-    Vision: {
-      Blue: [],
-      Red: [],
-    },
-  };
-  // Get the start time of the match from the first event in telem
-  const startTime = Date.parse(telem[0].time);
+ // TODO: Add gold miner, crystal miner, and kraken
+const OBJECTIVES = [
+  "*OuterTurret*",
+  "*Turret*",
+  "*VainTurret*",
+  "*VainCrystalHome*",
+  "*VainCrystalAway*",
+]
 
-  for (const data of telem) {
-    // Find the difference between the current event and startTime which will be time of the match in game
-    const difference = Date.parse(data.time) - startTime;
-    const { payload } = data;
-    const team = payload.Team === "Left" ? "Blue" : "Red";
-    const hero = payload.Actor;
-    // If the actors are objects and not heroes continue to the next loop
-    switch (hero) {
-      case "*JungleMinion_TreeEnt*":
-      case "Unknown":
-      case "*TankMinion*":
-      case "*LeadMinion*":
-      case "*RangedMinion*":
-      case "*JungleMinion_ElderTreeEnt*":
-      case "*OuterTurret*":
-      case "*Kraken_Captured*":
-      case undefined:
-        continue;
-      default:
-    }
-    const target = payload.Target;
-    const factHero = lyra.Facts[team][hero];
-    // If this heroes doesnt exist in the object above create the base for the hero
-    if (!factHero) {
-      lyra.Facts[team][hero] = {
+class Telemetry {
+
+  async json (url, id) {
+
+    const result = await fetch(url);
+    if (result.status !== 200) return {};
+    const telemetry = await result.json();
+
+    const res = {
+      id,
+      Draft: [],
+      Facts: {
+        Blue: {},
+        Red: {},
+      },
+      Vision: {
+        Blue: [],
+        Red: [],
+      },
+    };
+
+    const rawFactHero = () => {
+      return {
         Healed: 0,
         TotalHealed: {},
         TotalDamage: {},
         TotalDealt: {},
+        Skill: [],
         ObjectiveDamage: 0,
         Damage: 0,
         Dealt: 0,
-      };
+      }
     }
-    switch (data.type) {
-      case "HeroBan":
-      case "HeroSelect":
-        lyra.Draft.push({
-          Type: data.type,
-          Hero: payload.Hero,
-          Team: payload.Team,
-        });
-        break;
-      case "UseItemAbility":
-        switch (payload.Ability) {
-          case "Scout Trap":
-          case "Flare":
-          case "Contraption":
-          case "Flaregun":
-            lyra.Vision[team].push({
-              Location: payload.Position,
-              Name: payload.Ability,
-            });
-            break;
-          default:
-        }
-        break;
-      case "BuyItem":
-        // If items doesnt already exist in object for this hero then create it first
-        if (!factHero.Items) lyra.Facts[team][hero].Items = [];
-        // Find the minutes
-        const minutes = Math.floor(difference / 1000 / 60);
-        // Find the seconds
-        const seconds = (difference / 1000) % 60;
-        lyra.Facts[team][hero].Items.push({
-          Item: payload.Item,
-          // If the value is like 5 minutes change it to look like 05: so it looks nicer with the 0
-          Time: `${minutes > 9 ? minutes : `0${minutes}`}:${seconds > 9 ? seconds : `0${seconds}`}`,
-        });
-        break;
-      case "LearnAbility":
-        if (!factHero.Skill) lyra.Facts[team][hero].Skill = [];
-        cleanAbility(payload.Ability).then((result) => {
-          lyra.Facts[team][hero].Skill.push(result);
-        });
-        break;
-      case "DealDamage": {
-        if (!factHero.TotalDamage[target]) {
-          lyra.Facts[team][hero].TotalDamage[target] = 0;
-          lyra.Facts[team][hero].TotalDealt[target] = 0;
-        }
-        const properties = ["Damage", "Dealt", "TotalDamage", "TotalDealt"];
-        for (const prop of properties) {
-          switch (prop) {
-            case "Damage":
-            case "Dealt":
-              lyra.Facts[team][hero][prop] += payload[prop];
-              break;
-            case "TotalDamage":
-            case "TotalDealt":
-              lyra.Facts[team][hero][prop][target] += payload[prop === "TotalDamage" ? "Damage" : "Dealt"];
+
+    const startTime = Date.parse(telemetry[0].time);
+    
+    for (const data of telemetry) {
+      // Find the difference between the current event and startTime which will be time of the match in game
+      const difference = Date.parse(data.time) - startTime;
+      const { payload } = data;
+      const team = payload.Team === "Left" ? "Blue" : "Red";
+      const hero = payload.Actor;
+      // If the actors are objects and not heroes continue to the next loop
+      if (payload.isHero === 0 || NPC.includes(hero)) {
+        continue;
+      };
+
+      const target = payload.Target;
+
+      let draft = res.Draft;
+
+      // If this heroes doesnt exist in the object above create the base for the hero
+      if (!res.Facts[team][hero]) {
+        res.Facts[team][hero] = rawFactHero();
+      }
+
+      let factHero = res.Facts[team][hero];
+
+      switch (data.type) {
+        case "HeroBan":
+        case "HeroSelect":
+          draft.push({
+            Type: data.type,
+            Hero: payload.Hero,
+            Team: payload.Team,
+          });
+          break;
+
+        case "UseItemAbility":
+          switch (payload.Ability) {
+            case "Scout Trap":
+            case "Flare":
+            case "Contraption":
+            case "Flaregun":
+              res.Vision[team].push({
+                Location: payload.Position,
+                Name: payload.Ability,
+              });
               break;
             default:
           }
-        }
-        switch (payload.Target) {
-          case "*OuterTurret*":
-          case "*Turret*":
-          case "*VainTurret*":
-          case "*VainCrystalHome*":
-          case "*VainCrystalAway*":
-            // TODO: Add gold miner, crystal miner, and kraken
-            lyra.Facts[team][hero].ObjectiveDamage += payload.Dealt;
-            break;
-          default:
-        }
-      }
-        break;
-      case "HealTarget": {
-        const { TargetActor } = payload;
-        lyra.Facts[team][hero].Healed += payload.Healed;
-        if (isNaN(lyra.Facts[team][hero].TotalHealed[TargetActor])) lyra.Facts[team][hero].TotalHealed[TargetActor] = payload.Healed;
-        else lyra.Facts[team][hero].TotalHealed[TargetActor] += payload.Healed;
-        break;
-      }
-      case "KillActor":
-        if (payload.TargetIsHero === 1) {
-          const killer = hero === payload.Actor ? "Kills" : "Deaths";
-          if (!factHero[killer]) lyra.Facts[team][hero][killer] = [];
-          lyra.Facts[team][hero][killer].push({
-            Actor: killer ? payload.Killed : hero,
-            Time: `${Math.floor(difference / 60)}:${difference % 60}`,
-            Gold: payload.Gold,
-            Position: payload.Position,
-          });
-        }
-        break;
+          break;
 
-      default:
+        case "BuyItem":
+          // If items doesnt already exist in object for this hero then create it first
+          if (!factHero.Items) factHero.Items = [];
+          // Find the minutes
+          const minutes = Math.floor(difference / 1000 / 60);
+          // Find the seconds
+          const seconds = (difference / 1000) % 60;
+          factHero.Items.push({
+            Item: payload.Item,
+            // If the value is like 5 minutes change it to look like 05: so it looks nicer with the 0
+            Time: `${minutes > 9 ? minutes : `0${minutes}`}:${seconds > 9 ? seconds : `0${seconds}`}`,
+          });
+          break;
+          
+        case "LearnAbility":
+          const ability = cleanAbility(payload.Ability);
+          factHero.Skill.push(ability);
+          break;
+
+        case "DealDamage":
+
+
+          if (OBJECTIVES.includes(payload.Target)) {
+            factHero.ObjectiveDamage += payload.Dealt;
+          }
+          else {
+            factHero["Damage"] += payload["Damage"];
+            factHero["Dealt"] += payload["Dealt"];
+
+            if (!factHero.TotalDamage[target]) {
+              factHero.TotalDamage[target] = 0;
+              factHero.TotalDealt[target] = 0;
+            }
+
+            factHero["TotalDamage"][target] += payload["Damage"];
+            factHero["TotalDealt"][target] += payload["Dealt"];
+          }
+          break;
+
+        case "HealTarget": {
+          const { TargetActor } = payload;
+          factHero.Healed += payload.Healed;
+          if (isNaN(factHero.TotalHealed[TargetActor])) factHero.TotalHealed[TargetActor] = payload.Healed;
+          else factHero.TotalHealed[TargetActor] += payload.Healed;
+          break;
+        }
+
+        case "KillActor":
+          if (payload.TargetIsHero === 1) {
+            const killer = hero === payload.Actor ? "Kills" : "Deaths";
+            if (!factHero[killer]) factHero[killer] = [];
+            factHero[killer].push({
+              Actor: killer ? payload.Killed : hero,
+              Time: `${Math.floor(difference / 60)}:${difference % 60}`,
+              Gold: payload.Gold,
+              Position: payload.Position,
+            });
+          }
+          break;
+
+        default:
+      }
     }
+    return res;
+
   }
-  return lyra;
 }
 
-export default lyraStyle;
+// export default jsonStyle;
+export default new Telemetry().json;
