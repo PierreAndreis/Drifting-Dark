@@ -95,7 +95,6 @@ class VGMatches {
       const telemetry = await TelemetryTransform(telemetryUrl, matchId);
       return telemetry;
     };
-
     return CacheService.preferCache(key, get, { 
       expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE,
       category: "telemetry"

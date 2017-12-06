@@ -1,5 +1,6 @@
 import fetch from "node-fetch";
-import { cleanAbility } from "~/resources/dictionaries";
+import { cleanAbility, cleanActor } from "~/resources/dictionaries";
+
 
 const NPC = [
   "*JungleMinion_TreeEnt*",
@@ -66,19 +67,25 @@ class Telemetry {
       // Find the difference between the current event and startTime which will be time of the match in game
       const difference = Date.parse(data.time) - startTime;
       const { payload } = data;
-      const team = payload.Team === "Left" ? "Blue" : "Red";
-      const hero = payload.Actor;
+      const team = payload.Team === "Left" || payload.Team === "1" ? "Blue" : "Red";
+
       // If the actors are objects and not heroes continue to the next loop
-      if (payload.isHero === 0 || NPC.includes(hero)) {
+      if (payload.isHero === 0 || NPC.includes(payload.Actor)) {
         continue;
       };
 
-      const target = payload.Target;
+      let hero = (payload.Actor && payload.IsHero !== 0) && cleanActor(payload.Actor);
+      // if (!hero && payload.Hero) hero = cleanActor(payload.Hero)
+      // else continue;
 
+      if (payload.Target && payload.TargetIsHero === 1) payload.Target = cleanActor(payload.Target);
+      if (payload.TargetActor && payload.TargetIsHero === 1) payload.TargetActor = cleanActor(payload.TargetActor);
+
+      const target = payload.Target;
       let draft = res.Draft;
 
       // If this heroes doesnt exist in the object above create the base for the hero
-      if (!res.Facts[team][hero]) {
+      if (hero && !res.Facts[team][hero]) {
         res.Facts[team][hero] = rawFactHero();
       }
 
@@ -89,7 +96,7 @@ class Telemetry {
         case "HeroSelect":
           draft.push({
             Type: data.type,
-            Hero: payload.Hero,
+            Hero: cleanActor(payload.Hero),
             Team: payload.Team,
           });
           break;
@@ -134,7 +141,7 @@ class Telemetry {
           if (OBJECTIVES.includes(payload.Target)) {
             factHero.ObjectiveDamage += payload.Dealt;
           }
-          else {
+          else if (payload.TargetIsHero === 1){
             factHero["Damage"] += payload["Damage"];
             factHero["Dealt"] += payload["Dealt"];
 
@@ -161,7 +168,7 @@ class Telemetry {
             const killer = hero === payload.Actor ? "Kills" : "Deaths";
             if (!factHero[killer]) factHero[killer] = [];
             factHero[killer].push({
-              Actor: killer ? payload.Killed : hero,
+              Actor: killer ? cleanActor(payload.Killed) : hero,
               Time: `${Math.floor(difference / 60)}:${difference % 60}`,
               Gold: payload.Gold,
               Position: payload.Position,

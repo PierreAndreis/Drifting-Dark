@@ -110,3 +110,19 @@ export const cleanAbility = (ability) => {
     HERO_ABILITY_LORELAI_C_NAME: "lorelai_c",
   }[ability] || null;
 };
+
+export const cleanActor = (actor) => {
+  const badServerNames = [
+    { token: '*Hero009*', name: 'Krul' },
+    { token: '*Hero010*', name: 'Skaarf'},
+    { token: '*Sayoc*', name: 'Taka'},
+    { token: '*Hero016*', name: 'Rona'}
+  ];
+  const match = badServerNames.filter((item) => item.token === actor);
+
+  if (match.length > 0) {
+    return match[0].name;
+  }
+
+  return actor.replace(/\*/g, '');
+}
