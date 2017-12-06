@@ -39,7 +39,7 @@ app.use((req, res, next) => {
 
 // Error handler
 app.use((err, req, res, next) => {
-  logger.error("Error:", err.message, req.originalUrl);
+  logger.error(`Error: ${err.message}, message: ${req.originalUrl}`);
   res
     .status(err.status || 500)
     .send({Error: err.message});
