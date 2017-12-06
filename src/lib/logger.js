@@ -7,6 +7,8 @@ const consoleFormat = combine(format.printf(function (info) {
   return `(${moment().format('YYYY-MM-DDTHH:mm:ss.SSSZZ')}) ${info.level}: ${info.message}`;
 }));
 
+let logDestination = process.env.LOGS || `${__dirname}/../../logs/`;
+
 const logger = createLogger({
     level: 'silly',
     format: combine(
@@ -23,9 +25,9 @@ const logger = createLogger({
       // - Write Error to console as well
       //
       new transports.Console({ level: 'error', level: 'warn', format: consoleFormat}),
-      new transports.File({ filename: `${__dirname}/../../logs/rateLimit.log`, level: 'silly' }),
-      new transports.File({ filename: `${__dirname}/../../logs/error.log`, level: 'error' }),
-      new transports.File({ filename: `${__dirname}/../../logs/combined.log` })
+      new transports.File({ filename: `${logDestination}rateLimit.log`, level: 'silly' }),
+      new transports.File({ filename: `${logDestination}error.log`, level: 'error' }),
+      new transports.File({ filename: `${logDestination}combined.log` })
     ]
   });
   
@@ -33,10 +35,12 @@ const logger = createLogger({
 // If we're not in production then log to the `console` with the format:
 // `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
 // 
-if (process.env.NODE_ENV !== 'production') {
+// if (process.env.NODE_ENV !== 'production') {
   logger.add(new transports.Console({
       format: consoleFormat,
   }));
-}
+// }
+
+console.log("LOGS: ", logDestination);
 
 export default logger;
