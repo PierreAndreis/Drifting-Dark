@@ -20,7 +20,7 @@ class CouchBase {
 
     try {
 
-      console.log("** QUERYING FROM DATABASE **");
+      // console.log("** QUERYING FROM DATABASE **");
 
       //  Passing a new query as argument
       const query_builder  = this.query.fromString(query);

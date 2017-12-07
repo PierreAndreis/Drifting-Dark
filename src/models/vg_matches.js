@@ -6,6 +6,7 @@ import CacheService     from "~/services/cache";
 import VaingloryService from "~/services/vainglory";
 
 import MatchTransform from "~/transforms/matches.js";
+import TelemetryTransform from "~/transforms/telemetry.js";
 
 const BATCHAPI_PAGES_PER_TRY = 3;
 // const BATCHAPI_DATE_DEEP_TRY = 2; // We will try 3 dates deep down (28 * 2 = 56 days worth of data)
@@ -85,6 +86,19 @@ class VGMatches {
       category: "matches"
     });
 
+  }
+
+  getMatchTelemetry(telemetryUrl, matchId) {
+    const key = `telemetry:${telemetryUrl}`;
+
+    const get = async () => {
+      const telemetry = await TelemetryTransform(telemetryUrl, matchId);
+      return telemetry;
+    };
+    return CacheService.preferCache(key, get, { 
+      expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE,
+      category: "telemetry"
+    });
   }
 
   getProHistory() {

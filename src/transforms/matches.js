@@ -1,5 +1,18 @@
 import * as lodash from "lodash";
 
+const findRole = (player) => {
+  let role = "Captain";
+
+  const laneCS   = player.nonJungleMinionKills;
+  const jungleCS = player.jungleKills;
+  const farm     = player.minionKills;
+
+  if (laneCS > jungleCS && farm > 45) role = "Carry";
+  if (laneCS < jungleCS && farm > 45) role = "Jungler";
+
+  return role;
+}
+
 function generateMatch(match) {
   const gameMode = (match.gameMode === "Battle Royal" || match.gameMode === "Private Battle Royal") ? `${match.gameMode}e` : match.gameMode;
 
@@ -13,16 +26,17 @@ function generateMatch(match) {
     patchVersion:  match.patchVersion,
     // We will generate Rosters + Players
             ...generateRosters(match.rosters),
-    telemetry: generateTelemetry(match, ...match.assets),
+    telemetry: generateTelemetry(match.assets[0]),
   };
 }
 
 function generateTelemetry(telemetry) {
+
   if (!telemetry || !telemetry.URL) return {}
-  
+
   return {
     name:       "telemetry",
-    URL:         telemetry.URL,
+    URL:        telemetry.URL,
   };
 }
 
@@ -36,7 +50,7 @@ function generateRosters(r) {
   };
   // Let's separate the rosters
   lodash.forEach(r, (roster) => {
-    
+
     rosters.push(roster.stats);
 
     // Now, lets create the players for this roster
@@ -64,6 +78,7 @@ function generatePlayers(players, roster) {
       actor:    player.actor,
       side:     roster.stats.side,
       aces:     roster.stats.acesEarned,
+      role:     findRole(player.stats),
         ...player.stats,
     });
 

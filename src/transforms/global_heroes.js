@@ -14,7 +14,6 @@ export default function (match) {
   lodash.forEach(match.rosters, (roster) => lodash.forEach(roster.participants, (participant) => {
     heroes[participant.actor] = generateHeroesStats(match, participant);
 
-
     stats.kills    += participant._stats.kills;
     stats.deaths   += participant._stats.deaths;
     stats.assists  += participant._stats.assists;

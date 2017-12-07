@@ -6,10 +6,10 @@ const playerStats = require("./__mockup__/playerStats.json");
 const suite = new Benchmark.Suite;
 
 suite.add('Own Merge', function() {
-  return merge(playerStats, playerStats);
+  return merge(["lol"], ["xD"]);
 })
 .add('Lodash Merge', function() {
-  return merge_two(playerStats, playerStats);
+  return merge_two(["lol"], ["xD"]);
 })
 
 // add listeners
