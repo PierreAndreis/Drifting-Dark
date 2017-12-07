@@ -55,31 +55,29 @@ function generateMatchStats(match, stats, heroes) {
   }
 }
 
-function generateHeroesStats(match, participant) {
-  const { attributes }  = match.data[0];
-  const p               = participant.data.attributes.stats;
+function generateHeroesStats(match, player) {
 
-  const winner      = (p.winner) ? 1 : 0;
-  const afkOrNo     = (p.firstAfkTime !== -1) ? 1 : 0;
+  const winner      = (player.winner) ? 1 : 0;
+  const afkOrNo     = (player.firstAfkTime !== -1) ? 1 : 0;
 
   return {
-    actor:          p.actor,
-    patch:          attributes.patchVersion,
-    region:         attributes.shardId,
-    hero:           participant.actor,
+    patch:          match.patchVersion,
+    region:         match.shardId,
     wins:           winner,
-    krakenCap:      p.krakenCaptures,
-    aces:           p.aces,
+    krakenCap:      player.krakenCaptures,
+    crystalSentry:  player.crystalMineCaptures,
+    goldMiner:      player.goldMineCaptures,
+    aces:           player.aces,
     games:          1,
     afk:            afkOrNo,
-    kills:          p.kills,
-    deaths:         p.deaths,
-    assists:        p.assists,
-    farm:           p.farm,
-    gold:           p.gold,
-    lane:           p.nonJungleMinionKills,
-    jungle:         p.minionKills,
-    turretCaptures: p.turretCaptures,
-    duration:       attributes.duration,
+    kills:          player.kills,
+    deaths:         player.deaths,
+    assists:        player.assists,
+    farm:           player.farm,
+    gold:           player.gold,
+    lane:           player.nonJungleMinionKills,
+    jungle:         player.minionKills,
+    turretCaptures: player.turretCaptures,
+    duration:       match.duration,
   };
 }
