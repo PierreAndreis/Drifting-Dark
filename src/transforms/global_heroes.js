@@ -35,45 +35,51 @@ function generateMatchStats(match, stats, heroes) {
 
   // why is this a string?
   (match.matchRoster[0].data.attributes.won === "false") ? blueWins = 1 : redWins = 1;
-  
+
   return {
-      stats: {
-        kills:    stats.kills,
-        deaths:   stats.deaths,
-        assists:  stats.assists,
-        farm:     stats.farm,
-        blueWins: blueWins,
-        redWins:  redWins,
-        games:    1,
-        duration: match.duration,
-      },
-      lastId: match.id,
-      Heroes: {
-        ...heroes
-      }
-    
+    stats: {
+      kills:    stats.kills,
+      deaths:   stats.deaths,
+      assists:  stats.assists,
+      farm:     stats.farm,
+      blueWins: blueWins,
+      redWins:  redWins,
+      games:    1,
+      duration: match.duration,
+    },
+    lastId: match.id,
+    Heroes: {
+      ...heroes
+    }
+
   }
 }
 
 function generateHeroesStats(match, participant) {
+  const { attributes }  = match.data[0];
+  const p               = participant.data.attributes.stats;
 
-  const p = participant.data.attributes.stats;
-
-  const winner = (p.winner) ? 1 : 0;
-  const afk    = (p.firstAfkTime !== -1) ? 1 : 0;
+  const winner      = (p.winner) ? 1 : 0;
+  const afkOrNo     = (p.firstAfkTime !== -1) ? 1 : 0;
 
   return {
+    actor:          p.actor,
+    patch:          attributes.patchVersion,
+    region:         attributes.shardId,
     hero:           participant.actor,
     wins:           winner,
     krakenCap:      p.krakenCaptures,
     aces:           p.aces,
     games:          1,
-    afk:            afk,
+    afk:            afkOrNo,
     kills:          p.kills,
     deaths:         p.deaths,
     assists:        p.assists,
     farm:           p.farm,
+    gold:           p.gold,
+    lane:           p.nonJungleMinionKills,
+    jungle:         p.minionKills,
     turretCaptures: p.turretCaptures,
-    duration:       match.duration, 
+    duration:       attributes.duration,
   };
 }
