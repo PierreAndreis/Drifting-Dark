@@ -1,10 +1,12 @@
-import MatchesController from "~/controllers/vg_matches.js";
+import MatchesController    from "~/controllers/vg_matches.js";
+import HeroesStats          from "~/services/heroes.js";
 
 // matches/:name
 export const latestMatches = async (req, res, next) => {
-  const { name } = req.params;
-  const { patch, gameMode, page } = req.query;
-  const reply = await MatchesController.getMatchesByName(name, { patch, gameMode, page });
+  const {name} = req.params;
+  const {patch, gameMode, page} = req.query
+  let reply = await MatchesController.getMatchesByName(name, {patch, gameMode, page});
+  reply = await HeroesStats(reply[0]);
   res.json(reply);
 };
 
