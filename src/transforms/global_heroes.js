@@ -55,12 +55,10 @@ function generateMatchStats(match, stats, heroes) {
   }
 }
 
-function generateHeroesStats(match, player) {
-
+exports.generateHeroesStats = (match, player) => {
   const winner      = (player.winner) ? 1 : 0;
   const afkOrNo     = (player.firstAfkTime !== -1) ? 1 : 0;
-
-  return {
+  const stats = {
     patch:          match.patchVersion,
     region:         match.shardId,
     wins:           winner,
@@ -79,5 +77,24 @@ function generateHeroesStats(match, player) {
     jungle:         player.minionKills,
     turretCaptures: player.turretCaptures,
     duration:       match.duration,
+    wonWith:        [],
+    wonAgainst:     [],
+    lostWith:       [],
+    lostAgainst:    [],
   };
+
+  if (winner === 1) {
+    for (const won of match.players) {
+      if (won === player) continue;
+      if (won.side === player.side) stats.wonWith.push(won.actor);
+      if (won.side !== player.side) stats.wonAgainst.push(won.actor);
+    }
+  } else {
+    for (const loser of match.players) {
+      if (loser === player) continue;
+      if (loser.side === player.side) stats.lostWith.push(loser.actor);
+      if (loser.side !== player.side) stats.lostAgainst.push(loser.actor);
+    }
+  }
+  return stats;
 }
