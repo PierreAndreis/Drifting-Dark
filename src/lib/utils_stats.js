@@ -36,8 +36,8 @@ function getRate(wins, games, divider = 100) {
 
 }
 
-function getMinutes(time) {
-  return moment.utc(time).format("mm:ss");
+function getMinutes(s) {
+  return (s-(s%=60))/60+(9<s?':':':0')+s
 }
 
 function getAvg(value, total, time = false, precision = 2) {
@@ -57,5 +57,6 @@ function getAvg(value, total, time = false, precision = 2) {
 export {
   getKDA,
   getRate,
-  getAvg
+  getAvg,
+  getMinutes
 }

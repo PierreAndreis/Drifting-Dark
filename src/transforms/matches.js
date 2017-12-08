@@ -15,6 +15,11 @@ const findRole = (player) => {
   return role;
 }
 
+const addSeconds = (date, seconds) => {
+  date.setSeconds(date.getSeconds() + seconds);
+  return date;
+}
+
 class MatchInput {
   json(match) {
     const gameMode = (match.gameMode === "Battle Royal" || match.gameMode === "Private Battle Royal") ? `${match.gameMode}e` : match.gameMode;
@@ -109,6 +114,7 @@ class MatchOutput {
       shardId,
       gameMode,
       createdAt,
+      ended: addSeconds(new Date(createdAt), duration),
       duration,
       minutes: getMinutes(duration),
       patchVersion,
