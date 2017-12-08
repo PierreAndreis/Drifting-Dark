@@ -1,6 +1,6 @@
 import * as lodash from "lodash";
 
-import { getKDA, getRate, getAvg } from "~/lib/utils_stats";
+import { getKDA, getRate, getAvg, getMinutes } from "~/lib/utils_stats";
 
 const findRole = (player) => {
   let role = "Captain";
@@ -110,6 +110,7 @@ class MatchOutput {
       gameMode,
       createdAt,
       duration,
+      minutes: getMinutes(duration),
       patchVersion,
       players: this.generatePlayers(playerId, {match, rosters, players}),
     }

@@ -36,6 +36,10 @@ function getRate(wins, games, divider = 100) {
 
 }
 
+function getMinutes(time) {
+  return moment.utc(time).format("mm:ss");
+}
+
 function getAvg(value, total, time = false, precision = 2) {
 
   if (total == 0) return (time) ? "00:00" : "0.00";
