@@ -226,6 +226,7 @@ class PlayerStatsOutput {
       id,
       name,
       region,
+      lastCache,
       tier, 
       aka,
       seasonsAvailable,
