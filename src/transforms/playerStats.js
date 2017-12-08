@@ -207,7 +207,7 @@ class PlayerStatsOutput {
     const {season} = opts;
 
 
-    const {id, name, region, tier, aka, patches, info} = playerStats;
+    const {id, name, lastCache, region, tier, aka, patches, info} = playerStats;
 
     // first we will merge all in one structure that we will always know
     lodash.forEach(patches, (data, patch) => {
