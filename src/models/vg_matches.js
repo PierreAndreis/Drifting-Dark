@@ -81,8 +81,6 @@ class VGMatches {
       return res;
     };
 
-    return get();
-
     return CacheService.preferCache(key, get, { 
       expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE,
       category: "matches"
