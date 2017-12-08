@@ -1,5 +1,7 @@
 import * as lodash from "lodash";
 
+import { getKDA, getRate, getAvg } from "~/lib/utils_stats";
+
 const findRole = (player) => {
   let role = "Captain";
 
@@ -13,77 +15,156 @@ const findRole = (player) => {
   return role;
 }
 
-function generateMatch(match) {
-  const gameMode = (match.gameMode === "Battle Royal" || match.gameMode === "Private Battle Royal") ? `${match.gameMode}e` : match.gameMode;
+class MatchInput {
+  json(match) {
+    const gameMode = (match.gameMode === "Battle Royal" || match.gameMode === "Private Battle Royal") ? `${match.gameMode}e` : match.gameMode;
 
-  return {
-    id:      match.data.id,
-    shardId: match.shardId,
-    gameMode,
-    endGameReason: match.data.attributes.stats.endGameReason,
-    createdAt:     match.createdAt,
-    duration:      match.duration,
-    patchVersion:  match.patchVersion,
-    // We will generate Rosters + Players
-            ...generateRosters(match.rosters),
-    telemetry: generateTelemetry(match.assets[0]),
-  };
-}
+    return {
+      id:      match.data.id,
+      shardId: match.shardId,
+      gameMode,
+      endGameReason: match.data.attributes.stats.endGameReason,
+      createdAt:     match.createdAt,
+      duration:      match.duration,
+      patchVersion:  match.patchVersion,
+      // We will generate Rosters + Players
+              ...this.generateRosters(match.rosters),
+      telemetry: this.generateTelemetry(match.assets[0]),
+    };
+  }
 
-function generateTelemetry(telemetry) {
+  generateTelemetry(telemetry) {
 
-  if (!telemetry || !telemetry.URL) return {}
+    if (!telemetry || !telemetry.URL) return {}
 
-  return {
-    name:       "telemetry",
-    URL:        telemetry.URL,
-  };
-}
+    return {
+      name:       "telemetry",
+      URL:        telemetry.URL,
+    };
+  }
 
-function generateRosters(r) {
-  const rosters = [];
-  const players = [];
+  generateRosters(r) {
+    const rosters = [];
+    const players = [];
 
-  const names = {
-    "left/blue": "Blue",
-    "right/red": "Red",
-  };
-  // Let's separate the rosters
-  lodash.forEach(r, (roster) => {
+    const names = {
+      "left/blue": "Blue",
+      "right/red": "Red",
+    };
+    // Let's separate the rosters
+    lodash.forEach(r, (roster) => {
 
-    rosters.push(roster.stats);
+      rosters.push(roster.stats);
 
-    // Now, lets create the players for this roster
-    players.push(...generatePlayers(roster.participants, roster));
+      // Now, lets create the players for this roster
+      players.push(...this.generatePlayers(roster.participants, roster));
 
-  });
-
-  return {
-   players,
-   rosters
-  };
-}
-
-function generatePlayers(players, roster) {
-
-  let p = [];
-
-  lodash.forEach(players, (player) => {
-
-    p.push({
-      id:       player.player.id,
-      name:     player.player.name,
-      shardId:  player.player.shardId,
-      tier:     player._stats.skillTier,
-      actor:    player.actor,
-      side:     roster.stats.side,
-      aces:     roster.stats.acesEarned,
-      role:     findRole(player.stats),
-        ...player.stats,
     });
 
-  });
-  return p;
+    return {
+    players,
+    rosters
+    };
+  }
+  
+  generatePlayers(players, roster) {
+
+    let p = [];
+
+    lodash.forEach(players, (player) => {
+
+      p.push({
+        id:       player.player.id,
+        name:     player.player.name,
+        shardId:  player.player.shardId,
+        tier:     player._stats.skillTier,
+        actor:    player.actor,
+        side:     roster.stats.side,
+        aces:     roster.stats.acesEarned,
+        role:     findRole(player.stats),
+          ...player.stats,
+      });
+
+    });
+    return p;
+  }
 }
 
-export default generateMatch;
+class MatchOutput {
+  json(playerId, match) {
+
+    const {
+      id,
+      shardId,
+      gameMode,
+      createdAt,
+      duration,
+      patchVersion,
+      players,
+      rosters,
+    } = match;
+
+    return {
+      id,
+      shardId,
+      gameMode,
+      createdAt,
+      duration,
+      patchVersion,
+      players: this.generatePlayers(playerId, {match, rosters, players}),
+    }
+  }
+
+  generatePlayers(playerId, {match, rosters, players}) {
+
+    let matchMinutes = (match.duration / 60);
+
+    let res = players.map(player => {
+
+      let roster = rosters.find(r => r.side === player.side);
+
+      return {
+        id: player.id,
+        me: (playerId && player.id === playerId),
+        side: player.side,
+        name: player.name,
+        region: player.shardId,
+        tier: player.tier,
+        skillTier: player.skillTier,
+        winner: player.winner,
+        hero: player.hero,
+        role: player.role,
+        aces: player.aces, 
+        turretCaptures: player.turretCaptures,
+
+        kp: getRate((player.kills + player.assists), roster.heroKills),
+
+        kills: player.kills,
+        deaths: player.deaths,
+        assists: player.assists,
+        kda: getKDA(player.kills, player.deaths, player.assists),
+
+        cs: parseInt(player.farm, 10),
+        csMin: getAvg(player.farm, matchMinutes),
+
+        afk: (player.firstAfkTime !== -1 || player.wentAfk),
+
+        gold: parseInt(player.gold, 10),
+        goldMin: getAvg(player.gold, matchMinutes),
+        goldShare: getRate(player.gold, roster.gold),
+
+        items: player.items,
+        
+      }
+
+    });
+
+    return res;
+
+  }
+}
+
+export default {
+  input: new MatchInput(),
+  output: new MatchOutput(),
+};

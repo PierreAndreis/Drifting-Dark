@@ -15,9 +15,12 @@ function formatFixed(value, num = 2) {
 function getKDA(kills, deaths, assists) {
 
   // We will return kills + assists if there are no deaths (otherwise it would return 0 as kda)
+  let res = 0;
+  
+  if (deaths > 0) res = (kills + assists) / deaths;
+  else res = kills + assists;
 
-  if (deaths > 0) return parseFloat(formatFixed(math.eval(`(${kills} + ${assists}) / ${deaths}`)));
-  else return parseFloat(formatFixed(math.eval(`${kills} + ${assists}`)));
+  return parseFloat(formatFixed(res, 2));
 
 };
 

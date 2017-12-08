@@ -52,7 +52,7 @@ class VGMatches {
       const pagesRes = await get(pages);
       pagesRes.forEach((pg) => {
         if (pg.errors) done = true;
-        else res.push(...pg.match.map(match => MatchTransform(match)));
+        else res.push(...pg.match.map(match => MatchTransform.input.json(match)));
       });
       pages++;
     }
@@ -63,7 +63,7 @@ class VGMatches {
   async getMatchByMatchId(id, region) {
     const match = await VaingloryService.match(id, region);
     if (match.errors) return {}; // todo error handler
-    return MatchTransform(match);
+    return MatchTransform.input.json(match);
   }
   
   async getMatches(playerId, region, lastMatch, context) {
@@ -75,11 +75,13 @@ class VGMatches {
       
       const matches = await VaingloryService.getMatches(playerId, region, {lastMatch, ...context});
       if (!matches || matches.errors) return [];
-
-      const res = matches.match.map(match => MatchTransform(match));
-      
+      // Transform it in a nice way
+      const m = matches.match.map(match => MatchTransform.input.json(match));
+      const res = m.map(match => MatchTransform.output.json(playerId, match));
       return res;
     };
+
+    return get();
 
     return CacheService.preferCache(key, get, { 
       expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE,
