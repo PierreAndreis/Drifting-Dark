@@ -1,9 +1,3 @@
-import * as lodash    from "lodash";
-import moment         from "moment";
-import { merge }      from "~/lib/utils";
-
-import MatchesTransform from "./matches";
-
 class ProStats {
 
   create(match, proInfo) {

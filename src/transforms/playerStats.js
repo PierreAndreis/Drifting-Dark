@@ -4,7 +4,7 @@ import { merge }                   from "~/lib/utils";
 import { getKDA, getRate, getAvg } from "~/lib/utils_stats";
 import Config from "~/config";
 
-import MatchesTransform from "./matches";
+import MatchTransform from "./matches";
 
 const nowTime = () => new Date();
 
@@ -39,7 +39,7 @@ class PlayerStatsInput {
 
     if (lodash.isEmpty(m) || m.errors) return res;
     
-    const matches = (m.match) ? m.match.map(m => MatchesTransform.input.json(m)) : m;
+    const matches = (m.match) ? m.match.map(m => MatchTransform.input.json(m)) : m;
     const lastMatch = matches[0];
 
     const player = lastMatch.players.find(p => p.id === playerId);
