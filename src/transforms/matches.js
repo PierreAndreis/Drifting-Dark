@@ -139,7 +139,8 @@ class MatchOutput {
         tier: player.tier,
         skillTier: player.skillTier,
         winner: player.winner,
-        hero: player.hero,
+        
+        hero: player.actor,
         role: player.role,
         aces: player.aces, 
         turretCaptures: player.turretCaptures,
