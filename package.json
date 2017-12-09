@@ -30,6 +30,7 @@
     "body-parser": "^1.17.2",
     "cors": "^2.8.4",
     "couchbase": "^2.4.2",
+    "cryptiles": "^4.1.1",
     "express": "^4.15.3",
     "helmet": "^3.8.0",
     "ioredis": "^3.1.4",
