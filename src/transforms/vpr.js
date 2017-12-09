@@ -8,12 +8,24 @@ import PlayerStats from "~/transforms/playerStats";
 
 class VPRRating {
 
-    async initial(playerName) {
-        const averageKdaKpWr = // TODO: need this value
-        const season = Config.VAINGLORY.SEASONS[Config.VAINGLORY.previousSeason];
-        const seasonStats = PlayerStats.output.json(playerName, { season });
+    async initial(seasonStats) {
 
-        return (stats.tier + 1) * (-1 * (1 - seasonStats.kda * seasonStats.kp * seasonStats.winRatio / averageKdaKpWr * seasonStats.averageValue * 100))
+        const stats = {
+            kda: (seasonStats.kills + seasonStats.assists) / seasonStats.deaths,
+            kp: seasonStats.kp / 100,
+            winRatio: seasonStats.wins / (seasonStats.losses + seasonStats.wins),
+            averageKdaKpWr: (2.743333333 + 0.4454112848 + 13) / 3, // TODO: need this value
+            averageGames: 1197, // TODO: need this value
+            vst: 100, // TODO: need this value
+        };
+        const kdaKp = stats.kda * stats.kp;
+        const kdaKpWr = kdaKp * stats.winRatio;
+        const kdaKpWrRel = kdaKpWr / stats.averageKdaKpWr;
+
+        const averageGameScale = kdaKpWrRel * ((seasonStats.wins + seasonStats.losses) / stats.averageGames);
+
+        const antismurf = -1 * (1 - averageGameScale) * stats.vst;
+        return ((seasonStats.tier - 1) * 100) + antismurf;
     }
 
     update() {
@@ -24,7 +36,6 @@ class VPRRating {
             const killsPlayer   = kills;
             const deathsPlayer  = Math.max(deaths, 1);
             const assistsPlayer = assists;
-
             return ((killsPlayer + assistsPlayer) / deathsPlayer) / (3 * KP);
         }
 

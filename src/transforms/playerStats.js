@@ -231,6 +231,7 @@ class PlayerStatsOutput {
     const kda = (kills + assists) / deaths;
     const kp = (kills + assists) / teamKills;
     const winRatio = (wins / games) * 100;
+    const averageGames = 1000;
     const averageValue = games / averageGames; // TODO: Get this value in the database
 
     // first we will merge all in one structure that we will always know
