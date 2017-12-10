@@ -53,12 +53,18 @@ class VaingloryService {
 
     let resultPerPage = limit || RESULT_PER_PAGE;
 
+    
     if (lastMatch)  options["createdAt-end"] = lastMatch;
     if (startMatch) options["createdAt-start"] = startMatch;
     if (gameMode) options.gameMode = gameMode;
 
     options = generateOpt(options);
-    if (page) options.page = {offset: resultPerPage * page};
+    if (page) {
+      options.page = {
+        offset: resultPerPage * page, 
+        limit: resultPerPage
+      };
+    }
     
     return this.matches(region, options);
   }
