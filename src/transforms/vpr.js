@@ -29,7 +29,7 @@ class VPRRating {
   }
 
   update(match) {
-    // Kills, deaths, assists, teamKills, vst
+    // Need these 4 for each player to make update work: Kills, deaths, assists, teamKills, vst
 
     const getTRatio = (kills, deaths, assists, KP) => {
       const killsPlayer   = kills;
@@ -41,42 +41,12 @@ class VPRRating {
     const avgT = [];
     match.players = match.players.map(p => {
 
-      //          "name":"FlashX",
-      //          "tier":28,
-      //          "actor":"Skaarf",
-      //          "side":"right/red",
-      //          "aces":0,
-      //          "assists":3,
-      //          "crystalMineCaptures":1,
-      //          "deaths":5,
-      //          "farm":51,
-      //          "firstAfkTime":-1,
-      //          "gold":13770.6640625,
-      //          "goldMineCaptures":0,
-      //          "jungleKills":4,
-      //          "kills":3,
-      //          "krakenCaptures":0,
-      //          "level":30,
-      //          "minionKills":22,
-      //          "nonJungleMinionKills":18,
-      //          "turretCaptures":0,
-      //          "winner":false
-      //   {
-      //    "acesEarned":0,
-      //    "gold":41633,
-      //    "heroKills":13,
-      //    "krakenCaptures":0,
-      //    "side":"left/blue",
-      //    "turretKills":1,
-      //    "turretsRemaining":5
-      // },
       const teamStats = match.rosters.find(r => r.side === p.side);
       const teamTotalKill = Math.max(teamStats.heroKills, 1);
       const KPPlayer = ((p.kills + p.assists) / teamTotalKill);
 
       const tRatioPlayer = getTRatio(p.kills, p.deaths, p.assists, KPPlayer);
 
-    //   console.log(`${p.name} TrueRatio=`, tRatioPlayer);
       avgT.push(tRatioPlayer);
 
       return {
@@ -94,19 +64,15 @@ class VPRRating {
       return sum / avgT.length;
     }
 
-    //  relativeTRatioPlayerA = tRatioPlayerA / (average of (tRatioPlayerA, tRatioPlayerB, tRatioPlayerC, tRatioPlayerD, tRatioPlayerE, tRatioPlayerF));
-    // const avgtRatio = avgT.reduce((c, p) => c += p);
     const avgtRatio = getAvgtRatio();
-    // console.log("avg Team TrueRatio=", avgtRatio);
-
     let vstSumTeamBlue = 0;
     let vstSumTeamRed = 0;
     let scaleSumTeamBlue = 0;
     let scaleSumTeamRed = 0;
+
     match.players = match.players.map(p => {
       const relativeTRatio = p.tRatio / avgtRatio;
 
-    //   console.log(`${p.name} - relative Team Ratio =`, relativeTRatio);
       const kpScale = relativeTRatio * p.kp;
       if (p.side === "right/red") vstSumTeamRed += p.tier;
       else vstSumTeamBlue += p.tier;
@@ -160,11 +126,9 @@ class VPRRating {
       if (p.side === 'right/red') {
         if (p.winner) {
             gainLossScaled = eloGainLoss * (vstSumTeamRed/vstSumTeamBlue);
-            // console.log(`sum = ${gainLossScaled}, eloGainLoss ${eloGainLoss} * (${vstSumTeamRed}/${vstSumTeamBlue})`)
         }
         else {
             gainLossScaled = eloGainLoss * (vstSumTeamBlue/vstSumTeamRed);
-            // console.log(`sum = ${gainLossScaled}, eloGainLoss ${eloGainLoss} * (${vstSumTeamBlue}/${vstSumTeamRed})`)
         }
         eloGainLossTeamRed += gainLossScaled;
       } else {
@@ -180,10 +144,10 @@ class VPRRating {
 
     match.players = match.players.map(p => {
       let finalScale, vpr;
-      if (p.side === "right/red") finalScale = p.gainLossScaled / (eloGainLossTeamRed * eloScaleFactor * Math.ceil(match.players.length / 2));
-      else finalScale = p.gainLossScaled / (eloGainLossTeamBlue * eloScaleFactor * Math.ceil(match.players.length / 2));
 
-      console.log(`final = ${finalScale} p.gainLossScaled ${p.gainLossScaled}/ (eloGainLossTeamBlue ${eloGainLossTeamBlue} * eloScaleFactor ${eloScaleFactor} * ${Math.ceil(match.players.length / 2)})`)
+      if (p.side === "right/red") finalScale = ((p.gainLossScaled / eloGainLossTeamRed) * eloScaleFactor) * Math.ceil(match.players.length / 2);
+      else finalScale = ((p.gainLossScaled / eloGainLossTeamBlue) * eloScaleFactor) * Math.ceil(match.players.length / 2);
+
       if (p.side === "right/red") {
         if (p.winner) vpr = finalScale / (vstSumTeamRed / vstSumTeamBlue);
         else vpr = finalScale / (vstSumTeamBlue / vstSumTeamRed);
@@ -191,22 +155,11 @@ class VPRRating {
         if (p.winner) vpr = finalScale / (vstSumTeamBlue / vstSumTeamRed);
         else vpr = finalScale / (vstSumTeamRed / vstSumTeamBlue);
       }
-    //   console.log(`${p.name}: KDA: ${p.kills}/${p.deaths}/${p.assists} Tier: ${p.tier} Side: ${p.side}`)
-    // console.log(`${p.name}: finalScale ${finalScale}`)
-    //     console.log(`${p.name}: vpr ${vpr}`)
       return {
         ...p,
-        vpr
+        vpr,
       };
     });
-
-    // relativeTRatioPlayerA = tRatioPlayerA / (average of (tRatioPlayerA, tRatioPlayerB, tRatioPlayerC, tRatioPlayerD, tRatioPlayerE, tRatioPlayerF))
-
-    // console.log(avgT);
-
-    // const tRatioPlayerA = ((killsPlayerA + assistsPlayerA) / deathsPlayerA) / (3 * killParticipationPlayerA)
-
-    // const kpScale = relativeTRatio * (vstSumTeamRed)
   }
 
 }

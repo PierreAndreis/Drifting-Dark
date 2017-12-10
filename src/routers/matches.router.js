@@ -5,8 +5,7 @@ import VPR from "~/transforms/vpr.js";
 export const latestMatches = async (req, res, next) => {
   const {name} = req.params;
   const {patch, gameMode, page} = req.query
-  let reply = await MatchesController.getMatchesByName(name, {patch, gameMode, page});
-  reply = VPR.update(reply[2]);
+  const reply = await MatchesController.getMatchesByName(name, {patch, gameMode, page});
   res.json(reply);
 }
 
