@@ -149,7 +149,7 @@ class VPRRating {
     let eloGainLossTeamRed = 0, eloGainLossTeamBlue = 0;
 
     match.players = match.players.map(p => {
-      let relativeKPScale, eloGainLoss, eloGainLossScaled;
+      let relativeKPScale, eloGainLoss, gainLossScaled;
 
       if (p.side === 'right/red') relativeKPScale = p.scale/scaleSumTeamRed;
       else relativeKPScale = p.scale/scaleSumTeamBlue;
@@ -159,28 +159,31 @@ class VPRRating {
 
       if (p.side === 'right/red') {
         if (p.winner) {
-            eloGainLossScaled = eloGainLoss * (vstSumTeamRed/vstSumTeamBlue);
+            gainLossScaled = eloGainLoss * (vstSumTeamRed/vstSumTeamBlue);
+            // console.log(`sum = ${gainLossScaled}, eloGainLoss ${eloGainLoss} * (${vstSumTeamRed}/${vstSumTeamBlue})`)
         }
         else {
-            eloGainLossScaled = eloGainLoss * (vstSumTeamBlue/vstSumTeamRed);
+            gainLossScaled = eloGainLoss * (vstSumTeamBlue/vstSumTeamRed);
+            // console.log(`sum = ${gainLossScaled}, eloGainLoss ${eloGainLoss} * (${vstSumTeamBlue}/${vstSumTeamRed})`)
         }
-        eloGainLossTeamRed += eloGainLossScaled;
+        eloGainLossTeamRed += gainLossScaled;
       } else {
-        if (p.winner) eloGainLossScaled = eloGainLoss / (vstSumTeamBlue / vstSumTeamRed);
-        else eloGainLossScaled = eloGainLoss / (vstSumTeamRed / vstSumTeamBlue);
-        eloGainLossTeamBlue += eloGainLossScaled;
+        if (p.winner) gainLossScaled = eloGainLoss / (vstSumTeamBlue / vstSumTeamRed);
+        else gainLossScaled = eloGainLoss / (vstSumTeamRed / vstSumTeamBlue);
+        eloGainLossTeamBlue += gainLossScaled;
       }
       return {
         ...p,
-        eloGainLossScaled
+        gainLossScaled,
       };
     });
 
     match.players = match.players.map(p => {
       let finalScale, vpr;
-      if (p.side === "right/red") finalScale = p.eloGainLossScaled / (eloGainLossTeamRed * eloScaleFactor * Math.ceil(match.players.length / 2));
-      else finalScale = p.eloGainLossScaled / (eloGainLossTeamBlue * eloScaleFactor * Math.ceil(match.players.length / 2));
+      if (p.side === "right/red") finalScale = p.gainLossScaled / (eloGainLossTeamRed * eloScaleFactor * Math.ceil(match.players.length / 2));
+      else finalScale = p.gainLossScaled / (eloGainLossTeamBlue * eloScaleFactor * Math.ceil(match.players.length / 2));
 
+      console.log(`final = ${finalScale} p.gainLossScaled ${p.gainLossScaled}/ (eloGainLossTeamBlue ${eloGainLossTeamBlue} * eloScaleFactor ${eloScaleFactor} * ${Math.ceil(match.players.length / 2)})`)
       if (p.side === "right/red") {
         if (p.winner) vpr = finalScale / (vstSumTeamRed / vstSumTeamBlue);
         else vpr = finalScale / (vstSumTeamBlue / vstSumTeamRed);
@@ -188,7 +191,9 @@ class VPRRating {
         if (p.winner) vpr = finalScale / (vstSumTeamBlue / vstSumTeamRed);
         else vpr = finalScale / (vstSumTeamRed / vstSumTeamBlue);
       }
-    console.log(`${p.name}: finalScale ${finalScale}`)
+    //   console.log(`${p.name}: KDA: ${p.kills}/${p.deaths}/${p.assists} Tier: ${p.tier} Side: ${p.side}`)
+    // console.log(`${p.name}: finalScale ${finalScale}`)
+    //     console.log(`${p.name}: vpr ${vpr}`)
       return {
         ...p,
         vpr
