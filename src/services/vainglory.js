@@ -46,17 +46,19 @@ class VaingloryService {
     return vg.players.getById(playerId);
   }
 
-  getMatches(playerId, region, { startMatch, lastMatch, gameMode, page }) {
+  getMatches(playerId, region, { startMatch, lastMatch, gameMode, page, limit }) {
     let options = {
       playerIds: [playerId]
     }
+
+    let resultPerPage = limit || RESULT_PER_PAGE;
 
     if (lastMatch)  options["createdAt-end"] = lastMatch;
     if (startMatch) options["createdAt-start"] = startMatch;
     if (gameMode) options.gameMode = gameMode;
 
     options = generateOpt(options);
-    if (page) options.page = {offset: RESULT_PER_PAGE * page};
+    if (page) options.page = {offset: resultPerPage * page};
     
     return this.matches(region, options);
   }

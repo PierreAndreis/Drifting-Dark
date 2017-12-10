@@ -3,8 +3,8 @@ import MatchesController from "~/controllers/vg_matches.js";
 // matches/:name
 export const latestMatches = async (req, res, next) => {
   const { name } = req.params;
-  const { patch, gameMode, page } = req.query;
-  const reply = await MatchesController.getMatchesByName(name, { patch, gameMode, page });
+  const { patch, gameMode, page, limit } = req.query;
+  const reply = await MatchesController.getMatchesByName(name, { patch, gameMode, page, limit });
   res.json(reply);
 };
 
