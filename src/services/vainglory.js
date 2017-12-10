@@ -59,12 +59,8 @@ class VaingloryService {
     if (gameMode) options.gameMode = gameMode;
 
     options = generateOpt(options);
-    if (page) {
-      options.page = {
-        offset: resultPerPage * page, 
-        limit: resultPerPage
-      };
-    }
+    if (page) options.page = {offset: resultPerPage * page};
+    options.page = {...options.page, limit: resultPerPage};
     
     return this.matches(region, options);
   }
