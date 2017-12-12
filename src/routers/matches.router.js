@@ -3,9 +3,9 @@ import HeroesStats          from "~/services/heroes.js";
 
 // matches/:name
 export const latestMatches = async (req, res, next) => {
-  const {name} = req.params;
-  const {patch, gameMode, page} = req.query
-  let reply = await MatchesController.getMatchesByName(name, {patch, gameMode, page});
+  const { name } = req.params;
+  const { patch, gameMode, page, limit } = req.query;
+  let reply = await MatchesController.getMatchesByName(name, { patch, gameMode, page, limit });
   reply = await HeroesStats(reply[0]);
   res.json(reply);
 };
