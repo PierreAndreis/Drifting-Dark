@@ -2,6 +2,7 @@ import { Router } from "express"; // WebServer
 
 import { playerFind, playerStats }         from "./routers/players.router";
 import { latestMatches, test, ProHistory, details } from "./routers/matches.router";
+import { vpr } from "./routers/leaderboards.router";
 
 // import * as Tournament from "./routers/tournament.router";
 
@@ -16,12 +17,15 @@ routes.get("/player/:name/stats", playerStats);
 /** Matches Routers ?page=&gameMode[]= */
 routes.get("/matches/:name", latestMatches);
 
-routes.get("/matches/:id/:region/details", details)
+routes.get("/matches/:id/:region/details", details);
 
 /** Matches Routers */
 routes.get("/test/:name", test);
 
 routes.get("/pro/history", ProHistory);
+
+/* Leaderboards Routers */
+routes.get("leaderboards/:name", vpr);
 
 /** Tournament Routers */
 // routes.get("/tourney_entry/:region/:matchId",  Tournament.EntryRoute);
