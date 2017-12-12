@@ -13,9 +13,10 @@ export const vpr = async (req, res, next) => {
   const vprs = [];
   for (const player of reply.players) {
     const vpr = player.vpr;
-    Redis.zadd('vpr', vpr, player.name);
+    if (!vpr.won) vpr.amount = -Math.abs(vpr.amount);
+    Redis.zadd('vpr', vpr.amount, player.name);
   }
 
-  const leaderboard = await Redis.zrevrank('vpr');
+  const leaderboard = await Redis.zrevrange('vpr', 0, 5, 'withscores');
   res.json(leaderboard);
 };

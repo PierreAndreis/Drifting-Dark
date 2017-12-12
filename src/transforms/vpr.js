@@ -143,23 +143,28 @@ class VPRRating {
     });
 
     match.players = match.players.map(p => {
-      let finalScale, vpr;
+      let finalScale;
+      const vpr = {
+        won: p.winner
+      };
 
       if (p.side === "right/red") finalScale = ((p.gainLossScaled / eloGainLossTeamRed) * eloScaleFactor) * Math.ceil(match.players.length / 2);
       else finalScale = ((p.gainLossScaled / eloGainLossTeamBlue) * eloScaleFactor) * Math.ceil(match.players.length / 2);
 
       if (p.side === "right/red") {
-        if (p.winner) vpr = finalScale / (vstSumTeamRed / vstSumTeamBlue);
-        else vpr = finalScale / (vstSumTeamBlue / vstSumTeamRed);
+        if (p.winner) vpr.amount = finalScale / (vstSumTeamRed / vstSumTeamBlue);
+        else vpr.amount = finalScale / (vstSumTeamBlue / vstSumTeamRed);
       } else {
-        if (p.winner) vpr = finalScale / (vstSumTeamBlue / vstSumTeamRed);
-        else vpr = finalScale / (vstSumTeamRed / vstSumTeamBlue);
+        if (p.winner) vpr.amount = finalScale / (vstSumTeamBlue / vstSumTeamRed);
+        else vpr.amount = finalScale / (vstSumTeamRed / vstSumTeamBlue);
       }
       return {
         ...p,
         vpr,
       };
     });
+
+    return match;
   }
 
 }
