@@ -25,7 +25,7 @@ routes.get("/test/:name", test);
 routes.get("/pro/history", ProHistory);
 
 /* Leaderboards Routers */
-routes.get("/leaderboards/:name", vpr);
+routes.get("/leaderboards/:type/:region", vpr);
 
 /** Tournament Routers */
 // routes.get("/tourney_entry/:region/:matchId",  Tournament.EntryRoute);

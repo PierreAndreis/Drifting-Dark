@@ -1,17 +1,21 @@
 import Redis from "~/services/redis.js";
 
 class Leaderboards {
-    vpr(region, max, min = 0) {
-        return Redis.zrevrange(`vpr:${region}`, min, max, 'withscores');
-    }
+  constructor(name) {
+    this.name = name;
+  }
 
-    vst(region, max, min = 0) {
-        return Redis.zrevrange(`vst:${region}`, min, max, 'withscores');
-    }
+  get(playerId) {
+    return Redis.zrank(this.name, playerId);
+  }
 
-    heroes(region, max, min = 0) {
-        return Redis.zrevrange(`heroes:${region}`, min, max, 'withscores');
-    }
+  set(playerId, score) {
+    return Redis.zadd(this.name, score, playerId);
+  }
+
+  range(min, max) {
+    return Redis.zrevrange(this.name, min, max);
+  }
 }
 
 export default new Leaderboards();
