@@ -14,4 +14,4 @@ class Leaderboards {
     }
 }
 
-export default Leaderboards;
+export default new Leaderboards();
