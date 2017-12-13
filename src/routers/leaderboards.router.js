@@ -1,19 +1,10 @@
-import MatchesController from "~/controllers/vg_matches.js";
-import VPR from "~/transforms/vpr.js";
 import Redis from "~/services/redis.js";
 
 // leaderboards/:name
 export const vpr = async (req, res, next) => {
   const { name } = req.params;
-  const { patch, gameMode, page } = req.query;
-  let reply = await MatchesController.getMatchesByName(name, { patch, gameMode, page });
-  reply = await VPR.update(reply[0]);
-  for (const player of reply.players) {
-    const vpr = player.vpr;
-    if (!vpr.won) vpr.amount = -Math.abs(vpr.amount);
-    Redis.zadd('vpr', vpr.amount, player.name);
-  }
-
-  const leaderboard = await Redis.zrevrange('vpr', 0, 5, 'withscores');
+  const { region, amount } = req.query;
+  const limit = amount || 100;
+  const leaderboard = await Redis.zrevrange(`vpr:${region}`, 0, limit, 'withscores');
   res.json(leaderboard);
 };
