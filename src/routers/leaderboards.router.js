@@ -7,3 +7,4 @@ export const vpr = async (req, res, next) => {
   const leaderboard = await Redis.zrevrange(`vpr:${region}`, 0, limit, 'withscores');
   res.json(leaderboard);
 };
+
