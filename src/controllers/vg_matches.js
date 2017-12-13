@@ -1,7 +1,6 @@
-import MatchesModel from "~/models/vg_matches";
 import * as lodash from "lodash";
+import MatchesModel from "~/models/vg_matches";
 import PlayerController from "./vg_player";
-
 
 class MatchesController {
   async getPlayerId(playerName) {
@@ -17,7 +16,7 @@ class MatchesController {
   }
 
   async getMatchByMatchId(matchId, region) {
-    return MatchesModel.getMatchByMatchId(matchId, region)
+    return MatchesModel.getMatchByMatchId(matchId, region);
   }
 
   async getMatchesByName(playerName, context) {
@@ -28,6 +27,17 @@ class MatchesController {
 
     return this.getMatchesByPlayerId(playerObj, context);
     
+  }
+
+  async getMatchTelemetry(matchId, region) {
+    const match = await this.getMatchByMatchId(matchId, region);
+    if (match.error) return {};
+    // todo: error 404;
+    const telemetry = await MatchesModel.getMatchTelemetry(match.telemetry.URL, matchId);
+
+    return telemetry;
+
+
   }
 
   async getAllPages(playerName) {

@@ -23,7 +23,7 @@ export default {
       spring07: ["2.2", "2.3", "2.4", "2.5"],
       summer07: ["2.6", "2.7"],
       autumn07: ["2.8", "2.9", "2.10"],
-      winter18: ["2.11"],
+      winter07: ["2.11", "2.12", "3.0"]
     },
     previousSeason: "autumn07",
     PATCH_DATES: {

@@ -4,14 +4,14 @@
 
 ## Requirements
 
-* Couchbase 4.5
+* Couchbase 5
 * Redis 
 
 ## Installation
 
 ```sh
 $ npm install
-$ npm start dev
+$ npm run dev
 ```
 
 ## Usage

@@ -1,15 +1,9 @@
-import * as lodash    from "lodash";
-import moment         from "moment";
-import { merge }      from "~/lib/utils";
-
-import MatchesTransform from "./matches";
-
 class ProStats {
 
   create(match, proInfo) {
 
     const playerName = proInfo.name;
-    const playerStats = match.players.find(p => p.name === playerName);
+    const playerStats = match.players.find(p => p.me);
     
     if (!playerStats) return false;
 
@@ -17,9 +11,9 @@ class ProStats {
       createdAt: match.createdAt,
       matchId:   match.id,
       proInfo,
-      actor:    playerStats.actor,
+      actor:    playerStats.hero,
       tier:     playerStats.tier,
-      skilName: playerStats.skilName,
+      skillName: playerStats.skillName,
       winner:   playerStats.winner,
       kills:    playerStats.kills,
       deaths:   playerStats.deaths,

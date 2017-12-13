@@ -19,6 +19,8 @@ routes.get("/matches/:name", latestMatches);
 
 routes.get("/matches/:id/:region/details", details);
 
+routes.get("/matches/:id/:region/telemetry", telemetry);
+
 /** Matches Routers */
 routes.get("/test/:name", test);
 
