@@ -1,7 +1,7 @@
 import { Router } from "express"; // WebServer
 
 import { playerFind, playerStats }         from "./routers/players.router";
-import { latestMatches, test, ProHistory, details } from "./routers/matches.router";
+import { latestMatches, test, ProHistory, details, telemetry } from "./routers/matches.router";
 import { vpr } from "./routers/leaderboards.router";
 
 // import * as Tournament from "./routers/tournament.router";

@@ -26,6 +26,15 @@ class MatchInput {
   json(match) {
     const gameMode = (match.gameMode === "Battle Royal" || match.gameMode === "Private Battle Royal") ? `${match.gameMode}e` : match.gameMode;
 
+    let blueVstSum = 0, redVstTeam = 0;
+    for (const rost of match.rosters) {
+      for (const particp of rost.participants) {
+        if (rost.stats.side === "right/red") redVstTeam += particp._stats.skillTier;
+        else blueVstSum += particp._stats.skillTier;
+      }
+
+    }
+
     return {
       id:      match.data.id,
       shardId: match.shardId,
@@ -35,7 +44,7 @@ class MatchInput {
       duration:      match.duration,
       patchVersion:  match.patchVersion,
       // We will generate Rosters + Players
-              ...this.generateRosters(match.rosters),
+              ...this.generateRosters(match.rosters, blueVstSum, redVstTeam),
       telemetry: this.generateTelemetry(match.assets[0]),
     };
   }
@@ -50,7 +59,7 @@ class MatchInput {
     };
   }
 
-  generateRosters(r) {
+  generateRosters(r, blueVstSum, redVstSum) {
     const rosters = [];
     const players = [];
 
@@ -64,7 +73,7 @@ class MatchInput {
       rosters.push(roster.stats);
 
       // Now, lets create the players for this roster
-      players.push(...this.generatePlayers(roster.participants, roster));
+      players.push(...this.generatePlayers(roster.participants, roster, blueVstSum, redVstSum));
 
     });
 
@@ -74,28 +83,29 @@ class MatchInput {
     };
   }
   
-  generatePlayers(players, roster) {
+  generatePlayers(players, roster, blueVstSum, redVstSum) {
 
     let p = [];
 
+    const allVprChanges = VprTransforms.update(players, roster, blueVstSum, redVstSum);
+    let vprChange = 0;
+
     lodash.forEach(players, (player) => {
-
-      let vprChange = VprTransforms.update(players, roster);
-
-      for (const vprPlayer of vprChange) {
-        if (vprPlayer.id !== player.player.id) return;
-        vprChange = vprPlayer;
+      for (const vpr of allVprChanges) {
+        // console.log(vpr.data.id)
+          console.log(player)
+        if (vpr.data.id !== player.player.id) continue;
+        vprChange = vpr.vpr.amount;
       }
-
       p.push({
-        id:         player.player.id,
-        name:       player.player.name,
-        shardId:    player.player.shardId,
-        tier:       player._stats.skillTier,
-        actor:      player.actor,
-        side:       roster.stats.side,
-        aces:       roster.stats.acesEarned,
-        role:       findRole(player.stats),
+        id:       player.player.id,
+        name:     player.player.name,
+        shardId:  player.player.shardId,
+        tier:     player._stats.skillTier,
+        actor:    player.actor,
+        side:     roster.stats.side,
+        aces:     roster.stats.acesEarned,
+        role:     findRole(player.stats),
         vprChange,
           ...player.stats,
       });
@@ -139,7 +149,7 @@ class MatchOutput {
     let res = players.map(player => {
 
       let roster = rosters.find(r => r.side === player.side);
-
+      // console.log(player.vprChange)
       return {
         id: player.id,
         me: (playerId && player.id === playerId),
@@ -172,6 +182,7 @@ class MatchOutput {
         goldShare: getRate(player.gold, roster.gold),
 
         items: player.items,
+          vprChange: player.vprChange,
         
       }
 

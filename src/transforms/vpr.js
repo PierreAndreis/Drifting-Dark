@@ -28,25 +28,24 @@ class VPRRating {
     return ((seasonStats.tier - 1) * 100) + antismurf;
   }
 
-  update(players, rosters) {
+  update(players, roster, blueVstSum, redVstSum) {
     // Need these 4 for each player to make update work: Kills, deaths, assists, teamKills, vst
 
     const getTRatio = (kills, deaths, assists, KP) => {
       const killsPlayer       = kills;
       const deathsPlayer      = Math.max(deaths, 1);
       const assistsPlayer     = assists;
-
+      // console.log(`kills: ${kills}, deaths: ${deaths}, assists: ${assists}, kp: ${KP}`)
       return ((killsPlayer + assistsPlayer) / deathsPlayer) / (3 * KP);
     };
 
     const avgT = [];
 
     players = players.map(p => {
-
-      const teamStats     = rosters.find(r => r.side === p.side);
-      const teamTotalKill = Math.max(teamStats.heroKills, 1);
-      const KPPlayer      = ((p.kills + p.assists) / teamTotalKill);
-      const tRatioPlayer  = getTRatio(p.kills, p.deaths, p.assists, KPPlayer);
+      const { stats }     = p.data.attributes;
+      const teamTotalKill = Math.max(roster.data.attributes.stats.heroKills, 1);
+      const KPPlayer      = ((stats.kills + stats.assists) / teamTotalKill);
+      const tRatioPlayer  = getTRatio(stats.kills, stats.deaths, stats.assists, KPPlayer);
 
       avgT.push(tRatioPlayer);
 
@@ -78,7 +77,6 @@ class VPRRating {
     let scaleSumTeamRed   = 0;
 
     players = players.map(p => {
-
       const relativeTRatio = p.tRatio / avgtRatio;
       const kpScale = relativeTRatio * p.kp;
 
@@ -93,27 +91,28 @@ class VPRRating {
     });
 
     const eloScaleFactor = 5;
+    const  winner     = roster.data.attributes.won;
+    const { side }    = roster.data.attributes.stats;
 
     players = players.map(p => {
-
       let scale;
 
-      if (p.side === "right/red") {
-        if (p.winner) {
-          scale             = eloScaleFactor / (vstSumTeamRed / vstSumTeamBlue) * p.kpScale;
+      if (side === "right/red") {
+        if (winner) {
+          scale             = eloScaleFactor / (redVstSum / blueVstSum) * p.kpScale;
           scaleSumTeamRed   += scale;
         }
         else {
-          scale             = eloScaleFactor / (vstSumTeamBlue / vstSumTeamRed) * p.kpScale;
+          scale             = eloScaleFactor / (blueVstSum / redVstSum) * p.kpScale;
           scaleSumTeamRed   += scale;
         }
       } else {
-        if (p.winner) {
-          scale             = eloScaleFactor / (vstSumTeamBlue / vstSumTeamRed) * p.kpScale;
+        if (winner) {
+          scale             = eloScaleFactor / (blueVstSum / redVstSum) * p.kpScale;
           scaleSumTeamBlue  += scale;
         }
         else {
-          scale             = eloScaleFactor / (vstSumTeamRed / vstSumTeamBlue) * p.kpScale;
+          scale             = eloScaleFactor / (redVstSum / blueVstSum) * p.kpScale;
           scaleSumTeamBlue  += scale;
         }
       }
@@ -126,25 +125,23 @@ class VPRRating {
     let eloGainLossTeamRed = 0, eloGainLossTeamBlue = 0;
 
     players = players.map(p => {
-
       let relativeKPScale, eloGainLoss, gainLossScaled;
 
-      if (p.side === 'right/red') relativeKPScale = p.scale/scaleSumTeamRed;
+      if (side === 'right/red') relativeKPScale = p.scale/scaleSumTeamRed;
       else relativeKPScale = p.scale/scaleSumTeamBlue;
 
-      if (p.winner) eloGainLoss = eloScaleFactor * relativeKPScale;
+      if (winner) eloGainLoss = eloScaleFactor * relativeKPScale;
       else eloGainLoss = eloScaleFactor / relativeKPScale;
 
-      if (p.side === 'right/red') {
-        if (p.winner) gainLossScaled = eloGainLoss * (vstSumTeamRed/vstSumTeamBlue);
-        else gainLossScaled = eloGainLoss * (vstSumTeamBlue/vstSumTeamRed);
+      if (side === 'right/red') {
+        if (winner) gainLossScaled = eloGainLoss * (redVstSum / blueVstSum);
+        else gainLossScaled = eloGainLoss * (blueVstSum / redVstSum);
         eloGainLossTeamRed += gainLossScaled;
       } else {
-        if (p.winner) gainLossScaled = eloGainLoss / (vstSumTeamBlue / vstSumTeamRed);
-        else gainLossScaled = eloGainLoss / (vstSumTeamRed / vstSumTeamBlue);
+        if (winner) gainLossScaled = eloGainLoss / (blueVstSum / redVstSum);
+        else gainLossScaled = eloGainLoss / (redVstSum / blueVstSum);
         eloGainLossTeamBlue += gainLossScaled;
       }
-
       return {
         ...p,
         gainLossScaled,
@@ -152,23 +149,21 @@ class VPRRating {
     });
 
     players = players.map(p => {
-
       let finalScale;
       const vpr = {
-        won: p.winner
+        won: winner
       };
 
-      if (p.side === "right/red") finalScale = ((p.gainLossScaled / eloGainLossTeamRed) * eloScaleFactor) * Math.ceil(players.length / 2);
+      if (side === "right/red") finalScale = ((p.gainLossScaled / eloGainLossTeamRed) * eloScaleFactor) * Math.ceil(players.length / 2);
       else finalScale = ((p.gainLossScaled / eloGainLossTeamBlue) * eloScaleFactor) * Math.ceil(players.length / 2);
 
-      if (p.side === "right/red") {
-        if (p.winner) vpr.amount = finalScale / (vstSumTeamRed / vstSumTeamBlue);
-        else vpr.amount = finalScale / (vstSumTeamBlue / vstSumTeamRed);
+      if (side === "right/red") {
+        if (winner) vpr.amount = finalScale / (redVstSum / blueVstSum);
+        else vpr.amount = finalScale / (blueVstSum / redVstSum);
       } else {
-        if (p.winner) vpr.amount = finalScale / (vstSumTeamBlue / vstSumTeamRed);
-        else vpr.amount = finalScale / (vstSumTeamRed / vstSumTeamBlue);
+        if (winner) vpr.amount = finalScale / (blueVstSum / redVstSum);
+        else vpr.amount = finalScale / (redVstSum / blueVstSum);
       }
-
       return {
         ...p,
         vpr,
