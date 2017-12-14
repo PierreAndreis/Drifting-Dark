@@ -5,6 +5,7 @@ import PlayerLookupModel from "~/models/vg_player_lookup";
 import PlayerStatsModel from "~/models/vg_player_stats";
 
 import PlayerStatsTransform from "~/transforms/playerStats";
+import VprTransform           from "~/transforms/vpr";
 
 class PlayerController {
   lookupName(playerName, region) {
@@ -30,6 +31,9 @@ class PlayerController {
 
       stats = await PlayerStatsModel.update(player, playerOldStats);
       PlayerStatsModel.upsert(player.id, stats);
+
+      // TODO: add season stats as a parameter into this
+      VprTransform.initial(stats);
     }
 
     // return stats;

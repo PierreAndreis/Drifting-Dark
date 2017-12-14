@@ -2,6 +2,8 @@ import * as lodash from "lodash";
 
 import { getKDA, getRate, getAvg, getMinutes } from "~/lib/utils_stats";
 
+import VprTransforms                           from "~/transforms/vpr";
+
 const findRole = (player) => {
   let role = "Captain";
 
@@ -78,15 +80,23 @@ class MatchInput {
 
     lodash.forEach(players, (player) => {
 
+      let vprChange = VprTransforms.update(players, roster);
+
+      for (const vprPlayer of vprChange) {
+        if (vprPlayer.id !== player.player.id) return;
+        vprChange = vprPlayer;
+      }
+
       p.push({
-        id:       player.player.id,
-        name:     player.player.name,
-        shardId:  player.player.shardId,
-        tier:     player._stats.skillTier,
-        actor:    player.actor,
-        side:     roster.stats.side,
-        aces:     roster.stats.acesEarned,
-        role:     findRole(player.stats),
+        id:         player.player.id,
+        name:       player.player.name,
+        shardId:    player.player.shardId,
+        tier:       player._stats.skillTier,
+        actor:      player.actor,
+        side:       roster.stats.side,
+        aces:       roster.stats.acesEarned,
+        role:       findRole(player.stats),
+        vprChange,
           ...player.stats,
       });
 
