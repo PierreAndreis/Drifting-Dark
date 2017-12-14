@@ -92,9 +92,7 @@ class MatchInput {
 
     lodash.forEach(players, (player) => {
       for (const vpr of allVprChanges) {
-        // console.log(vpr.data.id)
-          console.log(player)
-        if (vpr.data.id !== player.player.id) continue;
+        if (vpr.data.id !== player.id) continue;
         vprChange = vpr.vpr.amount;
       }
       p.push({
