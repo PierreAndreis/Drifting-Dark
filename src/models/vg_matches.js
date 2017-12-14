@@ -33,14 +33,17 @@ class VGMatches {
      */
     const res = [];
 
-    const get = async (initialPages = 0, endDate) => {
+    let currentPage = 0;
+
+    const get = async (batch = 0, endDate) => {
       const queries = [];
 
-      for (let i = 0; i < BATCHAPI_PAGES_PER_TRY; i++) {
-        const page = initialPages + i;
+      let pageToEnd = currentPage + BATCHAPI_PAGES_PER_TRY;
+      for (let i = 0; i <= BATCHAPI_PAGES_PER_TRY; i++) {
+        let page = currentPage++;
+        console.log("page=", page);
         queries.push(VaingloryService.getMatches(playerId, region, {lastMatch: endDate, page}));
       }
-
       return Promise.all(queries);
     }
 
@@ -56,13 +59,27 @@ class VGMatches {
       });
       pages++;
     }
+    console.log("total page=", pages * BATCHAPI_PAGES_PER_TRY);
+
+    // Remove duplicates.
+    // There is a bug that is causing this
+    // Most likely Madglory End
+    const matchesId = new Set([]);
+
+    const removeDuplicatedMatches = res.filter(match => {
+      const test = matchesId.has(match.id);
+      matchesId.add(match.id);
+      return !test;
+    })
+
+    return removeDuplicatedMatches;
 
     return res;
   }
 
   async getMatchByMatchId(id, region) {
     const match = await VaingloryService.match(id, region);
-    if (match.errors) return {}; // todo error handler
+    if (match.errors) return {errors: match.messages}; // todo error handler
     return MatchTransform.input.json(match);
   }
   
@@ -77,9 +94,11 @@ class VGMatches {
       if (!matches || matches.errors) return [];
       // Transform it in a nice way
       const m = matches.match.map(match => MatchTransform.input.json(match));
+      return m; //debug: change this before commiting;
       const res = m.map(match => MatchTransform.output.json(playerId, match));
       return res;
     };
+    return get(); //debug: change this before commiting
 
     return CacheService.preferCache(key, get, { 
       expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE,

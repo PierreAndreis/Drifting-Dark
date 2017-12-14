@@ -5,9 +5,12 @@ import BaseCouchbase from "~/lib/BaseCouchbase";
 import CacheService      from "~/services/cache";
 import CouchbaseService  from "~/services/couchbase";
 import VaingloryService  from "~/services/vainglory";
+import HeroesStats       from "~/services/heroes";
+
 import PlayerTransform   from "~/transforms/playerStats.js";
 
 import MatchesModel   from "~/models/vg_matches";
+import MatchTransform from "~/transforms/matches.js";
 
 import { merge } from "~/lib/utils";
 
@@ -36,9 +39,12 @@ class VGPlayersStats extends BaseCouchbase {
   async update({id, region}, oldStats) {
 
     let stats;
+
+    let matches;
+
     if (!oldStats) {
       // New Player in the system. We will query all last 28 days of matches :D
-      const matches = await MatchesModel.getAllMatches(id, region);
+      matches = await MatchesModel.getAllMatches(id, region);
       stats = PlayerTransform.input.json(matches, id);
     }
     else {
@@ -53,10 +59,16 @@ class VGPlayersStats extends BaseCouchbase {
         lastMatch = oldStats.lastMatch;
       } else lastMatch = oldestDate;
 
-      const matches = await VaingloryService.getMatches(id, region, {startMatch: lastMatch});
+      matches = await VaingloryService.getMatches(id, region, {startMatch: lastMatch});
+      if (matches.errors) matches = [];
+      else matches = matches.match.map(m => MatchTransform.input.json(m));
+      
       const statsNew = PlayerTransform.input.json(matches, id);
       stats = merge(oldStats, statsNew);
     }
+
+    // Heroes Stats
+    if (matches !== [] && matches) HeroesStats.addMatches(matches);
     
     return stats;
   }

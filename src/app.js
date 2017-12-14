@@ -7,7 +7,7 @@ import logger       from "~/lib/logger"
 
 // todo: cron service
 import ProHistory from "~/services/prohistory";
-ProHistory.start();
+// ProHistory.start();
 
 import Cors         from "cors";     // Cross Request
 

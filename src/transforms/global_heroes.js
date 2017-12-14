@@ -1,71 +1,46 @@
 import * as lodash from "lodash";
+import {merge} from "./../lib/utils";
+import MatchesModel from "./../models/vg_matches";
 
-export default function (match) {
-  
-  const heroes = {};
+import T3Items from "~/resources/items_t3";
 
-  const stats = {
-    kills:   0,
-    deaths:  0,
-    assists: 0,
-    farm:    0,
-  };
-
-  lodash.forEach(match.rosters, (roster) => lodash.forEach(roster.participants, (participant) => {
-    heroes[participant.actor] = generateHeroesStats(match, participant);
-
-    stats.kills    += participant._stats.kills;
-    stats.deaths   += participant._stats.deaths;
-    stats.assists  += participant._stats.assists;
-    stats.farm     += participant._stats.farm;
-  }));
-  
-  const matches = generateMatchStats(match, stats, heroes);
-
-
-  return matches;
-  
+const translateSkillPath = (skillPath) => {
+  return skillPath.map(skill => /_(.+)/.exec(skill)[1]);
 }
 
-function generateMatchStats(match, stats, heroes) {
+const translateItemPath = (itemPath) => {
+  const res = [];
 
-  let blueWins = 0;
-  let redWins  = 0;
+  for (const tItem of itemPath) {
 
-  // why is this a string?
-  (match.matchRoster[0].data.attributes.won === "false") ? blueWins = 1 : redWins = 1;
-
-  return {
-    stats: {
-      kills:    stats.kills,
-      deaths:   stats.deaths,
-      assists:  stats.assists,
-      farm:     stats.farm,
-      blueWins: blueWins,
-      redWins:  redWins,
-      games:    1,
-      duration: match.duration,
-    },
-    lastId: match.id,
-    Heroes: {
-      ...heroes
+    const item = T3Items.find(t => t.name === tItem.Item);
+    if (item && item !== []) {
+      res.push(item.short);
     }
-
+    if (res.length > 3) break;
   }
+
+  return res.join(",");
 }
 
-exports.generateHeroesStats = (match, player) => {
+const generateHeroesStats = (match, player) => {
   const winner      = (player.winner) ? 1 : 0;
   const afkOrNo     = (player.firstAfkTime !== -1) ? 1 : 0;
+
   const stats = {
-    patch:          match.patchVersion,
-    region:         match.shardId,
+    gameMode:     match.gameMode,
+    matchId:      match.id,
+    patchVersion: match.patchVersion,
+    region:       match.shardId,
+    actor:          player.actor,
     wins:           winner,
     krakenCap:      player.krakenCaptures,
     crystalSentry:  player.crystalMineCaptures,
     goldMiner:      player.goldMineCaptures,
     aces:           player.aces,
     games:          1,
+    side:           {[player.side]: {games: 1, wins: winner}},
+    role:           {[player.role]: {games: 1, wins: winner}},
     afk:            afkOrNo,
     kills:          player.kills,
     deaths:         player.deaths,
@@ -76,24 +51,77 @@ exports.generateHeroesStats = (match, player) => {
     jungle:         player.minionKills,
     turretCaptures: player.turretCaptures,
     duration:       match.duration,
-    wonWith:        [],
-    wonAgainst:     [],
-    lostWith:       [],
-    lostAgainst:    [],
+    teammates:      {},
+    enemies:        {}
   };
 
-  if (winner === 1) {
-    for (const won of match.players) {
-      if (won === player) continue;
-      if (won.side === player.side) stats.wonWith.push(won.actor);
-      if (won.side !== player.side) stats.wonAgainst.push(won.actor);
+  for (const p of match.players) {
+    if (p.id === player.id) continue;
+
+    const toAdd = {
+      win: winner,
+      games: 1,
     }
-  } else {
-    for (const loser of match.players) {
-      if (loser === player) continue;
-      if (loser.side === player.side) stats.lostWith.push(loser.actor);
-      if (loser.side !== player.side) stats.lostAgainst.push(loser.actor);
-    }
+
+    if (p.side === player.side) stats.teammates[p.actor] = toAdd;
+    if (p.side !== player.side) stats.enemies[p.actor] = toAdd
   }
+
   return stats;
+}
+
+const getTelemetryStats = async (match) => {
+  let heroes = {};
+
+  const telem = await MatchesModel.getMatchTelemetry(match.telemetry.URL, match.id);
+  for (const pick of telem.Draft) {
+    if (pick.Type !== "HeroBan") continue;
+    heroes[pick.Hero] = {
+      patchVersion: match.patchVersion,
+      gameMode: match.gameMode,
+      region: match.shardId,
+      bans: 1,
+    };
+  }
+
+  const facts = telem.Facts;
+
+  lodash.forEach(facts, teams => lodash.forEach(teams, (actor, name) => {
+
+    const skillPath = translateSkillPath(actor.Skill);
+    const itemPath = translateItemPath(actor.Items);
+    const player = match.players.find(p => name === p.actor);
+
+      heroes[name] = {
+        totalhealed: actor.Healed,
+        totaldamage: actor.Damage,
+        abilitypicks: {
+          [skillPath]: 1
+        },
+        abilitywins: {
+          [skillPath]: (player.winner) ? 1 : 0,
+        },
+        itemspicks: {
+          [itemPath]: 1,
+        },
+        itemswin: {
+          [itemPath]: (player.winner) ? 1 : 0,
+        },
+      }
+  }));
+
+  return heroes;
+} 
+
+export default async (match) => {
+  let heroes = {};
+  for (const player of match.players) {
+    heroes[player.actor] = generateHeroesStats(match, player);
+  }
+
+
+  const telemetry = await getTelemetryStats(match);
+  heroes = merge(heroes, telemetry);
+
+  return heroes;
 }

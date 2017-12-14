@@ -9,14 +9,26 @@ const ONE_HOUR_SECONDS = 3600;
 
 class CacheService {
 
-  arrayAppend(key, value) {
+  arrayAppend(key, value, json) {
     key = REDIS.PREFIX + ':' + key;
+    if (json) value = JSON.stringify(value);
     return RedisService.rpush(key, value); 
   }
 
-  arrayGet(key, value) {
+  async arrayGet(key, json) {
     key = REDIS.PREFIX + ':' + key;
-    return RedisService.lrange(key, 0, -1);
+    let res = await RedisService.lrange(key, 0, -1);
+    if (json && res) res = JSON.parse(res);
+
+    return res;
+  }
+
+  async arrayPop(key, json) {
+    key = REDIS.PREFIX + ':' + key;
+    let res = await RedisService.lpop(key);
+    if (json && res) res = JSON.parse(res);
+
+    return res;
   }
 
   set(key, value, {expireSeconds} = {}) {
@@ -86,6 +98,17 @@ class CacheService {
       });
     }
     return value;
+  }
+
+  unique(key, value) {
+    const rawKey = key;
+    key = REDIS.PREFIX + ':' + key;
+
+    return RedisService.pfadd(key, value).then((res) => {
+      if (res === 0) return false;
+      return true;
+    });
+
   }
 
   // // for locking

@@ -35,19 +35,20 @@ class CouchBase {
     }
   }
 
-  async upsert(name, doc) {
+  async upsert(name, doc, options = {}) {
     try {
 
       // console.log(`** TRYING TO INSERT ${name} DOCUMENT **`);
       //  Trying to insert into the bucket
-      const rows = await this.bucket.upsertAsync(name, doc);
+      const rows = await this.bucket.upsertAsync(name, doc, options);
       // console.log(`** DONE INSERTING ${name} **`);
       return rows;
 
     }
     catch (e) {
-      console.log(e);
-      throw new Error(e);
+      if (e.message === "bad cas passed") return false;
+      console.log(`ERROR WHILE INSERTING ${name}=`, e.message, {args: arguments});
+      return e.message;
     }
   }
 
@@ -65,6 +66,16 @@ class CouchBase {
     catch (e) {
       return undefined;
     }
+  }
+
+  getAndLock(key) {
+    return this.bucket.getAndLockAsync(key, {lockTime: 20}).catch(err => {
+      if (err.message === "The key does not exist on the server") return [];
+      else {
+        console.log(err);
+        return false;
+      }
+    });
   }
 }
 

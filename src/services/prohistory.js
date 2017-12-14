@@ -2,6 +2,7 @@ import lodash from "lodash";
 
 import MatchController from "../controllers/vg_matches";
 import MatchModel      from "../models/vg_matches";
+import CacheService    from "./cache";
 
 import ProTransform from "../transforms/prohistory";
 
@@ -13,14 +14,19 @@ const PROS_PER_QUEUE = 10;
 // const PROS_QUEUE_TIME = 30000 // 30 seconds
 const PROS_QUEUE_TIME =10000; // 10 seconds for development
 const PROS_LIMIT_HISTORY = 50;
+const PROS_COUNTER_KEY = "PRO_HISTORY_COUNTER";
 
 
 class ProHistory {
   constructor() {
-    this.counter = 0;
 
     this.started = false;
     this.loop = null;
+  }
+
+  async counter(set) {
+    if (!set) return await CacheService.get(PROS_COUNTER_KEY);
+    else return await CacheService.set(PROS_COUNTER_KEY);
   }
 
   async fetch() {
