@@ -88,23 +88,19 @@ class MatchInput {
     let p = [];
 
     const allVprChanges = VprTransforms.update(players, roster, blueVstSum, redVstSum);
-    let vprChange = 0;
+
 
     lodash.forEach(players, (player) => {
-      for (const vpr of allVprChanges) {
-        if (vpr.data.id !== player.id) continue;
-        vprChange = vpr.vpr.amount;
-      }
       p.push({
-        id:       player.player.id,
-        name:     player.player.name,
-        shardId:  player.player.shardId,
-        tier:     player._stats.skillTier,
-        actor:    player.actor,
-        side:     roster.stats.side,
-        aces:     roster.stats.acesEarned,
-        role:     findRole(player.stats),
-        vprChange,
+        id:         player.player.id,
+        name:       player.player.name,
+        shardId:    player.player.shardId,
+        tier:       player._stats.skillTier,
+        actor:      player.actor,
+        side:       roster.stats.side,
+        aces:       roster.stats.acesEarned,
+        role:       findRole(player.stats),
+        vprChange:  allVprChanges.find(r => r.data.id === player.id),
           ...player.stats,
       });
 
