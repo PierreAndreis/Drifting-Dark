@@ -90,11 +90,12 @@ class VGMatches {
       const matches = await VaingloryService.getMatches(playerId, region, {lastMatch, ...context});
       if (!matches || matches.errors) return [];
       // Transform it in a nice way
-      const m = matches.match.map(match => MatchTransform.input.json(match));
-      const res = m.map(match => MatchTransform.output.json(playerId, match));
-      return res;
+      let m = matches.match.map(match => MatchTransform.input.json(match));
+      m = m.map(match => MatchTransform.output.json(playerId, match));
+      return m;
     };
 
+    return get();
     return CacheService.preferCache(key, get, { 
       expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE,
       category: "matches"

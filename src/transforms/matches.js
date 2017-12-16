@@ -2,7 +2,7 @@ import * as lodash from "lodash";
 
 import { getKDA, getRate, getAvg, getMinutes } from "~/lib/utils_stats";
 
-import VprTransforms                           from "~/transforms/vpr";
+import VPRService from "~/services/vpr";
 
 const findRole = (player) => {
   let role = "Captain";
@@ -26,15 +26,6 @@ class MatchInput {
   json(match) {
     const gameMode = (match.gameMode === "Battle Royal" || match.gameMode === "Private Battle Royal") ? `${match.gameMode}e` : match.gameMode;
 
-    let blueVstSum = 0, redVstTeam = 0;
-    for (const rost of match.rosters) {
-      for (const particp of rost.participants) {
-        if (rost.stats.side === "right/red") redVstTeam += particp._stats.skillTier;
-        else blueVstSum += particp._stats.skillTier;
-      }
-
-    }
-
     return {
       id:      match.data.id,
       shardId: match.shardId,
@@ -44,7 +35,7 @@ class MatchInput {
       duration:      match.duration,
       patchVersion:  match.patchVersion,
       // We will generate Rosters + Players
-              ...this.generateRosters(match.rosters, blueVstSum, redVstTeam),
+              ...this.generateRosters(gameMode, match.rosters),
       telemetry: this.generateTelemetry(match.assets[0]),
     };
   }
@@ -59,23 +50,28 @@ class MatchInput {
     };
   }
 
-  generateRosters(r, blueVstSum, redVstSum) {
-    const rosters = [];
-    const players = [];
+  generateRosters(gameMode, r) {
+    let rosters = [];
+    let players = [];
 
     const names = {
       "left/blue": "Blue",
       "right/red": "Red",
     };
+
     // Let's separate the rosters
     lodash.forEach(r, (roster) => {
 
       rosters.push(roster.stats);
 
       // Now, lets create the players for this roster
-      players.push(...this.generatePlayers(roster.participants, roster, blueVstSum, redVstSum));
+      players.push(...this.generatePlayers(roster.participants, roster));
 
     });
+
+    if (gameMode === "Ranked") {
+      players = VPRService.implementVPRChanges(players, rosters);
+    }
 
     return {
     players,
@@ -86,8 +82,6 @@ class MatchInput {
   generatePlayers(players, roster, blueVstSum, redVstSum) {
 
     let p = [];
-
-    const allVprChanges = VprTransforms.update(players, roster, blueVstSum, redVstSum);
 
 
     lodash.forEach(players, (player) => {
@@ -100,7 +94,6 @@ class MatchInput {
         side:       roster.stats.side,
         aces:       roster.stats.acesEarned,
         role:       findRole(player.stats),
-        vprChange:  allVprChanges.find(r => r.data.id === player.id),
           ...player.stats,
       });
 
@@ -176,7 +169,7 @@ class MatchOutput {
         goldShare: getRate(player.gold, roster.gold),
 
         items: player.items,
-          vprChange: player.vprChange,
+        vprChange: player.vprDiff || 0,
         
       }
 

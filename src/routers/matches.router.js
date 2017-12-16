@@ -1,5 +1,5 @@
 import MatchesController    from "~/controllers/vg_matches.js";
-import VPR from "~/transforms/vpr.js";
+// import VPR from "~/transforms/vpr.js";
 
 // matches/:name
 export const latestMatches = async (req, res, next) => {
@@ -44,9 +44,9 @@ export const telemetry = async (req, res, next) => {
 export const test = async (req, res, next) => {
   const { name } = req.params;
   const { patch, gameMode, page, limit } = req.query;
-  let reply = await HeroesStats.processMatches();
-  let rx = await HeroesStats.saveMatches();
-  res.json(reply);
+  // let reply = await HeroesStats.processMatches();
+  // let rx = await HeroesStats.saveMatches();
+  // res.json(reply);
 };
 
 export const ProHistory = async (req, res, next) => {
