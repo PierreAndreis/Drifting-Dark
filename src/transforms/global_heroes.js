@@ -33,6 +33,7 @@ const generateHeroesStats = (match, player) => {
     patchVersion: match.patchVersion,
     region:       match.shardId,
     actor:          player.actor,
+    tier:           player.tier,
     wins:           winner,
     krakenCap:      player.krakenCaptures,
     crystalSentry:  player.crystalMineCaptures,

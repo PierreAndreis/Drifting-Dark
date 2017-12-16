@@ -18,11 +18,15 @@ const MATCHES_SAVE_BATCH = 5; // `MATCHES_PROCESS_BATCH` matches in each batch
 
 const DEBUG = false;
 
+const gameModesAllowed = ["Ranked"];
+
 class HeroesStats {
 
   async addMatch(match) {
     // Only support MatchesTransform.input jsons
     try {
+      if (!gameModesAllowed.includes(match.gameMode)) return;
+
       const duplicated = await CacheService.unique(cacheKeyUnique, match.id);
       if (!duplicated) {
         // return console.warn(`[HEROSTATS] Avoiding duplicates: ${match.id}`);
@@ -80,7 +84,7 @@ class HeroesStats {
       promiseRes.forEach((match) => {
         for (const hero in match) {
           let heroStats = match[hero];
-          const key = `${hero}:${heroStats.patchVersion}:${heroStats.gameMode}:${heroStats.region}`
+          const key = `${hero}:${heroStats.patchVersion}:${heroStats.gameMode}:${heroStats.region}:${heroStats.tier}`
           heroes = merge(heroes, {[key]: heroStats});
         }
       });
