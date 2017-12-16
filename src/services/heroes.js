@@ -116,7 +116,7 @@ class HeroesStats {
     });
 
     for (const key in merged) {
-      let stats = payload[key];
+      let stats = merged[key];
       promises.push((async () => {
         try {
           let getRes = await HeroesModel.getAndLock(key);
