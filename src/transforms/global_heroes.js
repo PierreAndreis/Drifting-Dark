@@ -75,9 +75,16 @@ const getTelemetryStats = async (match) => {
   let heroes = {};
 
   const telem = await MatchesModel.getMatchTelemetry(match.telemetry.URL, match.id);
+  let averageTier = 0;
+  
+  match.players.forEach(p => averageTier += p.tier);
+
+  averageTier = parseInt(averageTier / match.players.length);
+
   for (const pick of telem.Draft) {
     if (pick.Type !== "HeroBan") continue;
     heroes[pick.Hero] = {
+      tier:         averageTier,
       patchVersion: match.patchVersion,
       gameMode: match.gameMode,
       region: match.shardId,
