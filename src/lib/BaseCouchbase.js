@@ -12,13 +12,17 @@ class CouchbaseModel {
     return this.conn.nquery(query);
   }
 
-  upsert(key, doc) {
+  getAndLock(key) {
+    return this.conn.getAndLock(key);
+  }
+
+  upsert(key, doc, options) {
     if (!key) 
       throw new Error('Missing id parametter');
     if (!doc) 
       throw new Error('Missing doc parametter');
     
-    return this.conn.upsert(key, doc);
+    return this.conn.upsert(key, doc, options);
   }
 }
 

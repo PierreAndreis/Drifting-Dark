@@ -5,10 +5,6 @@ import bodyParser   from "body-parser";
 import responseTime from "response-time";
 import logger       from "~/lib/logger"
 
-// todo: cron service
-import ProHistory from "~/services/prohistory";
-ProHistory.start();
-
 import Cors         from "cors";     // Cross Request
 
 import routes     from "~/routes";
