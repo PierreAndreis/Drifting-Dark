@@ -38,7 +38,6 @@ else {
   } else {
     // Workers can share any TCP connection
     startApp();
-    process.exit(0);
 
   }
 }
