@@ -40,6 +40,11 @@ class CacheService {
     });
   }
 
+  inc(key, value) {
+    key = REDIS.PREFIX + ':' + key;
+    return RedisService.incr(key);
+  }
+
   get(key) {
     key = REDIS.PREFIX + ':' + key;
     return RedisService.get(key).then(function(value) {

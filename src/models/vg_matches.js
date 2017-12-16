@@ -41,7 +41,6 @@ class VGMatches {
       let pageToEnd = currentPage + BATCHAPI_PAGES_PER_TRY;
       for (let i = 0; i <= BATCHAPI_PAGES_PER_TRY; i++) {
         let page = currentPage++;
-        console.log("page=", page);
         queries.push(VaingloryService.getMatches(playerId, region, {lastMatch: endDate, page}));
       }
       return Promise.all(queries);
@@ -59,11 +58,11 @@ class VGMatches {
       });
       pages++;
     }
-    console.log("total page=", pages * BATCHAPI_PAGES_PER_TRY);
 
     // Remove duplicates.
     // There is a bug that is causing this
     // Most likely Madglory End
+
     const matchesId = new Set([]);
 
     const removeDuplicatedMatches = res.filter(match => {
@@ -73,8 +72,6 @@ class VGMatches {
     })
 
     return removeDuplicatedMatches;
-
-    return res;
   }
 
   async getMatchByMatchId(id, region) {
@@ -94,11 +91,9 @@ class VGMatches {
       if (!matches || matches.errors) return [];
       // Transform it in a nice way
       const m = matches.match.map(match => MatchTransform.input.json(match));
-      return m; //debug: change this before commiting;
       const res = m.map(match => MatchTransform.output.json(playerId, match));
       return res;
     };
-    return get(); //debug: change this before commiting
 
     return CacheService.preferCache(key, get, { 
       expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE,
@@ -123,7 +118,7 @@ class VGMatches {
   getProHistory() {
     const key = `prohistory`;
 
-    return CacheService.get(key) || {};
+    return CacheService.get(key) || [];
   }
 
   setProHistory(value) {

@@ -4,7 +4,7 @@ import moment from "moment";
 const { combine, timestamp, prettyPrint, json, colorize } = format;
 
 const consoleFormat = combine(format.printf(function (info) {
-  return `(${moment().format('YYYY-MM-DDTHH:mm:ss.SSSZZ')}) ${info.level}: ${info.message}`;
+  return `[${process.pid}](${moment().format('YYYY-MM-DDTHH:mm:ss.SSSZZ')}) ${info.level}: ${info.message}`;
 }));
 
 let logDestination = process.env.LOGS || `${__dirname}/../../logs/`;
@@ -40,7 +40,5 @@ const logger = createLogger({
       format: consoleFormat,
   }));
 // }
-
-console.log("LOGS: ", logDestination);
 
 export default logger;

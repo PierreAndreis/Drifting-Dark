@@ -29,7 +29,7 @@ class PlayerController {
       logger.info(`new cache for ${playerName}`);
 
       stats = await PlayerStatsModel.update(player, playerOldStats);
-      // PlayerStatsModel.upsert(player.id, stats);
+      PlayerStatsModel.upsert(player.id, stats);
     }
 
     // return stats;
