@@ -85,11 +85,12 @@ const getTelemetryStats = async (match) => {
   for (const pick of telem.Draft) {
     if (pick.Type !== "HeroBan") continue;
     heroes[pick.Hero] = {
+      actor:        pick.Hero,
       tier:         "" + averageTier,
       patchVersion: match.patchVersion,
-      gameMode: match.gameMode,
-      region: match.shardId,
-      bans: 1,
+      gameMode:     match.gameMode,
+      region:       match.shardId,
+      bans:         1,
     };
   }
 
