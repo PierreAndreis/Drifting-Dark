@@ -33,14 +33,16 @@ class VGMatches {
      */
     const res = [];
 
-    const get = async (initialPages = 0, endDate) => {
+    let currentPage = 0;
+
+    const get = async (batch = 0, endDate) => {
       const queries = [];
 
-      for (let i = 0; i < BATCHAPI_PAGES_PER_TRY; i++) {
-        const page = initialPages + i;
+      let pageToEnd = currentPage + BATCHAPI_PAGES_PER_TRY;
+      for (let i = 0; i <= BATCHAPI_PAGES_PER_TRY; i++) {
+        let page = currentPage++;
         queries.push(VaingloryService.getMatches(playerId, region, {lastMatch: endDate, page}));
       }
-
       return Promise.all(queries);
     }
 
@@ -57,12 +59,24 @@ class VGMatches {
       pages++;
     }
 
-    return res;
+    // Remove duplicates.
+    // There is a bug that is causing this
+    // Most likely Madglory End
+
+    const matchesId = new Set([]);
+
+    const removeDuplicatedMatches = res.filter(match => {
+      const test = matchesId.has(match.id);
+      matchesId.add(match.id);
+      return !test;
+    })
+
+    return removeDuplicatedMatches;
   }
 
   async getMatchByMatchId(id, region) {
     const match = await VaingloryService.match(id, region);
-    if (match.errors) return {}; // todo error handler
+    if (match.errors) return {errors: match.messages}; // todo error handler
     return MatchTransform.input.json(match);
   }
   
@@ -104,7 +118,7 @@ class VGMatches {
   getProHistory() {
     const key = `prohistory`;
 
-    return CacheService.get(key) || {};
+    return CacheService.get(key) || [];
   }
 
   setProHistory(value) {

@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 import { cleanAbility, cleanActor } from "~/resources/dictionaries";
-
+import logger from "../lib/logger";
 
 const NPC = [
   "*JungleMinion_TreeEnt*",
@@ -33,7 +33,16 @@ class Telemetry {
 
     const result = await fetch(url);
     if (result.status !== 200) return {};
-    const telemetry = await result.json();
+
+    let telemetry;
+
+    try {
+      telemetry = await result.json();
+    }
+    catch(e) {
+      logger.warn(`Invalid Telemetry JSON: ${url}`);
+      throw Error("InvalidJSON");
+    }
 
     const res = {
       id,
@@ -156,24 +165,24 @@ class Telemetry {
           break;
 
         case "HealTarget": {
-          const { TargetActor } = payload;
-          factHero.Healed += payload.Healed;
-          if (isNaN(factHero.TotalHealed[TargetActor])) factHero.TotalHealed[TargetActor] = payload.Healed;
-          else factHero.TotalHealed[TargetActor] += payload.Healed;
+          if (payload.IsHero !== 1) continue;
+          const { TargetActor, Healed } = payload;
+          factHero.Healed += Healed;
+          if (isNaN(factHero.TotalHealed[TargetActor])) factHero.TotalHealed[TargetActor] = Healed;
+          else factHero.TotalHealed[TargetActor] += Healed;
           break;
         }
 
         case "KillActor":
-          if (payload.TargetIsHero === 1) {
-            const killer = hero === payload.Actor ? "Kills" : "Deaths";
-            if (!factHero[killer]) factHero[killer] = [];
-            factHero[killer].push({
-              Actor: killer ? cleanActor(payload.Killed) : hero,
-              Time: `${Math.floor(difference / 60)}:${difference % 60}`,
-              Gold: payload.Gold,
-              Position: payload.Position,
-            });
-          }
+          if (payload.TargetIsHero !== 1) continue;
+          const killer = hero === payload.Actor ? "Kills" : "Deaths";
+          if (!factHero[killer]) factHero[killer] = [];
+          factHero[killer].push({
+            Actor: killer ? cleanActor(payload.Killed) : hero,
+            Time: `${Math.floor(difference / 60)}:${difference % 60}`,
+            Gold: payload.Gold,
+            Position: payload.Position,
+          });
           break;
 
         default:

@@ -29,7 +29,7 @@ const findSeasonByPatch = (patchVersion) => {
 
 class PlayerStatsInput {
 
-  json(m, playerId) {
+  json(matches, playerId) {
 
     let res = {
       id: playerId,
@@ -37,9 +37,9 @@ class PlayerStatsInput {
       nextCache: addMinutes(nowTime(), 5),
     }
 
-    if (lodash.isEmpty(m) || m.errors) return res;
+    if (lodash.isEmpty(matches) || matches.errors) return res;
     
-    const matches = (m.match) ? m.match.map(m => MatchTransform.input.json(m)) : m;
+    // const matches = (m.match) ? m.match.map(m => MatchTransform.input.json(m)) : m;
     const lastMatch = matches[0];
 
     const player = lastMatch.players.find(p => p.id === playerId);

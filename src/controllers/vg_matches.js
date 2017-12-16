@@ -31,13 +31,9 @@ class MatchesController {
 
   async getMatchTelemetry(matchId, region) {
     const match = await this.getMatchByMatchId(matchId, region);
-    if (match.error) return {};
-    // todo: error 404;
     const telemetry = await MatchesModel.getMatchTelemetry(match.telemetry.URL, matchId);
 
     return telemetry;
-
-
   }
 
   async getAllPages(playerName) {

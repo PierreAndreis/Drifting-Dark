@@ -108,6 +108,9 @@ export const cleanAbility = (ability) => {
     HERO_ABILITY_LORELAI_A_NAME: "lorelai_a",
     HERO_ABILITY_LORELAI_B_NAME: "lorelai_b",
     HERO_ABILITY_LORELAI_C_NAME: "lorelai_c",
+    HERO_ABILITY_VARYA_A_NAME: "varya_a",
+    HERO_ABILITY_VARYA_B_NAME: "varya_b",
+    HERO_ABILITY_VARYA_C_NAME: "varya_c",
   }[ability] || null;
 };
 
