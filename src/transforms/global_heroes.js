@@ -97,6 +97,9 @@ const getTelemetryStats = async (match) => {
   lodash.forEach(facts, teams => lodash.forEach(teams, (actor, name) => {
 
     const skillPath = translateSkillPath(actor.Skill);
+    if (typeof itemPath !== "object") {
+      console.log(itemPath, match.id, name);
+    }
     const itemPath = translateItemPath(actor.Items);
     const player = match.players.find(p => name === p.actor);
 
