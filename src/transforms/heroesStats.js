@@ -2,6 +2,8 @@ import * as lodash from "lodash";
 import {merge} from "./../lib/utils";
 import MatchesModel from "./../models/vg_matches";
 
+import logger from "./../lib/logger";
+
 import T3Items from "~/resources/items_t3";
 
 const translateSkillPath = (skillPath) => {
@@ -74,6 +76,11 @@ const generateHeroesStats = (match, player) => {
 
 const getTelemetryStats = async (match) => {
   let heroes = {};
+
+  if (!match.telemetry && !match.telemetry.URL) {
+    logger.warn(`No Telemetry: ${match.id}`);
+    throw Error("InvalidJSON");
+  }
 
   const telem = await MatchesModel.getMatchTelemetry(match.telemetry.URL, match.id);
   let averageTier = 0;

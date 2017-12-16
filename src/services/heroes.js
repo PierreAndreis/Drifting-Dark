@@ -1,4 +1,4 @@
-import generateHeroesStats      from "~/transforms/global_heroes.js";
+import transformHeroesStats     from "~/transforms/heroesStats.js";
 import {merge}                  from "~/lib/utils.js";
 import Telemetry                from "~/transforms/telemetry.js";
 import MatchesModel             from "~/models/vg_matches.js";
@@ -66,11 +66,12 @@ class HeroesStats {
     const matches = await this.getMatches(cacheKeyStore, MATCHES_PROCESS_BATCH);
     for (let index = 0; index < matches.length; index++) {
       const match = matches[index];
-      res.push(generateHeroesStats(match).catch(e => {
+      res.push(transformHeroesStats(match).catch(e => {
         if (e.message === "InvalidJSON") {
           return;
         }
-        else throw Error(e);
+        
+        setTimeout(() => { throw err; }); // Small Hack to keep the same error
       }));
     };
 
@@ -95,7 +96,7 @@ class HeroesStats {
     }
     catch(e) {
       console.warn("ProcessFailed:", e);
-      logger.warn(`[HeroStats] Process Failed: ${JSON.stringify(e)}`);
+      logger.warn(`[HeroStats] Process Failed: ${e}`);
       matches.forEach(match => this.retryMatch(cacheKeyStore, match));
       return false;
     }
