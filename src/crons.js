@@ -27,21 +27,19 @@ const crons = [
   },
   {
     name: "HeroStats - Digest",
-    interval: everyMinute(5),
+    interval: everyMinute(1),
     fn: () => HeroesStats.processMatches(),
   },
   {
     name: "HeroStats - Save",
-    interval: everyHour(1),
+    interval: everyMinute(2),
     fn: () => HeroesStats.saveMatches(),
   }
 ]
 
 if (cluster.isMaster) {
-
-
   crons.forEach(c => cron.schedule(c.interval, () => {
-    logger.info(`${c.name} is running`);
+    logger.verbose(`${c.name} is running`);
     c.fn()
   }));
 }

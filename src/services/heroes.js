@@ -13,8 +13,8 @@ const cacheKeyStore = "HeroesStatsMatches";
 const cacheKeyProcessed = "HeroesStats";
 
 
-const MATCHES_PROCESS_BATCH = 50;
-const MATCHES_SAVE_BATCH = 50;
+const MATCHES_PROCESS_BATCH = 150;
+const MATCHES_SAVE_BATCH = 5; // `MATCHES_PROCESS_BATCH` matches in each batch
 
 const DEBUG = false;
 

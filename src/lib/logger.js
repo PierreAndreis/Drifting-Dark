@@ -25,7 +25,8 @@ const logger = createLogger({
       // - Write Error to console as well
       //
       new transports.Console({ level: 'error', level: 'warn', format: consoleFormat}),
-      new transports.File({ filename: `${logDestination}rateLimit.log`, level: 'silly' }),
+      new transports.File({ filename: `${logDestination}silly.log`, level: 'silly' }),
+      new transports.File({ filename: `${logDestination}cron.log`,  level: 'verbose' }),
       new transports.File({ filename: `${logDestination}error.log`, level: 'error' }),
       new transports.File({ filename: `${logDestination}combined.log` })
     ]

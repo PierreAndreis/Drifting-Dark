@@ -26,7 +26,7 @@ class PlayerController {
     // or create if there is no stats
     if (!playerOldStats || new Date(playerOldStats.nextCache) < new Date()) {
 
-      logger.info(`new cache for ${playerName}`);
+      logger.silly(`new cache for ${playerName}`);
 
       stats = await PlayerStatsModel.update(player, playerOldStats);
       PlayerStatsModel.upsert(player.id, stats);
