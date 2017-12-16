@@ -34,7 +34,7 @@ const generateHeroesStats = (match, player) => {
     patchVersion: match.patchVersion,
     region:       match.shardId,
     actor:          player.actor,
-    tier:           player.tier,
+    tier:           "" + player.tier,
     wins:           winner,
     krakenCap:      player.krakenCaptures,
     crystalSentry:  player.crystalMineCaptures,
@@ -85,7 +85,7 @@ const getTelemetryStats = async (match) => {
   for (const pick of telem.Draft) {
     if (pick.Type !== "HeroBan") continue;
     heroes[pick.Hero] = {
-      tier:         averageTier,
+      tier:         "" + averageTier,
       patchVersion: match.patchVersion,
       gameMode: match.gameMode,
       region: match.shardId,
