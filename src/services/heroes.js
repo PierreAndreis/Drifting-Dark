@@ -66,8 +66,8 @@ class HeroesStats {
     const matches = await this.getMatches(cacheKeyStore, MATCHES_PROCESS_BATCH);
     for (let index = 0; index < matches.length; index++) {
       const match = matches[index];
-      res.push(transformHeroesStats(match).catch(e => {
-        if (e.message === "InvalidJSON") {
+      res.push(transformHeroesStats(match).catch(err => {
+        if (err.message === "InvalidJSON") {
           return;
         }
         
