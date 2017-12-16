@@ -94,7 +94,8 @@ class HeroesStats {
       return heroes;
     }
     catch(e) {
-      logger.warn(`[HeroStats] Process Failed: ${e}`);
+      console.warn("ProcessFailed:", e);
+      logger.warn(`[HeroStats] Process Failed: ${JSON.stringify(e)}`);
       matches.forEach(match => this.retryMatch(cacheKeyStore, match));
       return false;
     }
@@ -134,6 +135,7 @@ class HeroesStats {
       return res;
     }
     catch(e) {
+      console.warn(e);
       logger.warn(`[HEROSTATS] Saving Unknown Error: ${e}`);
       return false;
     }
