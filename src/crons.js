@@ -32,7 +32,7 @@ const crons = [
   },
   {
     name: "HeroStats - Save",
-    interval: everyMinute(2),
+    interval: everyMinute(1),
     fn: () => HeroesStats.saveMatches(),
   }
 ]

@@ -14,7 +14,7 @@ const cacheKeyProcessed = "HeroesStats";
 
 
 const MATCHES_PROCESS_BATCH = 150;
-const MATCHES_SAVE_BATCH = 5; // `MATCHES_PROCESS_BATCH` matches in each batch
+const MATCHES_SAVE_BATCH = 100; // `MATCHES_PROCESS_BATCH` matches in each batch
 
 const DEBUG = false;
 
@@ -106,29 +106,35 @@ class HeroesStats {
 
     let matches = await this.getMatches(cacheKeyProcessed, MATCHES_SAVE_BATCH);
     // generate one big array in separate versions and gamemodes
+    let merged = {};
 
     matches.forEach((payload) => {
       for (const key in payload) {
         let stats = payload[key];
-        promises.push((async () => {
-          try {
-            let getRes = await HeroesModel.getAndLock(key);
-            if (!getRes) throw Error(`Locked`);
-            let res = merge(getRes.value, stats);
-            const insert = await HeroesModel.upsert(key, res, {cas: getRes.cas});
-            if (!insert) throw Error(`WrongKey`);
-            return insert;
-          }
-          catch(e) {
-            if (e.message === "Locked" || e.message === "WrongKey") {
-              logger.warn(`[HEROSTATS] Saving Error Known: [${key}] ${e.message}`);
-            } 
-            logger.warn(`[HEROSTATS] Saving unknown error: [${key} ${e}`);
-            this.retryMatch(cacheKeyProcessed, {[key]: stats});
-          }
-        })());
+        merged[key] = merge(merged[key], payload[key]);
       }
     });
+
+    for (const key in merged) {
+      let stats = payload[key];
+      promises.push((async () => {
+        try {
+          let getRes = await HeroesModel.getAndLock(key);
+          if (!getRes) throw Error(`Locked`);
+          let res = merge(getRes.value, stats);
+          const insert = await HeroesModel.upsert(key, res, {cas: getRes.cas});
+          if (!insert) throw Error(`WrongKey`);
+          return insert;
+        }
+        catch(e) {
+          if (e.message === "Locked" || e.message === "WrongKey") {
+            logger.warn(`[HEROSTATS] Saving Error Known: [${key}] ${e.message}`);
+          } 
+          logger.warn(`[HEROSTATS] Saving unknown error: [${key} ${e}`);
+          this.retryMatch(cacheKeyProcessed, {[key]: stats});
+        }
+      })());
+    }
 
     try {
       const res = await Promise.all(promises);

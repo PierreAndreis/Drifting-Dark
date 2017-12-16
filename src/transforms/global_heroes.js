@@ -9,6 +9,7 @@ const translateSkillPath = (skillPath) => {
 }
 
 const translateItemPath = (itemPath) => {
+  if (!itemPath) return [0];
   const res = [];
 
   for (const tItem of itemPath) {
@@ -97,9 +98,6 @@ const getTelemetryStats = async (match) => {
   lodash.forEach(facts, teams => lodash.forEach(teams, (actor, name) => {
 
     const skillPath = translateSkillPath(actor.Skill);
-    if (typeof actor.Items !== "object") {
-      console.log(actor.Items, match.id, name);
-    }
     const itemPath = translateItemPath(actor.Items);
     const player = match.players.find(p => name === p.actor);
 
