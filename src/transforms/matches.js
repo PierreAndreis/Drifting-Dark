@@ -90,7 +90,8 @@ class MatchInput {
       const role = rolesToPick.pop();
 
       const rankvst = lodash.get(player, "player.stats.rankPoints.ranked", 0);
-      const tier = TIER3_NAMES.find(t => t.name === player._stats.skillTier).serverName;
+      const tierN = TIER3_NAMES.find(t => t.name === player._stats.skillTier);
+      const tier = tierN && tierN.serverName ? tierN.serverName : -1;
 
       p.push({
         id:       player.player.id,
