@@ -1,8 +1,7 @@
 import * as lodash    from "lodash";
 
-import { merge }                   from "~/lib/utils";
-import { getKDA, getRate, getAvg } from "~/lib/utils_stats";
-import Config from "~/config";
+import { merge, findSeasonByPatch } from "~/lib/utils";
+import { getKDA, getRate, getAvg }  from "~/lib/utils_stats";
 
 import MatchTransform from "./matches";
 
@@ -11,20 +10,6 @@ const nowTime = () => new Date();
 const addMinutes = (date, minutes) => {
   date.setMinutes(date.getMinutes() + minutes);
   return date;
-}
-
-const findSeasonByPatch = (patchVersion) => {
-  let season;
-
-  lodash.forEach(Config.VAINGLORY.SEASONS, (s, name) => {
-    if (s.includes(patchVersion)) {
-      season = name;
-      return false;
-    }
-  })
-
-
-  return season;
 }
 
 class PlayerStatsInput {
@@ -55,6 +40,7 @@ class PlayerStatsInput {
       // the last match won't show... we already calculated that.
       lastMatch: addMinutes(new Date(lastMatch.createdAt), 1),
       aka:       stats.aka,
+      vpr:       stats.vpr,
       patches:   stats.patches,
       info:      stats.info,
     }
@@ -66,6 +52,7 @@ class PlayerStatsInput {
     let patches = {};
     let aka     = [];
     let info    = {};
+    let vpr     = {};
 
     lodash.forEach(matches, (match) => {
       const pv = match.patchVersion;
@@ -81,17 +68,24 @@ class PlayerStatsInput {
       
       patches[pv] = patches[pv] || {};
 
-      patches[pv]               = merge(patches[pv],     _total    );
+      patches[pv]               = merge(patches[pv],     _total    );   
       patches[pv]["gameModes"]  = merge(patches[pv]["gameModes"], _gameModes);
       patches[pv]["gameModes"]  = merge(patches[pv]["gameModes"], _roles    );
       patches[pv]["gameModes"]  = merge(patches[pv]["gameModes"], _heroes   );
       patches[pv]["gameModes"]  = merge(patches[pv]["gameModes"], _friends  );
       aka  = merge(aka, [player.name]);
       info = merge(info, this.generateInfo(match, player, roster))
+      vpr[pv]  = merge(vpr[pv], this.generateVPR(match, player))
 
     });
 
-    return {patches, aka, info};
+    return {patches, aka, info, vpr};
+  }
+
+  generateVPR(match, player) {
+    return {
+      change: player.vprDiff || 0
+    }
   }
 
   generateTotal(type, match, player, roster) {
@@ -295,6 +289,7 @@ class PlayerStatsOutput {
       blueWins,
       redGames,
       redWins,
+      vprChange,
     } = stats;
 
     const thisKP = kills + assists;
@@ -306,6 +301,7 @@ class PlayerStatsOutput {
       games,
       wins,
       duration,
+      vprChange,
       loss:            games - wins,
       winRate:         getRate(wins, games),
       kp:              getRate(thisKP, teamKills),

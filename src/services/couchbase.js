@@ -7,7 +7,7 @@ const couchbase = Promise.promisifyAll(c);
 
 const cluster = new couchbase.Cluster(Config.COUCHBASE.HOST);
 
-cluster.authenticate(Config.COUCHBASE.USERNAME, Config.COUCHBASE.PASSWORD);
+// cluster.authenticate(Config.COUCHBASE.USERNAME, Config.COUCHBASE.PASSWORD);
 
 class CouchBase {
 

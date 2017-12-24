@@ -13,12 +13,13 @@ const BATCHAPI_PAGES_PER_TRY = 3;
 
 class VGMatches {
 
-  createCacheKey(playerId, region, {lastMatch, patch, gameMode, page}) {
+  createCacheKey(playerId, region, {lastMatch, patch, gameMode, limit, page}) {
 
     let key = `matches:${playerId}:${region}`;
     if (lastMatch) key += `:${lastMatch}`;
     if (patch)     key += `:${patch}`;
     if (gameMode)  key += `:${gameMode}`;
+    if (limit)     key += `:${limit}`;
     if (page)      key += `:${page}`;
 
     return key;

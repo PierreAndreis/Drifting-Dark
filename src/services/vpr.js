@@ -1,36 +1,60 @@
-import * as lodash      from "lodash";
-import moment           from "moment";
-import { merge }        from "~/lib/utils";
-import Config           from "~/config";
+import * as lodash                  from "lodash";
+import { merge, findSeasonByPatch } from "~/lib/utils";
+import Config                       from "~/config";
 
 import MatchesTransform from "~/transforms/matches";
 import PlayerController from "~/controllers/vg_player";
 import PlayerStats      from "~/transforms/playerStats";
-
 
 const ELOSCALE_FACTOR = 5;
 const ALLOWED_GAME_MODES = ["Ranked"];
 
 class VPRRating {
 
-  async initial(seasonStats) {
+  initial(seasonStats, tier) {
+
+
+    const {
+      kills, 
+      assists,
+      deaths,
+      teamKills,
+      wins,
+      games,
+    } = seasonStats;
+
+    const loss = games - wins;
 
     const stats = {
-      kda:              (seasonStats.kills + seasonStats.assists) / seasonStats.deaths,
-      kp:               seasonStats.kp / 100,
-      winRatio:         seasonStats.wins / (seasonStats.losses + seasonStats.wins),
+      kda:              (kills + assists) / deaths,
+      kp:               (kills + assists) / teamKills,
+      winRatio:         wins / (games),
       averageKdaKpWr:   (2.743333333 + 0.4454112848 + 13) / 3, // TODO: need this value
       averageGames:     1197, // TODO: need this value
-    vst:                100, // TODO: need this value
+      vst:              100, // TODO: need this value
+      tier:             tier,
     };
 
     const kdaKp             = stats.kda * stats.kp;
     const kdaKpWr           = kdaKp * stats.winRatio;
     const kdaKpWrRel        = kdaKpWr / stats.averageKdaKpWr;
-    const averageGameScale  = kdaKpWrRel * ((seasonStats.wins + seasonStats.losses) / stats.averageGames);
+    const averageGameScale  = kdaKpWrRel * ((wins + loss) / stats.averageGames);
     const antismurf         = -1 * (1 - averageGameScale) * stats.vst;
+    const baseVPR           = ((stats.tier - 1) * 100) + antismurf;
 
-    return ((seasonStats.tier - 1) * 100) + antismurf;
+    return baseVPR;
+  }
+
+  update(playerStats) {
+    // if (!playerStats.vpr) return playerStats;
+    for (let patch in playerStats.vpr) {
+      const seasonStats = playerStats.patches[patch] && playerStats.patches[patch]["gameModes"]["Ranked"] || [];
+      playerStats.vpr[patch]["initial"] = this.initial(seasonStats, playerStats.tier);
+      
+    }
+
+    return playerStats;
+
   }
 
   getTRatio(kills, deaths, assists, KP) {

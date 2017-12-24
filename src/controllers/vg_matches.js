@@ -21,8 +21,6 @@ class MatchesController {
 
   async getMatchesByName(playerName, context) {
     const playerObj = await this.getPlayerId(playerName);
-    // TODO: Add playerID to pros.js in resources IF this function is called by prohistory loop
-    // if it's a array, let's join with comma
     if (typeof context.gameMode == "object") context.gameMode = context.gameMode.join(",");
 
     return this.getMatchesByPlayerId(playerObj, context);

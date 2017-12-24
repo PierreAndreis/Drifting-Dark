@@ -114,6 +114,20 @@ export const sortBy = (array, desc, field, fn = function(x){return x}) => {
   })
 };
 
+export const findSeasonByPatch = (patchVersion) => {
+  let season;
+
+  lodash.forEach(Config.VAINGLORY.SEASONS, (s, name) => {
+    if (s.includes(patchVersion)) {
+      season = name;
+      return false;
+    }
+  })
+
+
+  return season;
+}
+
 // WIP below
 const PATCHES = [
   {
