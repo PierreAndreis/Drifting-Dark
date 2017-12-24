@@ -76,7 +76,17 @@ class MatchInput {
 
     let p = [];
 
+    players = players.sort((a, b) => {
+      /**/ if (a.stats.farm > a.stats.farm) return 1;
+      else if (a.stats.farm < a.stats.farm) return -1;
+      else return 0;
+    });
+
+    const rolesToPick = ["Carry", "Jungler", "Captain"];
+
     lodash.forEach(players, (player) => {
+
+      const role = rolesToPick.pop();
 
       p.push({
         id:       player.player.id,
@@ -86,7 +96,7 @@ class MatchInput {
         actor:    player.actor,
         side:     roster.stats.side,
         aces:     roster.stats.acesEarned,
-        role:     findRole(player.stats),
+        role:     role,
           ...player.stats,
       });
 

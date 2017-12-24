@@ -19,6 +19,11 @@ const NPC = [
   "*PetalMinion*",
 ];
 
+const HEALS_TO_SKIP = [
+  "Buff_SpawnStage_RechargeAndAlwaysSpeedBoost",
+  "Buff_Ace",
+]
+
  // TODO: Add gold miner, crystal miner, and kraken
 const OBJECTIVES = [
   "*OuterTurret*",
@@ -172,8 +177,26 @@ class Telemetry {
           break;
 
         case "HealTarget": {
-          if (payload.IsHero !== 1) continue;
+          if (payload.IsHero !== 1 || payload.TargetIsHero !== 1) continue;
+
+          if (HEALS_TO_SKIP.includes(payload.Source)) continue;
+          if (payload.Team !== payload.TargetTeam) continue;
+
           const { TargetActor, Healed } = payload;
+          factHero.healed += Healed;
+
+          if (isNaN(factHero.totalHealed[TargetActor])) factHero.totalHealed[TargetActor] = Healed;
+          else factHero.totalHealed[TargetActor] += Healed;
+          
+          break;
+        }
+
+        case "Vampirism": {
+          if (payload.IsHero !== 1 || payload.TargetIsHero !== 1) continue;
+          if (HEALS_TO_SKIP.includes(payload.Source)) continue;
+
+          const { TargetActor, Vamp } = payload;
+          const Healed = Number(Vamp);
           factHero.healed += Healed;
 
           if (isNaN(factHero.totalHealed[TargetActor])) factHero.totalHealed[TargetActor] = Healed;
