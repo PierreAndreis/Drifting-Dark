@@ -15,7 +15,7 @@ export const latestMatches = async (req, res, next) => {
 // matches/:id/:region/details
 export const details = async (req, res, next) => {
   const { id, region } = req.params;
-  const reply = await MatchesController.getMatchByMatchId(id, region);
+  const reply = await MatchesController.getMatchDetails(id, region);
   res.json(reply);
 };
 

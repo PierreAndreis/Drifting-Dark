@@ -119,6 +119,7 @@ class MatchOutput {
       minutes: getMinutes(duration),
       patchVersion,
       players: this.generatePlayers(playerId, {match, rosters, players}),
+      rosters: rosters,
     }
   }
 

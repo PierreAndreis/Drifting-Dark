@@ -74,10 +74,12 @@ class VGMatches {
     return removeDuplicatedMatches;
   }
 
-  async getMatchByMatchId(id, region) {
+  async getMatchByMatchId(id, region, output) {
     const match = await VaingloryService.match(id, region);
     if (match.errors) return {errors: match.messages}; // todo error handler
-    return MatchTransform.input.json(match);
+    let m = MatchTransform.input.json(match);
+    if (output) m = MatchTransform.output.json(m);
+    return m
   }
   
   async getMatches(playerId, region, lastMatch, context) {
@@ -109,6 +111,8 @@ class VGMatches {
       const telemetry = await TelemetryTransform(telemetryUrl, matchId);
       return telemetry;
     };
+
+    return get();
     return CacheService.preferCache(key, get, { 
       expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE,
       category: "telemetry"

@@ -36,6 +36,10 @@ class MatchesController {
     return telemetry;
   }
 
+  async getMatchDetails(matchId, region) {
+    return await getMatchByMatchId(matchId, region, true);
+  }
+
   async getAllPages(playerName) {
     const { id, region } = await this.getPlayerId(playerName);
 
