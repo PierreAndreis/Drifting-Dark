@@ -139,7 +139,7 @@ class PlayerStatsInput {
     const role = player.role;
 
     // Role shouldn't be a thing on anything not Ranked or Casual
-    if (match.gameMode !== "Ranked" || match.gameMode !== "Casual") return {};
+    if (match.gameMode !== "Ranked" || match.gameMode !== "Casual") return false;
 
     return {
       [match.gameMode]: {
