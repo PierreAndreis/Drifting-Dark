@@ -77,8 +77,8 @@ class MatchInput {
     let p = [];
 
     players = players.sort((a, b) => {
-      /**/ if (a.stats.farm > a.stats.farm) return 1;
-      else if (a.stats.farm < a.stats.farm) return -1;
+      /**/ if (a.stats.farm > a.stats.farm) return -1;
+      else if (a.stats.farm < a.stats.farm) return 1;
       else return 0;
     });
 
