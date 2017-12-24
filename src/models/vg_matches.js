@@ -112,7 +112,6 @@ class VGMatches {
       return telemetry;
     };
 
-    return get();
     return CacheService.preferCache(key, get, { 
       expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE,
       category: "telemetry"

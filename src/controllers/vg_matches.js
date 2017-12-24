@@ -37,7 +37,7 @@ class MatchesController {
   }
 
   async getMatchDetails(matchId, region) {
-    return await getMatchByMatchId(matchId, region, true);
+    return await this.getMatchByMatchId(matchId, region, true);
   }
 
   async getAllPages(playerName) {
