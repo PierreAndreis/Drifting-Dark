@@ -78,7 +78,7 @@ class VGMatches {
     const match = await VaingloryService.match(id, region);
     if (match.errors) return {errors: match.messages}; // todo error handler
     let m = MatchTransform.input.json(match);
-    if (output) m = MatchTransform.output.json(m);
+    if (output) m = MatchTransform.output.json(id, m);
     return m
   }
   
