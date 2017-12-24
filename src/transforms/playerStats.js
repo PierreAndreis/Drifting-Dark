@@ -51,6 +51,8 @@ class PlayerStatsInput {
       name:      player.name,
       region:    player.shardId,
       tier:      "" + player.tier,
+      rankVst:   player.rankvst,
+      blitzVst:  player.blitzvst,
       // we add 1 minute to the lastMatch so if we search using createdAt-start, 
       // the last match won't show... we already calculated that.
       lastMatch: addMinutes(new Date(lastMatch.createdAt), 1),
@@ -210,7 +212,7 @@ class PlayerStatsOutput {
     const {season} = opts;
 
 
-    const {id, name, lastCache, region, tier, aka, patches, info} = playerStats;
+    const {id, name, lastCache, region, tier, aka, patches, info, rankVst, blitzVst} = playerStats;
 
     // first we will merge all in one structure that we will always know
     lodash.forEach(patches, (data, patch) => {
@@ -232,6 +234,8 @@ class PlayerStatsOutput {
       lastCache,
       tier, 
       aka,
+      rankVst,
+      blitzVst,
       seasonsAvailable,
       gameModesAvailable,
       filters: opts,

@@ -1,6 +1,7 @@
 import * as lodash from "lodash";
 
 import { getKDA, getRate, getAvg, getMinutes } from "~/lib/utils_stats";
+import TIER3_NAMES from "~/resources/tiers_name";
 
 const findRole = (player) => {
   let role = "Captain";
@@ -88,16 +89,21 @@ class MatchInput {
 
       const role = rolesToPick.pop();
 
+      const rankvst = lodash.get(player, "player.stats.rankPoints.ranked", 0);
+      const tier = TIER3_NAMES.find(t => t.name === player._stats.skillTier).serverName;
+
       p.push({
         id:       player.player.id,
         name:     player.player.name,
         shardId:  player.player.shardId,
-        tier:     player._stats.skillTier,
+        rankvst:  lodash.get(player, "player.stats.rankPoints.ranked", 0),
+        blitzvst: lodash.get(player, "player.stats.rankPoints.blitz", 0),
         actor:    player.actor,
         side:     roster.stats.side,
         aces:     roster.stats.acesEarned,
         role:     role,
           ...player.stats,
+        tier:     tier,
       });
 
     });
@@ -141,15 +147,18 @@ class MatchOutput {
 
       let roster = rosters.find(r => r.side === player.side);
 
-      return {
-        id: player.id,
-        me: (playerId && player.id === playerId),
-        side: player.side,
-        name: player.name,
-        region: player.shardId,
-        tier: player.tier,
+      return {    
+        id:        player.id,
+        me:        (playerId && player.id === playerId),
+        side:      player.side,
+        name:      player.name,
+        region:    player.shardId,
+        tier:      player.tier,
         skillTier: player.skillTier,
-        winner: player.winner,
+        winner:    player.winner,
+
+        rankvst:  player.rankvst,
+        blitzvst: player.blitzvst,
         
         hero: player.actor,
         role: player.role,
