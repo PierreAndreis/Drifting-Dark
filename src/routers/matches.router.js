@@ -1,5 +1,6 @@
 import MatchesController    from "~/controllers/vg_matches.js";
 import HeroesStats          from "~/services/heroes.js";
+import HeroesModel      from "~/models/vg_heroes";
 
 import H from "~/models/vg_heroes.js";
 
@@ -8,7 +9,8 @@ export const latestMatches = async (req, res, next) => {
   const { name } = req.params;
   const { patch, gameMode, page, limit } = req.query;
   let reply = await MatchesController.getMatchesByName(name, { patch, gameMode, page, limit });
-  // reply = await HeroesStats(reply[0]);
+  reply = await HeroesModel.bans();
+  console.log('it ran')
   res.json(reply);
 };
 
