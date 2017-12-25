@@ -9,7 +9,7 @@ export const latestMatches = async (req, res, next) => {
   const { name } = req.params;
   const { patch, gameMode, page, limit } = req.query;
   let reply = await MatchesController.getMatchesByName(name, { patch, gameMode, page, limit });
-  reply = await HeroesModel.bans();
+  reply = await HeroesModel.heroData('bans');
   console.log('it ran')
   res.json(reply);
 };

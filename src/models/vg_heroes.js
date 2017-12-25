@@ -23,6 +23,7 @@ class VGHeroes extends BaseCouchbase {
 
   async heroData(type) {
     const dbData = await this.callCouch();
+    console.log(dbData)
     return dbData.map((hero) => {
       let numerator = "";
       let property  = "";
