@@ -37,7 +37,10 @@ class Telemetry {
 
   async json (url, id) {
 
-    const result = await fetch(url);
+    const result = await fetch(url, {
+      timeout: 10000,
+      compress: true
+    });
     if (result.status !== 200) return {};
 
     let telemetry;
