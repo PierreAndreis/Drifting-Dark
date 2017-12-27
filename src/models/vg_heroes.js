@@ -1,6 +1,8 @@
 import CouchbaseService from "~/services/couchbase";
 import BaseCouchbase from "~/lib/BaseCouchbase";
 
+import { getRate } from "~/lib/utils_stats";
+
 import Config from "~/config";
 
 import CacheService     from "~/services/cache";
@@ -10,69 +12,51 @@ const HEROESDB = new CouchbaseService("heroes");
 
 const cacheKey = "HeroesStats";
 
+const QUERY_GET_LATEST = (region) => `
+SELECT actor, SUM(bans) as bans, SUM(games) as games, SUM(wins) as wins
+FROM heroes 
+WHERE patchVersion = '2.11' 
+${region && `AND region = '${region}'`}
+GROUP BY actor 
+ORDER BY bans DESC
+`;
+
+
 class VGHeroes extends BaseCouchbase {
-  callCouch(select, from, where, group, order, ascDesc) {
-    console.log("inside coudh");
-    if (!select) return this.query("SELECT patchVersion, actor, SUM(bans) as bans, SUM(games) as games FROM heroes WHERE patchVersion = '2.11' GROUP BY patchVersion, actor ORDER BY bans DESC");
-    return this.query(`SELECT ${select} FROM ${from} WHERE ${where} GROUP BY ${group} ORDER BY ${order} ${ascDesc}"`);
-  }
 
-  getTotalGames(dbData) {
-    return dbData.reduce((prev, now) => prev.games + now.games) / 6;
-  }
+  async heroStats(region) {
+    const payload = await this.query(QUERY_GET_LATEST(region));
 
-  async heroData(type) {
-    const dbData = await this.callCouch();
-    console.log(dbData)
-    return dbData.map((hero) => {
-      let numerator = "";
-      let property  = "";
-      switch (type) {
-        case "bans":
-          numerator   = hero.bans;
-          property    = "banRate";
-          break;
-        case "picks":
-          numerator = hero.games - hero.bans;
-          property    = "pickRate";
-          break;
-        case "games":
-          numerator   = hero.games;
-          property    = "gamesRate";
-          break;
-        default:
+    let sumGames = payload.reduce((total, now) => {
+      return total + now.games
+    }, 0);
+    
+    const totalGames = sumGames / 6
+
+    const heroes = payload.map(hero => {
+      return {
+        ...hero,
+        totalGames,
+        winRate: getRate(hero.wins, hero.games),
+        banRate: getRate(hero.bans, totalGames),
+        pickRate: getRate(hero.games, totalGames),
       }
-      hero[property]  = numerator / this.getTotalGames(dbData);
-      return hero;
-    });
+    })
+
+    return heroes;
   }
 
-  // async bans() {
-  //   const dbData = await this.callCouch();
-  //   console.log(dbData);
-  //   return dbData.map((hero) => {
-  //     console.log("inside map");
-  //     hero.banRate    = hero.bans / this.getTotalGames(dbData);
-  //     console.log(hero.banRate);
-  //     return hero;
-  //   });
-  // }
-  //
-  // async picks() {
-  //   const dbData = await this.callCouch();
-  //   return dbData.map((hero) => {
-  //     hero.pickRate   = (hero.games - hero.bans) / this.getTotalGames(dbData);
-  //     return hero;
-  //   });
-  // }
-  //
-  // async games() {
-  //   const dbData = await this.callCouch();
-  //   return dbData.map((hero) => {
-  //     hero.gamesRate  = hero.games / this.getTotalGames(dbData);
-  //     return hero;
-  //   });
-  // }
+  cacheKey(type, region) {
+    return `HeroesStats:${type.toLowerCase()}:${region}`
+  }
+
+  saveStats(type, region, payload) {
+    return CacheService.set(this.cacheKey(type, region), payload);
+  }
+
+  getStats(type, region) {
+    return CacheService.get(this.cacheKey(type, region));
+  }
 }
 
 export default new VGHeroes(HEROESDB);
