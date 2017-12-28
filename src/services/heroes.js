@@ -157,9 +157,10 @@ class HeroesStats {
     for (let region of REGIONS) {
       const stats = await HeroesModel.heroStats(region);
       if (!region) region = "all";
-      HeroesModel.saveStats("pickRate", region, sortStats(stats, "pickRate"));
-      HeroesModel.saveStats("banRate",  region, sortStats(stats, "banRate"));
-      HeroesModel.saveStats("winRate", region,  sortStats(stats, "winRate"));
+      HeroesModel.saveStats("raw",      region, stats);
+      HeroesModel.saveStats("pickrate", region, sortStats(stats, "pickRate"));
+      HeroesModel.saveStats("banrate",  region, sortStats(stats, "banRate"));
+      HeroesModel.saveStats("winrate",  region, sortStats(stats, "winRate"));
     };
   }
 

@@ -16,6 +16,7 @@ const QUERY_GET_LATEST = (region) => `
 SELECT actor, SUM(bans) as bans, SUM(games) as games, SUM(wins) as wins
 FROM heroes 
 WHERE patchVersion = '2.11' 
+AND TONUMBER(tier) > 24
 ${region && `AND region = '${region}'`}
 GROUP BY actor 
 ORDER BY bans DESC
@@ -37,8 +38,8 @@ class VGHeroes extends BaseCouchbase {
       return {
         ...hero,
         totalGames,
-        winRate: getRate(hero.wins, hero.games),
-        banRate: getRate(hero.bans, totalGames),
+        winRate:  getRate(hero.wins,  hero.games),
+        banRate:  getRate(hero.bans,  totalGames),
         pickRate: getRate(hero.games, totalGames),
       }
     })
