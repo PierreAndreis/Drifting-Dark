@@ -1,6 +1,6 @@
 import HeroesModel from "../models/vg_heroes";
 
-const allowedTypes = ["pickrate", "winrate", "banrate", "all"];
+const allowedTypes = ["pickrate", "winrate", "banrate", "raw"];
 
 class HeroesController {
   
