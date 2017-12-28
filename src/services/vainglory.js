@@ -60,8 +60,7 @@ class VaingloryService {
     else {
       options["patchVersion"] = patches;
     }
-
-    console.log(options);
+    
     if (gameMode) options.gameMode = gameMode;
 
     options = generateOpt(options);

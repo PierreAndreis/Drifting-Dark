@@ -41,8 +41,6 @@ class MatchesController {
       context.patches = patches || "";
     }
 
-    console.log(context);
-
     return this.getMatchesByPlayerId(playerObj, context);
     
   }
