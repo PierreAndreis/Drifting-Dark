@@ -4,6 +4,8 @@ import { merge }                   from "~/lib/utils";
 import { getKDA, getRate, getAvg } from "~/lib/utils_stats";
 import Config from "~/config";
 
+import Seasons from "~/resources/seasons";
+
 import MatchTransform from "./matches";
 
 const nowTime = () => new Date();
@@ -16,7 +18,7 @@ const addMinutes = (date, minutes) => {
 const findSeasonByPatch = (patchVersion) => {
   let season;
 
-  lodash.forEach(Config.VAINGLORY.SEASONS, (s, name) => {
+  lodash.forEach(Seasons, (s, name) => {
     if (s.includes(patchVersion)) {
       season = name;
       return false;
@@ -219,6 +221,7 @@ class PlayerStatsOutput {
 
       const thisSeason = findSeasonByPatch(patch);
       seasonsAvailable.add(thisSeason);
+
       Object.keys(data.gameModes).forEach((name) => gameModesAvailable.add(name));
 
       if (!lodash.isEmpty(season) && !season.includes(thisSeason)) return;

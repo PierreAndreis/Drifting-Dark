@@ -2,6 +2,9 @@ import * as lodash from "lodash";
 import MatchesModel from "~/models/vg_matches";
 import PlayerController from "./vg_player";
 
+import { dirtyGameMode, getPatchesList } from "~/resources/dictionaries";
+
+
 class MatchesController {
   async getPlayerId(playerName) {
     const player = await PlayerController.lookupName(playerName);
@@ -21,9 +24,24 @@ class MatchesController {
 
   async getMatchesByName(playerName, context) {
     const playerObj = await this.getPlayerId(playerName);
-    // TODO: Add playerID to pros.js in resources IF this function is called by prohistory loop
-    // if it's a array, let's join with comma
-    if (typeof context.gameMode == "object") context.gameMode = context.gameMode.join(",");
+
+    // Transform clean GameMode into server name
+    // Blitz => blitz_pvp_ranked
+    if (typeof context.gameMode == "object") {
+      context.gameMode = context.gameMode
+        .map(gameMode => dirtyGameMode(gameMode) || "")
+        .join(",");
+    }
+    else if (context.gameMode) {
+      context.gameMode = dirtyGameMode(context.gameMode) || "";
+    }
+
+    if (context.season) {
+      const patches = getPatchesList(context.season);
+      context.patches = patches || "";
+    }
+
+    console.log(context);
 
     return this.getMatchesByPlayerId(playerObj, context);
     
