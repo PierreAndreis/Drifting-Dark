@@ -1,9 +1,9 @@
 import * as lodash    from "lodash";
 
-import { merge, findSeasonByPatch } from "~/lib/utils";
+import { merge,                   } from "~/lib/utils";
 import { getKDA, getRate, getAvg }  from "~/lib/utils_stats";
 
-import Seasons from "~/resources/seasons";
+import { findSeasonByPatch } from "~/resources/dictionaries";
 
 import MatchTransform from "./matches";
 

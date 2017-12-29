@@ -12,6 +12,21 @@ export const getPatchesList = (season) => {
   return patches;
 }
 
+export const findSeasonByPatch = (patchVersion) => {
+  let season;
+
+  for (let name in SEASONS) {
+    let s = SEASONS[name];
+    if (s.includes(patchVersion)) {
+      season = name;
+      break;
+    }
+  };
+
+
+  return season;
+}
+
 export const cleanAbility = (ability) => {
   return ABILITIES[ability] || null;
 };

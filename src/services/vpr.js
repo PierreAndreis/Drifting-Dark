@@ -1,6 +1,6 @@
-import * as lodash                  from "lodash";
-import { merge, findSeasonByPatch } from "~/lib/utils";
-import Config                       from "~/config";
+import * as lodash from "lodash";
+import { merge }   from "~/lib/utils";
+import Config      from "~/config";
 
 import MatchesTransform from "~/transforms/matches";
 import PlayerController from "~/controllers/vg_player";
