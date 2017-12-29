@@ -150,7 +150,7 @@ class HeroesStats {
   async cacheStats() {
 
     const sortStats = (stats, type) => {
-      const sorted = sortBy(stats, false, type, n => parseInt(n));
+      const sorted = sortBy(stats, false, type, n => parseFloat(n));
       return sorted.map(m => ({name: m.actor, [type]: m[type]}));
     }
 
