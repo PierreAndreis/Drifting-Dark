@@ -1,6 +1,6 @@
 import * as lodash    from "lodash";
 import Config         from "../config";
-import { findSeasonbyPatch } from "~/resources/dictionaries";
+import { findSeasonByPatch } from "~/resources/dictionaries";
 
 export const createPlayer = (p) => {
   

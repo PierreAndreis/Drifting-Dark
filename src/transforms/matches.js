@@ -69,7 +69,7 @@ class MatchInput {
       players.push(...this.generatePlayers(roster.participants, roster));
 
     });
-
+    
     if (gameMode === "Ranked") {
       players = VPRService.implementVPRChanges(players, rosters);
     }

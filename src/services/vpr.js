@@ -11,8 +11,12 @@ const ALLOWED_GAME_MODES = ["Ranked"];
 
 class VPRRating {
 
-  initial(seasonStats, tier) {
+  initial(player, seasonStats) {
 
+    const {
+      rankVst,
+      tier
+    } = player;
 
     const {
       kills, 
@@ -20,7 +24,7 @@ class VPRRating {
       deaths,
       teamKills,
       wins,
-      games,
+      games
     } = seasonStats;
 
     const loss = games - wins;
@@ -29,10 +33,10 @@ class VPRRating {
       kda:              (kills + assists) / deaths,
       kp:               (kills + assists) / teamKills,
       winRatio:         wins / (games),
-      averageKdaKpWr:   (2.743333333 + 0.4454112848 + 13) / 3, // TODO: need this value
-      averageGames:     1197, // TODO: need this value
-      vst:              100, // TODO: need this value
-      tier:             tier,
+      averageKdaKpWr:   (2.743333333 + 0.4454112848 + 13) / 3,
+      averageGames:     1000,
+      vst:              parseInt(rankVst, 10),
+      tier:             parseInt(tier, 10),
     };
 
     const kdaKp             = stats.kda * stats.kp;
@@ -48,8 +52,10 @@ class VPRRating {
   update(playerStats) {
     // if (!playerStats.vpr) return playerStats;
     for (let patch in playerStats.vpr) {
+
       const seasonStats = playerStats.patches[patch] && playerStats.patches[patch]["gameModes"]["Ranked"] || [];
-      playerStats.vpr[patch]["initial"] = this.initial(seasonStats, playerStats.tier);
+
+      playerStats.vpr[patch]["initial"] = this.initial(playerStats, seasonStats);
       
     }
 
@@ -206,13 +212,12 @@ class VPRRating {
       if (p.winner) vprDiff = finalScale;
       else vprDiff = (finalScale) * -1
 
-
       return {
         ...p,
         vprDiff,
       };
     });
-
+  
     return players;
   }
 

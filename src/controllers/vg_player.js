@@ -36,7 +36,7 @@ class PlayerController {
       stats = await PlayerStatsModel.update(player, playerOldStats);
       stats = VPRService.update(stats);
       
-      PlayerStatsModel.upsert(player.id, stats);
+      // PlayerStatsModel.upsert(player.id, stats);
     }
 
     // return stats;
