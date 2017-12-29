@@ -1,6 +1,7 @@
 import * as lodash from "lodash";
 
 import { getKDA, getRate, getAvg, getMinutes } from "~/lib/utils_stats";
+import TIER3_NAMES from "~/resources/tiers_name";
 
 import VPRService from "~/services/vpr";
 
@@ -82,19 +83,35 @@ class MatchInput {
   generatePlayers(players, roster, blueVstSum, redVstSum) {
 
     let p = [];
+    
+    players = players.sort((a, b) => {
+      /**/ if (a.stats.farm > b.stats.farm) return 1;
+      else if (a.stats.farm < b.stats.farm) return -1;
+      else return 0;
+    });
 
+    const rolesToPick = ["Carry", "Jungler", "Captain"];
 
     lodash.forEach(players, (player) => {
+
+      const role = rolesToPick.pop();
+
+      const rankvst = lodash.get(player, "player.stats.rankPoints.ranked", 0);
+      const tierN = TIER3_NAMES.find(t => t.name === player._stats.skillTier);
+      const tier = tierN && tierN.serverName ? tierN.serverName : -1;
+
       p.push({
-        id:         player.player.id,
-        name:       player.player.name,
-        shardId:    player.player.shardId,
-        tier:       player._stats.skillTier,
-        actor:      player.actor,
-        side:       roster.stats.side,
-        aces:       roster.stats.acesEarned,
-        role:       findRole(player.stats),
+        id:       player.player.id,
+        name:     player.player.name,
+        shardId:  player.player.shardId,
+        rankvst:  lodash.get(player, "player.stats.rankPoints.ranked", 0),
+        blitzvst: lodash.get(player, "player.stats.rankPoints.blitz", 0),
+        actor:    player.actor,
+        side:     roster.stats.side,
+        aces:     roster.stats.acesEarned,
+        role:     role,
           ...player.stats,
+        tier:     tier,
       });
 
     });
@@ -126,6 +143,7 @@ class MatchOutput {
       minutes: getMinutes(duration),
       patchVersion,
       players: this.generatePlayers(playerId, {match, rosters, players}),
+      rosters: rosters,
     }
   }
 
@@ -136,16 +154,20 @@ class MatchOutput {
     let res = players.map(player => {
 
       let roster = rosters.find(r => r.side === player.side);
-      // console.log(player.vprChange)
-      return {
-        id: player.id,
-        me: (playerId && player.id === playerId),
-        side: player.side,
-        name: player.name,
-        region: player.shardId,
-        tier: player.tier,
+
+      return {    
+        id:        player.id,
+        me:        (playerId && player.id === playerId),
+        side:      player.side,
+        name:      player.name,
+        region:    player.shardId,
+        tier:      player.tier,
+        
         skillTier: player.skillTier,
-        winner: player.winner,
+        winner:    player.winner,
+
+        rankvst:  player.rankvst,
+        blitzvst: player.blitzvst,
         
         hero: player.actor,
         role: player.role,

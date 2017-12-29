@@ -3,6 +3,8 @@ import * as lodash    from "lodash";
 import { merge, findSeasonByPatch } from "~/lib/utils";
 import { getKDA, getRate, getAvg }  from "~/lib/utils_stats";
 
+import Seasons from "~/resources/seasons";
+
 import MatchTransform from "./matches";
 
 const nowTime = () => new Date();
@@ -36,6 +38,8 @@ class PlayerStatsInput {
       name:      player.name,
       region:    player.shardId,
       tier:      "" + player.tier,
+      rankVst:   "" + player.rankvst,
+      blitzVst:  "" + player.blitzvst,
       // we add 1 minute to the lastMatch so if we search using createdAt-start, 
       // the last match won't show... we already calculated that.
       lastMatch: addMinutes(new Date(lastMatch.createdAt), 1),
@@ -132,6 +136,9 @@ class PlayerStatsInput {
 
     const role = player.role;
 
+    // Role shouldn't be a thing on anything not Ranked or Casual
+    if (match.gameMode !== "Ranked" && match.gameMode !== "Casual") return false;
+
     return {
       [match.gameMode]: {
         Roles: { 
@@ -201,13 +208,14 @@ class PlayerStatsOutput {
     const {season} = opts;
 
 
-    const {id, name, lastCache, region, tier, aka, patches, info} = playerStats;
+    const {id, name, lastCache, region, tier, aka, patches, info, rankVst, blitzVst} = playerStats;
 
     // first we will merge all in one structure that we will always know
     lodash.forEach(patches, (data, patch) => {
 
       const thisSeason = findSeasonByPatch(patch);
       seasonsAvailable.add(thisSeason);
+
       Object.keys(data.gameModes).forEach((name) => gameModesAvailable.add(name));
 
       if (!lodash.isEmpty(season) && !season.includes(thisSeason)) return;
@@ -223,6 +231,8 @@ class PlayerStatsOutput {
       lastCache,
       tier, 
       aka,
+      rankVst,
+      blitzVst,
       seasonsAvailable,
       gameModesAvailable,
       filters: opts,

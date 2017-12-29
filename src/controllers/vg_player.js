@@ -28,7 +28,11 @@ class PlayerController {
     if (!playerOldStats || new Date(playerOldStats.nextCache) < new Date()) {
 
       logger.silly(`new cache for ${playerName}`);
-
+      if (playerOldStats && typeof playerOldStats.rankVst === "number") {
+        // PLEASE REMOVE BEFORE PRODUCTION
+        playerOldStats.rankVst = "0";
+        playerOldStats.blitzVst = "0";
+      }
       stats = await PlayerStatsModel.update(player, playerOldStats);
       stats = VPRService.update(stats);
       

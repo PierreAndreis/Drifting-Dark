@@ -16,6 +16,7 @@ class ProStats {
       skillName: playerStats.skillName,
       winner:   playerStats.winner,
       kills:    playerStats.kills,
+      role:     playerStats.role,
       deaths:   playerStats.deaths,
       assists:  playerStats.assists,
       items:    playerStats.items,

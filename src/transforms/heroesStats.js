@@ -89,7 +89,7 @@ const getTelemetryStats = async (match) => {
 
   averageTier = parseInt(averageTier / match.players.length);
 
-  for (const pick of telem.Draft) {
+  for (const pick of telem.draft) {
     if (pick.Type !== "HeroBan") continue;
     heroes[pick.Hero] = {
       actor:        pick.Hero,
@@ -101,17 +101,17 @@ const getTelemetryStats = async (match) => {
     };
   }
 
-  const facts = telem.Facts;
+  const facts = telem.facts;
 
   lodash.forEach(facts, teams => lodash.forEach(teams, (actor, name) => {
 
-    const skillPath = translateSkillPath(actor.Skill);
-    const itemPath = translateItemPath(actor.Items);
+    const skillPath = translateSkillPath(actor.skill);
+    const itemPath = translateItemPath(actor.items);
     const player = match.players.find(p => name === p.actor);
 
       heroes[name] = {
-        totalhealed: actor.Healed,
-        totaldamage: actor.Damage,
+        totalhealed: actor.healed,
+        totaldamage: actor.damage,
         abilitypicks: {
           [skillPath]: 1
         },

@@ -1,20 +1,19 @@
 import transformHeroesStats     from "~/transforms/heroesStats.js";
-import {merge}                  from "~/lib/utils.js";
+import {merge, sortBy}                  from "~/lib/utils.js";
 import Telemetry                from "~/transforms/telemetry.js";
 import MatchesModel             from "~/models/vg_matches.js";
 import HeroesModel              from "~/models/vg_heroes.js";
 
 import logger                   from "~/lib/logger";
-
-import CacheService     from "~/services/cache";
+import CacheService              from "~/services/cache";
 
 const cacheKeyUnique = "HeroesStatsMatchesID";
 const cacheKeyStore = "HeroesStatsMatches";
 const cacheKeyProcessed = "HeroesStats";
 
-
 const MATCHES_PROCESS_BATCH = 150;
 const MATCHES_SAVE_BATCH = 100; // `MATCHES_PROCESS_BATCH` matches in each batch
+const REGIONS = ["", "na", "eu", "sa", "ea", "sg", "cn"];
 
 const DEBUG = false;
 
@@ -148,6 +147,22 @@ class HeroesStats {
     }
   }
 
+  async cacheStats() {
+
+    const sortStats = (stats, type) => {
+      const sorted = sortBy(stats, false, type, n => parseFloat(n));
+      return sorted.map(m => ({name: m.actor, [type]: m[type]}));
+    }
+
+    for (let region of REGIONS) {
+      const stats = await HeroesModel.heroStats(region);
+      if (!region) region = "all";
+      HeroesModel.saveStats("raw",      region, stats);
+      HeroesModel.saveStats("pickrate", region, sortStats(stats, "pickRate"));
+      HeroesModel.saveStats("banrate",  region, sortStats(stats, "banRate"));
+      HeroesModel.saveStats("winrate",  region, sortStats(stats, "winRate"));
+    };
+  }
 
 }
 

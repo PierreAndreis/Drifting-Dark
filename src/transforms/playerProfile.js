@@ -1,10 +1,11 @@
-import * as lodash from "lodash";
-import Config from "../config";
+import * as lodash    from "lodash";
+import Config         from "../config";
+import SeasonResource from "~/resources/seasons";
 
 const findSeasonByPatch = (patchVersion) => {
   let season;
 
-  lodash.forEach(Config.VAINGLORY.SEASONS, (s, name) => {
+  lodash.forEach(SeasonResource, (s, name) => {
     if (s.includes(patchVersion)) {
       season = name;
       return false;

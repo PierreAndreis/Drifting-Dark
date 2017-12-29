@@ -1,5 +1,6 @@
 import fetch from "node-fetch";
 import { cleanAbility, cleanActor } from "~/resources/dictionaries";
+import { getRate } from "~/lib/utils_stats";
 import logger from "../lib/logger";
 
 const NPC = [
@@ -18,6 +19,11 @@ const NPC = [
   "*PetalMinion*",
 ];
 
+const HEALS_TO_SKIP = [
+  "Buff_SpawnStage_RechargeAndAlwaysSpeedBoost",
+  "Buff_Ace",
+]
+
  // TODO: Add gold miner, crystal miner, and kraken
 const OBJECTIVES = [
   "*OuterTurret*",
@@ -31,7 +37,10 @@ class Telemetry {
 
   async json (url, id) {
 
-    const result = await fetch(url);
+    const result = await fetch(url, {
+      timeout: 10000,
+      compress: true
+    });
     if (result.status !== 200) return {};
 
     let telemetry;
@@ -44,29 +53,30 @@ class Telemetry {
       throw Error("InvalidJSON");
     }
 
-    const res = {
+    let res = {
       id,
-      Draft: [],
-      Facts: {
-        Blue: {},
-        Red: {},
+      draft: [],
+      facts: {
+        blue: {},
+        red: {},
       },
-      Vision: {
-        Blue: [],
-        Red: [],
+      vision: {
+        blue: [],
+        red: [],
       },
     };
 
     const rawFactHero = () => {
       return {
-        Healed: 0,
-        TotalHealed: {},
-        TotalDamage: {},
-        TotalDealt: {},
-        Skill: [],
-        ObjectiveDamage: 0,
-        Damage: 0,
-        Dealt: 0,
+        healed: 0,
+        totalHealed: {},
+        totalDamage: {},
+        totalDealt: {},
+        skill: [],
+        objectiveDamage: 0,
+        damage: 0,
+        dealt: 0,
+        taken: 0,
       }
     }
 
@@ -76,7 +86,7 @@ class Telemetry {
       // Find the difference between the current event and startTime which will be time of the match in game
       const difference = Date.parse(data.time) - startTime;
       const { payload } = data;
-      const team = payload.Team === "Left" || payload.Team === "1" ? "Blue" : "Red";
+      const team = payload.Team === "Left" || payload.Team === "1" ? "blue" : "red";
 
       // If the actors are objects and not heroes continue to the next loop
       if (payload.isHero === 0 || NPC.includes(payload.Actor)) {
@@ -91,14 +101,14 @@ class Telemetry {
       if (payload.TargetActor && payload.TargetIsHero === 1) payload.TargetActor = cleanActor(payload.TargetActor);
 
       const target = payload.Target;
-      let draft = res.Draft;
+      let draft = res.draft;
 
       // If this heroes doesnt exist in the object above create the base for the hero
-      if (hero && !res.Facts[team][hero]) {
-        res.Facts[team][hero] = rawFactHero();
+      if (hero && !res.facts[team][hero]) {
+        res.facts[team][hero] = rawFactHero();
       }
 
-      let factHero = res.Facts[team][hero];
+      let factHero = res.facts[team][hero];
 
       switch (data.type) {
         case "HeroBan":
@@ -116,7 +126,7 @@ class Telemetry {
             case "Flare":
             case "Contraption":
             case "Flaregun":
-              res.Vision[team].push({
+              res.vision[team].push({
                 Location: payload.Position,
                 Name: payload.Ability,
               });
@@ -127,12 +137,12 @@ class Telemetry {
 
         case "BuyItem":
           // If items doesnt already exist in object for this hero then create it first
-          if (!factHero.Items) factHero.Items = [];
+          if (!factHero.items) factHero.items = [];
           // Find the minutes
           const minutes = Math.floor(difference / 1000 / 60);
           // Find the seconds
           const seconds = (difference / 1000) % 60;
-          factHero.Items.push({
+          factHero.items.push({
             Item: payload.Item,
             // If the value is like 5 minutes change it to look like 05: so it looks nicer with the 0
             Time: `${minutes > 9 ? minutes : `0${minutes}`}:${seconds > 9 ? seconds : `0${seconds}`}`,
@@ -141,44 +151,69 @@ class Telemetry {
           
         case "LearnAbility":
           const ability = cleanAbility(payload.Ability);
-          factHero.Skill.push(ability);
+          factHero.skill.push(ability);
           break;
 
         case "DealDamage":
 
-
           if (OBJECTIVES.includes(payload.Target)) {
-            factHero.ObjectiveDamage += payload.Dealt;
+            factHero.objDamage += payload.Dealt;
           }
           else if (payload.TargetIsHero === 1){
-            factHero["Damage"] += payload["Damage"];
-            factHero["Dealt"] += payload["Dealt"];
+            factHero.damage += payload.Damage;
+            factHero.dealt += payload.Dealt;
 
-            if (!factHero.TotalDamage[target]) {
-              factHero.TotalDamage[target] = 0;
-              factHero.TotalDealt[target] = 0;
+            if (!factHero.totalDamage[target]) {
+              factHero.totalDamage[target] = 0;
+              factHero.totalDealt[target] = 0;
             }
 
-            factHero["TotalDamage"][target] += payload["Damage"];
-            factHero["TotalDealt"][target] += payload["Dealt"];
+            // Damage Taken
+
+            const enemyTeam = payload.Team !== "Left" ? "blue" : "red";
+            if (!res.facts[enemyTeam][target]) res.facts[enemyTeam][target] = rawFactHero();
+            res.facts[enemyTeam][target].taken += payload.Dealt;
+            
+            factHero.totalDamage[target] += payload.Damage;
+            factHero.totalDealt[target] += payload.Dealt;
           }
           break;
 
         case "HealTarget": {
-          if (payload.IsHero !== 1) continue;
+          if (payload.IsHero !== 1 || payload.TargetIsHero !== 1) continue;
+
+          if (HEALS_TO_SKIP.includes(payload.Source)) continue;
+          if (payload.Team !== payload.TargetTeam) continue;
+
           const { TargetActor, Healed } = payload;
-          factHero.Healed += Healed;
-          if (isNaN(factHero.TotalHealed[TargetActor])) factHero.TotalHealed[TargetActor] = Healed;
-          else factHero.TotalHealed[TargetActor] += Healed;
+          factHero.healed += Healed;
+
+          if (isNaN(factHero.totalHealed[TargetActor])) factHero.totalHealed[TargetActor] = Healed;
+          else factHero.totalHealed[TargetActor] += Healed;
+          
+          break;
+        }
+
+        case "Vampirism": {
+          if (payload.IsHero !== 1 || payload.TargetIsHero !== 1) continue;
+          if (HEALS_TO_SKIP.includes(payload.Source)) continue;
+
+          const { TargetActor, Vamp } = payload;
+          const Healed = Number(Vamp);
+          factHero.healed += Healed;
+
+          if (isNaN(factHero.totalHealed[TargetActor])) factHero.totalHealed[TargetActor] = Healed;
+          else factHero.totalHealed[TargetActor] += Healed;
+          
           break;
         }
 
         case "KillActor":
           if (payload.TargetIsHero !== 1) continue;
-          const killer = hero === payload.Actor ? "Kills" : "Deaths";
-          if (!factHero[killer]) factHero[killer] = [];
-          factHero[killer].push({
-            Actor: killer ? cleanActor(payload.Killed) : hero,
+          const typeOfKill = hero === payload.Actor ? "kills" : "deaths";
+          if (!factHero[typeOfKill]) factHero[typeOfKill] = [];
+          factHero[typeOfKill].push({
+            Actor: typeOfKill ? cleanActor(payload.Killed) : hero,
             Time: `${Math.floor(difference / 60)}:${difference % 60}`,
             Gold: payload.Gold,
             Position: payload.Position,
@@ -188,6 +223,30 @@ class Telemetry {
         default:
       }
     }
+
+    let highestDamage = 0;
+    let highestHealing = 0;
+    let highestTaken = 0;
+    
+    for (let x in res.facts) {
+      for (let i in res.facts[x]) {
+        const p = res.facts[x][i]
+        highestDamage = Math.max(highestDamage, p.dealt);
+        highestHealing = Math.max(highestHealing, p.healed);
+        highestTaken    = Math.max(highestTaken, p.taken);
+      }
+    }
+
+    for (let x in res.facts) {
+      for (let i in res.facts[x]) {
+        const p = res.facts[x][i];
+        p.damageShare  = getRate(p.dealt, highestDamage);
+        p.takenShare   = getRate(p.taken, highestTaken);
+        p.healingShare = getRate(p.healed, highestHealing);
+      }
+    }
+    
+
     return res;
 
   }

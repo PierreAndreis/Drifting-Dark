@@ -13,11 +13,11 @@ const BATCHAPI_PAGES_PER_TRY = 3;
 
 class VGMatches {
 
-  createCacheKey(playerId, region, {lastMatch, patch, gameMode, limit, page}) {
+  createCacheKey(playerId, region, {lastMatch, patches, gameMode, page}) {
 
     let key = `matches:${playerId}:${region}`;
     if (lastMatch) key += `:${lastMatch}`;
-    if (patch)     key += `:${patch}`;
+    if (patches)   key += `:${patches}`;
     if (gameMode)  key += `:${gameMode}`;
     if (limit)     key += `:${limit}`;
     if (page)      key += `:${page}`;
@@ -75,16 +75,16 @@ class VGMatches {
     return removeDuplicatedMatches;
   }
 
-  async getMatchByMatchId(id, region) {
+  async getMatchByMatchId(id, region, output) {
     const match = await VaingloryService.match(id, region);
     if (match.errors) return {errors: match.messages}; // todo error handler
-    return MatchTransform.input.json(match);
+    let m = MatchTransform.input.json(match);
+    if (output) m = MatchTransform.output.json(id, m);
+    return m
   }
   
   async getMatches(playerId, region, lastMatch, context) {
     const key = this.createCacheKey(playerId, region, {lastMatch, ...context});
-    // todo: verify if gameMode is valid using /resources/gamemodes.js
-    // also limit the max page
 
     const get = async () => {
       
@@ -105,12 +105,14 @@ class VGMatches {
   }
 
   getMatchTelemetry(telemetryUrl, matchId) {
+    
     const key = `telemetry:${telemetryUrl}`;
 
     const get = async () => {
       const telemetry = await TelemetryTransform(telemetryUrl, matchId);
       return telemetry;
     };
+
     return CacheService.preferCache(key, get, { 
       expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE,
       category: "telemetry"

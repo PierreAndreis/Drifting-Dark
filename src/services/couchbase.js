@@ -19,12 +19,23 @@ class CouchBase {
   async nquery(query) {
 
     try {
-
       // console.log("** QUERYING FROM DATABASE **");
 
       //  Passing a new query as argument
       const query_builder  = this.query.fromString(query);
-      const [result, meta] = await this.bucket.queryAsync(query_builder);
+      const [result, meta] = await new Promise((resolve, reject) => {
+        const req = this.bucket.query(query_builder);
+        let res = [];
+        req.on('row', function(row) {
+          res.push(row);
+        });
+        req.on('error', function(err) {
+          reject(err);
+        });
+        req.on('end', function(meta) {
+          resolve([res, meta]);
+        });
+      });
       // TODO: something with meta
       return result;
 

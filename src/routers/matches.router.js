@@ -1,19 +1,17 @@
 import MatchesController    from "~/controllers/vg_matches.js";
-// import VPR from "~/transforms/vpr.js";
 
 // matches/:name
 export const latestMatches = async (req, res, next) => {
   const { name } = req.params;
-  const { patch, gameMode, page, limit } = req.query;
-  let reply = await MatchesController.getMatchesByName(name, { patch, gameMode, page, limit });
-  // reply = await HeroesStats(reply[0]);
+  const { season, gameMode, page, limit } = req.query;
+  let reply = await MatchesController.getMatchesByName(name, { season, gameMode, page, limit });
   res.json(reply);
 };
 
 // matches/:id/:region/details
 export const details = async (req, res, next) => {
   const { id, region } = req.params;
-  const reply = await MatchesController.getMatchByMatchId(id, region);
+  const reply = await MatchesController.getMatchDetails(id, region);
   res.json(reply);
 };
 
@@ -41,13 +39,12 @@ export const telemetry = async (req, res, next) => {
 //   res.json(reply);
 // };
 
-export const test = async (req, res, next) => {
-  const { name } = req.params;
-  const { patch, gameMode, page, limit } = req.query;
-  // let reply = await HeroesStats.processMatches();
-  // let rx = await HeroesStats.saveMatches();
-  // res.json(reply);
-};
+// export const test = async (req, res, next) => {
+//   const { name } = req.params;
+//   const { patch, gameMode, page, limit } = req.query;
+//   const reply = await HeroesStats.cacheStats();
+//   res.json(reply);
+// };
 
 export const ProHistory = async (req, res, next) => {
   const reply = await MatchesController.ProMatches();
