@@ -80,7 +80,9 @@ class Telemetry {
       }
     }
 
-    const startTime = Date.parse(telemetry[0].time);
+    const startGame = telemetry.find((t) => t.type === "PlayerFirstSpawn");
+
+    const startTime = Date.parse(startGame.time);
     
     for (const data of telemetry) {
       // Find the difference between the current event and startTime which will be time of the match in game
@@ -138,6 +140,7 @@ class Telemetry {
         case "BuyItem":
           // If items doesnt already exist in object for this hero then create it first
           if (!factHero.items) factHero.items = [];
+          if (payload.Item === "Candy - Taunt") break;
           // Find the minutes
           const minutes = Math.floor(difference / 1000 / 60);
           // Find the seconds
