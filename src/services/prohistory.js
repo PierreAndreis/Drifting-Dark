@@ -32,7 +32,7 @@ export default async () => {
   const counter = await getCounter();
   const player = Pros[counter];
 
-  const matches = await MatchController.getMatchesByName(player.name, {gameMode: "ranked"});
+  const matches = await MatchController.getMatchesByName(player.name, {gameMode: "Ranked"});
 
   for (let i = 0; i < matches.length; i++) {
     let m = matches[i];
