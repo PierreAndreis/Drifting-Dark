@@ -16,7 +16,7 @@ const startApp = () => {
   });
 }
 
-if (process.env.NODE_ENV !== "production") {
+if (true || process.env.NODE_ENV !== "production") {
   startApp();
 }
 else {
