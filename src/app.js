@@ -1,5 +1,6 @@
 import express      from "express";
 import path         from "path";
+import morgan       from "morgan";
 import helmet       from "helmet";
 import bodyParser   from "body-parser";
 import responseTime from "response-time";
@@ -10,6 +11,8 @@ import Cors         from "cors";     // Cross Request
 import routes     from "~/routes";
 
 const app = express();
+
+app.use(morgan('combined'))
 
 app.disable("x-powered-by");
 
