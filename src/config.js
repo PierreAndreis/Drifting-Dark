@@ -12,8 +12,8 @@ export default {
 
   REDIS: {
     PORT: 6379,
-    HOSTNAME: "localhost",
-    KUEHOSTNAME: "localhost",
+    HOSTNAME: process.env.REDIS_SERVER || "localhost",
+    KUEHOSTNAME: process.env.REDIS_SERVER || "localhost",
     PREFIX: "vgpro",
   },
 
