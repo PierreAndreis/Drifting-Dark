@@ -23,7 +23,6 @@ class HeroesStats {
 
   async addMatch(match) {
     // Only support MatchesTransform.input jsons
-	return;
     try {
       if (!gameModesAllowed.includes(match.gameMode)) return;
 
