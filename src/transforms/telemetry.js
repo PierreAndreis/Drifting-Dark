@@ -49,7 +49,7 @@ class Telemetry {
       telemetry = await result.json();
     }
     catch(e) {
-      logger.warn(`Invalid Telemetry JSON: ${url}`);
+      logger.warn(`Invalid Telemetry JSON: ${url}`, e);
       throw Error("InvalidJSON");
     }
 
