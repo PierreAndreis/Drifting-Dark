@@ -43,8 +43,8 @@ const crons = [
 ]
 
 if (cluster.isMaster) {
-//  crons.forEach(c => cron.schedule(c.interval, () => {
-  //  logger.verbose(`${c.name} is running`);
-   // c.fn()
- // }));
+ crons.forEach(c => cron.schedule(c.interval, () => {
+   logger.verbose(`${c.name} is running`);
+   c.fn()
+ }));
 }
