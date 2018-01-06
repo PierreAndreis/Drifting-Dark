@@ -1,3 +1,4 @@
+import {performance} from "perf_hooks";
 import * as lodash from "lodash";
 import logger from "~/lib/logger";
 
@@ -23,8 +24,14 @@ class PlayerController {
     // we will fetch new stats and merge with old stats 
     // or create if there is no stats
     if (!playerOldStats || new Date(playerOldStats.nextCache) < new Date()) {
+      logger.silly(`updating ${playerName}/${region}`);
+      const t0 = performance.now();
+
       stats = await PlayerStatsModel.update(player, playerOldStats);
       PlayerStatsModel.upsert(player.id, stats);
+
+      const t1 = perfomance.now();
+      logger.silly(`updated ${playerName}/${region} in ${t1 - t0}ms`);
     }
     return (opts.raw) ? stats : PlayerStatsTransform.output.json(stats, opts);
   }
