@@ -26,8 +26,8 @@ const Analysis = {
 
 }
 
-dogstatsd.socket.on('error', function (exception) {
-   return logger.warn("error event in socket.send(): " + exception);
-});
+// dogstatsd.socket.on('error', function (exception) {
+//    return logger.warn("error event in socket.send(): " + exception);
+// });
 
 export default Analysis;
