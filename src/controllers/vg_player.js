@@ -31,7 +31,14 @@ class PlayerController {
       PlayerStatsModel.upsert(player.id, stats);
 
       const t1 = performance.now();
-      logger.silly(`updated ${playerName} in ${t1 - t0}ms`);
+      const result = t0 - performance.now();
+
+      if (result > 1000) {
+        logger.warn(`updated ${playerName} in ${result.toFixed(0)}ms`);
+      }
+      else {
+        logger.silly(`updated ${playerName} in ${result.toFixed(0)}ms`);
+      }
     }
     return (opts.raw) ? stats : PlayerStatsTransform.output.json(stats, opts);
   }
