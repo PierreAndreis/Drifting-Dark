@@ -6,7 +6,7 @@ import vg          from "vainglory";
 import Config from "~/config";
 
 const RESULT_PER_PAGE = 50;
-const TIMEOUT_REQUEST_MS = 3000;
+const TIMEOUT_REQUEST_MS = 8000;
 /**
  * todoschema,
  * verify region
