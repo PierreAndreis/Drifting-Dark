@@ -48,11 +48,7 @@ class CouchBase {
 
   async upsert(name, doc, options = {}) {
     try {
-
-      // console.log(`** TRYING TO INSERT ${name} DOCUMENT **`);
-      //  Trying to insert into the bucket
       const rows = await this.bucket.upsertAsync(name, doc, options);
-      // console.log(`** DONE INSERTING ${name} **`);
       return rows;
 
     }
@@ -68,9 +64,9 @@ class CouchBase {
     try {
 
       // console.log(`** DB SEARCH ${query} **`);
-
+      console.time("find");
       const res = await this.bucket.getAsync(query);
-
+      console.timeEnd("find");
       return res.value;
 
     }

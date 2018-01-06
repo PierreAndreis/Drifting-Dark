@@ -16,27 +16,23 @@ class PlayerController {
     const player = await this.lookupName(playerName);
     // todo: 404 not found
     if (lodash.isEmpty(player)) return {};
-
+    console.time(`GetCouchbase-${player}`);
     const playerOldStats = await PlayerStatsModel.get(player.id);
-
+    console.timeEnd(`GetCouchbase-${player}`);
     let stats = playerOldStats;
 
     // if there is no stats, or if the next cache is older than the current date
     // we will fetch new stats and merge with old stats 
     // or create if there is no stats
+    console.time(`New Cache-1-${player}`);
     if (!playerOldStats || new Date(playerOldStats.nextCache) < new Date()) {
-
+      console.time(`New Cache-2-${player}`);
       logger.silly(`new cache for ${playerName}`);
-      if (playerOldStats && typeof playerOldStats.rankVst === "number") {
-        // PLEASE REMOVE BEFORE PRODUCTION
-        playerOldStats.rankVst = "0";
-        playerOldStats.blitzVst = "0";
-      }
       stats = await PlayerStatsModel.update(player, playerOldStats);
+      console.timeEnd(`New Cache-2-${player}`);
       PlayerStatsModel.upsert(player.id, stats);
     }
-
-    // return stats;
+    console.timeEnd(`New Cache-1-${player}`);
     return (opts.raw) ? stats : PlayerStatsTransform.output.json(stats, opts);
   }
 }

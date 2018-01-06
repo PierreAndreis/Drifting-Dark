@@ -12,7 +12,9 @@ export const playerFind = async (req, res, next) => {
 export const playerStats = async (req, res, next) => {
   const {name} = req.params;
   const opts = req.query
+  console.time(`Routers-${name}`);
   const reply = await PlayerController.getStats(name, opts);
+  console.timeEnd(`Routers-${name}`);
   // const reply = await HeroesModel.games();
   res.json(reply);
 }
