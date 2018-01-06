@@ -16,23 +16,23 @@ class PlayerController {
     const player = await this.lookupName(playerName);
     // todo: 404 not found
     if (lodash.isEmpty(player)) return {};
-    console.time(`GetCouchbase-${player}`);
+    console.time(`GetCouchbase-${playerName}`);
     const playerOldStats = await PlayerStatsModel.get(player.id);
-    console.timeEnd(`GetCouchbase-${player}`);
+    console.timeEnd(`GetCouchbase-${playerName}`);
     let stats = playerOldStats;
 
     // if there is no stats, or if the next cache is older than the current date
     // we will fetch new stats and merge with old stats 
     // or create if there is no stats
-    console.time(`New Cache-1-${player}`);
+    console.time(`New Cache-${playerName}`);
     if (!playerOldStats || new Date(playerOldStats.nextCache) < new Date()) {
-      console.time(`New Cache-2-${player}`);
+      console.time(`FetchingMatches-${playerName}`);
       logger.silly(`new cache for ${playerName}`);
       stats = await PlayerStatsModel.update(player, playerOldStats);
-      console.timeEnd(`New Cache-2-${player}`);
+      console.timeEnd(`FetchingMatches-${playerName}`);
       PlayerStatsModel.upsert(player.id, stats);
     }
-    console.timeEnd(`New Cache-1-${player}`);
+    console.timeEnd(`New Cache-${playerName}`);
     return (opts.raw) ? stats : PlayerStatsTransform.output.json(stats, opts);
   }
 }
