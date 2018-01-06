@@ -9,7 +9,6 @@ const numCPUs = os.cpus().length;
 
 const {PORT = 8080} = process.env;
 
-
 const startApp = () => {
   return app.listen(PORT, () => {
     logger.info(`Worker ${process.pid} is listening on port ${PORT}`)
