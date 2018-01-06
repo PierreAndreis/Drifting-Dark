@@ -23,9 +23,7 @@ class PlayerController {
     // we will fetch new stats and merge with old stats 
     // or create if there is no stats
     if (!playerOldStats || new Date(playerOldStats.nextCache) < new Date()) {
-      console.time(`FetchingMatches-${playerName}`);
       stats = await PlayerStatsModel.update(player, playerOldStats);
-      console.timeEnd(`FetchingMatches-${playerName}`);
       PlayerStatsModel.upsert(player.id, stats);
     }
     return (opts.raw) ? stats : PlayerStatsTransform.output.json(stats, opts);
