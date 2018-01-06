@@ -29,9 +29,7 @@ class PlayerController {
 
       stats = await PlayerStatsModel.update(player, playerOldStats);
       PlayerStatsModel.upsert(player.id, stats);
-
-      const t1 = performance.now();
-      const result = t0 - performance.now();
+      const result = performance.now() - t0;
 
       if (result > 1000) {
         logger.warn(`updated ${playerName} in ${result.toFixed(0)}ms`);
