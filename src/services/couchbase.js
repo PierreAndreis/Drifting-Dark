@@ -64,9 +64,7 @@ class CouchBase {
     try {
 
       // console.log(`** DB SEARCH ${query} **`);
-      console.time("find");
       const res = await this.bucket.getAsync(query);
-      console.timeEnd("find");
       return res.value;
 
     }
