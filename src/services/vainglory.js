@@ -4,10 +4,18 @@ import vg          from "vainglory";
 import Config from "~/config";
 
 const RESULT_PER_PAGE = 50;
+const TIMEOUT_REQUEST_MS = 2000;
 /**
  * todoschema,
  * verify region
  */
+
+let timeout = (ms, rejectMessage) => new Promise((resolve, reject) => {
+  let id = setTimeout(() => {
+    clearTimeout(id);
+    resolve(rejectMessage);
+  }, ms)
+});
 
 const generateOpt = (options) => {
   return {
@@ -40,7 +48,8 @@ class VaingloryService {
 
     if (playerName) {
       if (typeof playerName !== "object") playerName = [playerName];
-      return vg.players.getByName(playerName);
+      const lol = vg.players.getByName(playerName);
+      return lol;
     }
 
     return vg.players.getById(playerId);
@@ -67,7 +76,10 @@ class VaingloryService {
     if (page) options.page = {offset: resultPerPage * page};
     options.page = {...options.page, limit: resultPerPage};
     
-    return this.matches(region, options);
+    return Promise.race([
+      this.matches(region, options),
+      timeout(TIMEOUT_REQUEST_MS, {errors: true})
+    ])
   }
 
   get(method, ...args) {
