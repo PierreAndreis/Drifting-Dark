@@ -30,7 +30,7 @@ class PlayerController {
       stats = await PlayerStatsModel.update(player, playerOldStats);
       PlayerStatsModel.upsert(player.id, stats);
 
-      const t1 = perfomance.now();
+      const t1 = performance.now();
       logger.silly(`updated ${playerName} in ${t1 - t0}ms`);
     }
     return (opts.raw) ? stats : PlayerStatsTransform.output.json(stats, opts);
