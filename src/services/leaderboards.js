@@ -3,8 +3,8 @@ import Redis from "~/services/redis.js";
 const key = "VGPRO:Leaderboard:";
 
 class Leaderboards {
-  constructor(type, name, region) {
-    this.name = `${key}:${type}:${name}:${region}`;
+  constructor(type, region) {
+    this.name = `${key}:${type}:${region}`;
   }
   get(playerId) {
     return Redis.zrevrank(this.name, playerId);
