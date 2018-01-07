@@ -1,3 +1,4 @@
+import {performance} from "perf_hooks";
 import * as lodash from "lodash";
 import logger from "~/lib/logger";
 
@@ -17,29 +18,30 @@ class PlayerController {
     const player = await this.lookupName(playerName);
     // todo: 404 not found
     if (lodash.isEmpty(player)) return {};
-
     const playerOldStats = await PlayerStatsModel.get(player.id);
-
     let stats = playerOldStats;
 
     // if there is no stats, or if the next cache is older than the current date
     // we will fetch new stats and merge with old stats 
     // or create if there is no stats
     if (!playerOldStats || new Date(playerOldStats.nextCache) < new Date()) {
+      logger.silly(`updating ${playerName}`);
+      const t0 = performance.now();
 
-      logger.silly(`new cache for ${playerName}`);
-      if (playerOldStats && typeof playerOldStats.rankVst === "number") {
-        // PLEASE REMOVE BEFORE PRODUCTION
-        playerOldStats.rankVst = "0";
-        playerOldStats.blitzVst = "0";
-      }
       stats = await PlayerStatsModel.update(player, playerOldStats);
-      stats = VPRService.update(stats);
       
-      // PlayerStatsModel.upsert(player.id, stats);
-    }
+      stats = VPRService.update(stats);
 
-    // return stats;
+      PlayerStatsModel.upsert(player.id, stats);
+      const result = performance.now() - t0;
+
+      if (result > 1000) {
+        logger.warn(`updated ${playerName} in ${result.toFixed(0)}ms`);
+      }
+      else {
+        logger.silly(`updated ${playerName} in ${result.toFixed(0)}ms`);
+      }
+    }
     return (opts.raw) ? stats : PlayerStatsTransform.output.json(stats, opts);
   }
 }

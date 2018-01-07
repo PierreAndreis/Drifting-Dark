@@ -13,7 +13,7 @@ import logger       from "../lib/logger";
 import Pros from "../resources/pro";
 
 const PROS_PER_QUEUE = 10;
-const PROS_LIMIT_HISTORY = 150;
+const PROS_LIMIT_HISTORY = 50;
 const PROS_COUNTER_KEY = "PRO_HISTORY_COUNTER";
 
 const getCounter = async () => {
@@ -32,7 +32,7 @@ export default async () => {
   const counter = await getCounter();
   const player = Pros[counter];
 
-  const matches = await MatchController.getMatchesByName(player.name, {gameMode: "ranked"});
+  const matches = await MatchController.getMatchesByName(player.name, {gameMode: "Ranked"});
 
   for (let i = 0; i < matches.length; i++) {
     let m = matches[i];

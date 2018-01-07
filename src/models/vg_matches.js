@@ -98,8 +98,7 @@ class VGMatches {
 
     return get();
     return CacheService.preferCache(key, get, { 
-      expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE,
-      category: "matches"
+      expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE
     });
 
   }
@@ -114,8 +113,7 @@ class VGMatches {
     };
 
     return CacheService.preferCache(key, get, { 
-      expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE,
-      category: "telemetry"
+      expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE
     });
   }
 

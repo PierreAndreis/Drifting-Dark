@@ -58,7 +58,6 @@ class VGPlayersStats extends BaseCouchbase {
       if (oldStats.lastMatch && new Date(oldStats.lastMatch) > oldestDate ) {
         lastMatch = oldStats.lastMatch;
       } else lastMatch = oldestDate;
-
       matches = await VaingloryService.getMatches(id, region, {startMatch: lastMatch});
       if (matches.errors) matches = [];
       else matches = matches.match.map(m => MatchTransform.input.json(m));

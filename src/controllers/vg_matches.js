@@ -40,7 +40,7 @@ class MatchesController {
       const patches = getPatchesList(context.season);
       context.patches = patches || "";
     }
-
+    
     return this.getMatchesByPlayerId(playerObj, context);
     
   }

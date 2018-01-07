@@ -2,14 +2,20 @@ import express      from "express";
 import path         from "path";
 import helmet       from "helmet";
 import bodyParser   from "body-parser";
-import responseTime from "response-time";
-import logger       from "~/lib/logger"
+import datadog      from "connect-datadog";
 
+import logger       from "~/lib/logger"
 import Cors         from "cors";     // Cross Request
 
 import routes     from "~/routes";
 
 const app = express();
+
+const dd_options = {
+  'response_code': true,
+  'tags': ['app:my_app']
+}
+
 
 app.disable("x-powered-by");
 
@@ -20,8 +26,9 @@ app.use(Cors());
 // Security Headers
 app.use(helmet());
 
-// Add ResponseTime Header
-app.use(responseTime())
+// Datadog
+app.use(datadog(dd_options));
+
 
 // Routes
 app.use("/", routes);
@@ -42,7 +49,7 @@ app.use((err, req, res, next) => {
 });
 
 process.on('unhandledRejection', (reason, p) => {
-  // console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+  // console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);c
   logger.error(`Unhandled Rejection. Reason: ${reason}. Stack: ${JSON.stringify(reason.stack)}`);
   // application specific logging, throwing an error, or other logic here
 });

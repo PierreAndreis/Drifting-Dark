@@ -1,13 +1,24 @@
 import * as lodash from "lodash";
+import {performance} from "perf_hooks";
+import Analysis from "../lib/analysis";
 import vg          from "vainglory";
 
 import Config from "~/config";
 
 const RESULT_PER_PAGE = 50;
+const TIMEOUT_REQUEST_MS = 50000;
 /**
  * todoschema,
  * verify region
  */
+
+let timeout = (ms, rejectFn) => new Promise((resolve, reject) => {
+  let id = setTimeout(() => {
+    clearTimeout(id);
+    const message = rejectFn();
+    resolve(message);
+  }, ms)
+});
 
 const generateOpt = (options) => {
   return {
@@ -25,7 +36,21 @@ class VaingloryService {
   }
   
   matches (region, options) {
-    return vainglory.setRegion(region).matches.collection(options);
+    return Promise.race([
+      new Promise((resolve, reject) => {
+        const t0 = performance.now();
+        return vainglory.setRegion(region).matches.collection(options).then(res => {
+          const t1 = performance.now();
+          Analysis.timing(`api.matches.request.${region}.timing`, t1 - t0);
+          Analysis.increment(`api.matches.request.${region}.success`);
+          resolve(res);
+        });
+      }),
+      timeout(TIMEOUT_REQUEST_MS, () => {
+        Analysis.increment(`api.matches.requests.${region}.timeout`);
+        return {errors: true}
+      })
+    ]);
   }
 
   match (matchId, region) {
@@ -40,10 +65,26 @@ class VaingloryService {
 
     if (playerName) {
       if (typeof playerName !== "object") playerName = [playerName];
-      return vg.players.getByName(playerName);
-    }
+      const t0 = performance.now();
 
-    return vg.players.getById(playerId);
+      return new Promise((resolve, reject) => {
+        const t0 = performance.now();
+        return vg.players.getByName(playerName).then(res => {
+          const t1 = performance.now();
+          Analysis.timing(`api.players.name.request.${region}.timing`, t1 - t0);
+          resolve(res);
+        })
+      });
+    };
+
+    return new Promise((resolve, reject) => {
+      const t0 = performance.now();
+      return vg.players.getById(playerId).then(res => {
+        const t1 = performance.now();
+        Analysis.timing(`api.players.id.request.${region}.timing`, t1 - t0);
+        resolve(res);
+      })
+    });
   }
 
   getMatches(playerId, region, { startMatch, lastMatch, gameMode, page, patches, limit }) {
@@ -66,7 +107,6 @@ class VaingloryService {
     options = generateOpt(options);
     if (page) options.page = {offset: resultPerPage * page};
     options.page = {...options.page, limit: resultPerPage};
-    
     return this.matches(region, options);
   }
 

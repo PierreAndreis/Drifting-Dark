@@ -75,11 +75,11 @@ class CacheService {
    if (category) {
       const categoryKey = 'category:' + category;
 
-      this.arrayGet(categoryKey).then((categoryKeys) => {
-        if (categoryKeys.indexOf(key) === -1) {
-          return this.arrayAppend(categoryKey, rawKey);
-        }
-      });
+      // this.arrayGet(categoryKey).then((categoryKeys) => {
+      //   if (categoryKeys.indexOf(key) === -1) {
+      //     return this.arrayAppend(categoryKey, rawKey);
+      //   }
+      // });
       
     }
 
