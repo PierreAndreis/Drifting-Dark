@@ -208,20 +208,7 @@ class PlayerStatsOutput {
     const {season} = opts;
 
 
-    const {
-      id, 
-      name, 
-      lastCache, 
-      region, 
-      tier, 
-      aka, 
-      patches, 
-      info, 
-      rankVst, 
-      blitzVst,
-      rankedRanking,
-      blitzRanking
-    } = playerStats;
+    const {id, name, lastCache, region, tier, aka, patches, info, rankVst, blitzVst} = playerStats;
 
     // first we will merge all in one structure that we will always know
     lodash.forEach(patches, (data, patch) => {
@@ -246,8 +233,6 @@ class PlayerStatsOutput {
       aka,
       rankVst,
       blitzVst,
-      rankedRanking,
-      blitzRanking,
       seasonsAvailable,
       gameModesAvailable,
       filters: opts,

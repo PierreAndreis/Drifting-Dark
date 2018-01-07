@@ -5,8 +5,6 @@ import TIER3_NAMES from "~/resources/tiers_name";
 
 import VPRService from "~/services/vpr";
 
-const VPR_ENABLED = false;
-
 const findRole = (player) => {
   let role = "Captain";
 
@@ -72,7 +70,7 @@ class MatchInput {
 
     });
     
-    if (gameMode === "Ranked" && VPR_ENABLED) {
+    if (gameMode === "Ranked") {
       players = VPRService.implementVPRChanges(players, rosters);
     }
 
@@ -87,8 +85,8 @@ class MatchInput {
     let p = [];
     
     players = players.sort((a, b) => {
-      /**/ if (a.stats.nonJungleMinionKills > b.stats.nonJungleMinionKills) return 1;
-      else if (a.stats.nonJungleMinionKills < b.stats.nonJungleMinionKills) return -1;
+      /**/ if (a.stats.farm > b.stats.farm) return 1;
+      else if (a.stats.farm < b.stats.farm) return -1;
       else return 0;
     });
 
