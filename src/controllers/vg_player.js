@@ -20,6 +20,7 @@ import MatchesModel   from "~/models/vg_matches";
 
 class PlayerController {
   lookupName(playerName, region) {
+    if (!playerName) return {};
     if (!region) return PlayerLookupModel.getByName(playerName);
     return PlayerLookupModel.getByName(playerName, region);
   }
@@ -74,7 +75,7 @@ class PlayerController {
       points: points,
     }
 
-    if (points < 1) return res;
+    if (parseInt(points, 10) < 1) return res;
     
     const LeaderboardGlobal   = new LeaderboardService(type, "all");
     const LeaderboardRegional = new LeaderboardService(type, region);
@@ -111,7 +112,9 @@ class PlayerController {
       ]
 
       await Promise.all(promises);
-      stats = VPRService.update(stats);
+
+      // stats = VPRService.update(stats);
+      PlayerStatsModel.upsert(player.id, stats);
 
       const result = performance.now() - t0;
 

@@ -33,6 +33,12 @@ app.use(datadog(dd_options));
 // Routes
 app.use("/", routes);
 
+app.get("/", (req, res) => {
+  res.status(200).send(
+    "PONG"
+  );
+})
+
 // Catch 404 and forward to error handler
 app.use((req, res, next) => {
   const err  = new Error("Not Found");

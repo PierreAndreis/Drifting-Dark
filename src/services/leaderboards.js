@@ -1,6 +1,6 @@
 import Redis from "~/services/redis.js";
 
-const key = "VGPRO:Leaderboard:";
+const key = "VGPRO:Leaderboard";
 
 class Leaderboards {
   constructor(type, region) {
