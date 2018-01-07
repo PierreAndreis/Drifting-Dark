@@ -87,8 +87,8 @@ class MatchInput {
     let p = [];
     
     players = players.sort((a, b) => {
-      /**/ if (a.stats.nonJungleMinionKills > b.stats.nonJungleMinionKills) return 1;
-      else if (a.stats.nonJungleMinionKills < b.stats.nonJungleMinionKills) return -1;
+      /**/ if (a.stats.farm > b.stats.farm) return 1;
+      else if (a.stats.farm < b.stats.farm) return -1;
       else return 0;
     });
 
@@ -98,9 +98,13 @@ class MatchInput {
 
       const role = rolesToPick.pop();
 
-      const rankvst = lodash.get(player, "player.stats.rankPoints.ranked", 0);
-      const tierN = TIER3_NAMES.find(t => t.name === player._stats.skillTier);
-      const tier = tierN && tierN.serverName ? tierN.serverName : -1;
+      // const rankvst = lodash.get(player, "player.stats.rankPoints.ranked", 0);
+      let tier = player._stats.skillTier;
+
+      if (typeof tier !== "number") {
+        const tierN = TIER3_NAMES.find(t => t.name === player._stats.skillTier);
+        tier = tierN && tierN.serverName ? tierN.serverName : tier;
+      }
 
       p.push({
         id:       player.player.id,
