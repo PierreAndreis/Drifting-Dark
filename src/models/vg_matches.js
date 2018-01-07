@@ -83,7 +83,7 @@ class VGMatches {
     return m
   }
   
-  async getMatches(playerId, region, lastMatch, context) {
+  getMatches(playerId, region, lastMatch, context) {
     const key = this.createCacheKey(playerId, region, {lastMatch, ...context});
 
     const get = async () => {
@@ -96,7 +96,6 @@ class VGMatches {
       return m;
     };
 
-    return get();
     return CacheService.preferCache(key, get, { 
       expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE
     });

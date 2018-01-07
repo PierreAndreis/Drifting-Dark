@@ -63,12 +63,15 @@ class CouchBase {
 
     try {
 
-      // console.log(`** DB SEARCH ${query} **`);
-      const res = await this.bucket.getAsync(query);
-      return res.value;
+      let res;
+      if (typeof query === "object") res = await this.bucket.getMultiAsync(query);
+      else res = await this.bucket.getAsync(query);
+
+      return res.value ? res.value : res;
 
     }
     catch (e) {
+      console.warn(e);
       return undefined;
     }
   }

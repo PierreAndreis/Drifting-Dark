@@ -12,8 +12,8 @@ class Leaderboards {
   set(playerId, score) {
     return Redis.zadd(this.name, score, playerId);
   }
-  range(min, max) {
-    return Redis.zrevrange(this.name, min, max);
+  range(start, end) {
+    return Redis.zrevrange(this.name, start, end, "withscores");
   }
 
   async updateAndGet(playerId, score) {

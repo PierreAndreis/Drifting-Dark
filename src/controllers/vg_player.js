@@ -106,14 +106,19 @@ class PlayerController {
 
       stats = await this.update(player, playerOldStats);
       
-      const promises = [
-        this.rankUpdate("ranked", player.id, stats.region, stats.rankVst).then(res => stats.rankedRanking = res),
-        this.rankUpdate("blitz", player.id, stats.region, stats.blitzVst).then(res => stats.blitzRanking = res),
-      ]
+      // If this player exists... and has played a match recently...
+      if (stats.region) {
+        const promises = [
+          this.rankUpdate("ranked", player.id, stats.region, stats.rankVst).then(res => stats.rankedRanking = res),
+          this.rankUpdate("blitz", player.id, stats.region, stats.blitzVst).then(res => stats.blitzRanking = res),
+        ]
 
-      await Promise.all(promises);
+        await Promise.all(promises);
+      }
 
       // stats = VPRService.update(stats);
+
+      // Saving on database
       PlayerStatsModel.upsert(player.id, stats);
 
       const result = performance.now() - t0;

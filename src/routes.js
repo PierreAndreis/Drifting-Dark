@@ -2,7 +2,7 @@ import { Router } from "express"; // WebServer
 
 import { playerFind, playerStats }         from "./routers/players.router";
 import { latestMatches, test, ProHistory, details, telemetry } from "./routers/matches.router";
-import { vpr } from "./routers/leaderboards.router";
+import { leaderboard } from "./routers/leaderboards.router";
 import { heroesStats } from "./routers/heroes.router";
 
 // import * as Tournament from "./routers/tournament.router";
@@ -25,13 +25,11 @@ routes.get("/matches/:id/:region/telemetry", telemetry);
 /** Heroes Stats Routers */
 routes.get("/heroes/:type/:region", heroesStats);
 
-/** Matches Routers */
-// routes.get("/test/:name", test);
-
+/** Pro Routers */
 routes.get("/pro/history", ProHistory);
 
 /* Leaderboards Routers */
-routes.get("/leaderboards/:region", vpr);
+routes.get("/leaderboard/:type/:region", leaderboard);
 
 /** Tournament Routers */
 // routes.get("/tourney_entry/:region/:matchId",  Tournament.EntryRoute);

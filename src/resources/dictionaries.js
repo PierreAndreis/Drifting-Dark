@@ -22,10 +22,10 @@ export const findSeasonByPatch = (patchVersion) => {
       break;
     }
   };
-
-
   return season;
 }
+
+export const latestSeason = Object.keys(SEASONS)[Object.keys(SEASONS).length - 1];
 
 export const cleanAbility = (ability) => {
   return ABILITIES[ability] || null;

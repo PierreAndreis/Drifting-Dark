@@ -83,7 +83,7 @@ class PlayerStatsInput {
 
     });
 
-    return {patches, aka, info, vpr};
+    return {patches, aka, info};
   }
 
   generateVPR(match, player) {
