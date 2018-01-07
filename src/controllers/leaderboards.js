@@ -15,6 +15,9 @@ class LeaderboardsControllers {
 
   async getRange(type, region, {limit, offset}) {
 
+    limit = limit && parseInt(limit, 10);
+    offset = offset && parseInt(offset, 10);
+
     const startAt = offset || 0;
     const endAt = limit && limit < LIMIT_PER_PAGE ? startAt + limit : startAt + LIMIT_PER_PAGE;
 
@@ -22,9 +25,8 @@ class LeaderboardsControllers {
     
     const get = async () => {
       const Leaderboard = new LeaderboardsService(type, region);
-      const getList = await Leaderboard.range(startAt, endAt);
+      const getList = await Leaderboard.range(startAt, endAt - 1);
       const sorted = lodash.chunk(getList, 2);
-
       const arrayOfPlayerId = sorted.map(p => p[0]);
 
       if (!(arrayOfPlayerId.length > 0)) return [];
