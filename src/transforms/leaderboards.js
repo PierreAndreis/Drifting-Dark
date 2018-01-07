@@ -17,7 +17,6 @@ const LeaderboardPlayer = ([playerId, points], type, position, data) => {
   const heroes = sortBy(lodash.get(stats, "Heroes", []), false, "games")
     .slice(0, 5)
     .map(hero => hero.name);
-  
 
   return {
     playerId: playerId,

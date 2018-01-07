@@ -18,7 +18,7 @@ class LeaderboardsControllers {
     const startAt = offset || 0;
     const endAt = limit && limit < LIMIT_PER_PAGE ? startAt + limit : startAt + LIMIT_PER_PAGE;
 
-    const cacheKey = `LeaderboardCache:${type}:${region}:${limit}:${offset}`;
+    const cacheKey = `LeaderboardCache:${type}:${region}:${startAt}:${endAt}`;
     
     const get = async () => {
       const Leaderboard = new LeaderboardsService(type, region);
@@ -27,7 +27,7 @@ class LeaderboardsControllers {
 
       const arrayOfPlayerId = sorted.map(p => p[0]);
 
-      if (!(arrayOfPlayerId > 0)) return [];
+      if (!(arrayOfPlayerId.length > 0)) return [];
       
       const stats = await PlayerStatsModel.get(arrayOfPlayerId);
       if (!stats) throw Error("Leaderboard error.");
