@@ -71,7 +71,7 @@ class CouchBase {
 
     }
     catch (e) {
-      console.warn(e);
+      if (e.code !== 13) console.warn(e);
       return undefined;
     }
   }
