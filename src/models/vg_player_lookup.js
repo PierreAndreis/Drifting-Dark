@@ -28,7 +28,6 @@ class VGPlayerLookup {
       // https://github.com/seripap/vainglory/blob/master/src/Errors.js
       if (players.errors) continue;
       foundRegions.push(...players.player);
-
     }
 
     

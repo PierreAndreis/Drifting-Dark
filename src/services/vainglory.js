@@ -36,24 +36,34 @@ class VaingloryService {
   }
   
   matches (region, options) {
+    let done = false;
+
+    Analysis.increment('api.calls', 1, region);
+    Analysis.increment('api.matches.request.count', 1, region);
+    
     return Promise.race([
       new Promise((resolve, reject) => {
         const t0 = performance.now();
         return vainglory.setRegion(region).matches.collection(options).then(res => {
           const t1 = performance.now();
-          Analysis.timing(`api.matches.request.${region}.timing`, t1 - t0);
-          Analysis.increment(`api.matches.request.${region}.success`);
+          Analysis.timing(`api.matches.request.timing`, t1 - t0, [`region:${region}`]);
+          if (!done) Analysis.increment(`api.matches.request.success`, 1, [`region:${region}`]);
+          done = true;
           resolve(res);
         });
       }),
       timeout(TIMEOUT_REQUEST_MS, () => {
-        Analysis.increment(`api.matches.requests.${region}.timeout`);
+        if (!done) Analysis.increment(`api.matches.request.timeout`, 1, [`region:${region}`]);
+        done = true;
         return {errors: true}
       })
     ]);
   }
 
   match (matchId, region) {
+    Analysis.increment('api.calls', 1, region);
+    Analysis.increment('api.matches.single.request.count', 1, [`region:${region}`]);
+
     return vainglory.region(region).matches.single(matchId);
   }
 
@@ -63,6 +73,10 @@ class VaingloryService {
 
     if (region) vg.setRegion(region);
 
+    Analysis.increment('api.calls', 1, region);
+    Analysis.increment('api.players.request.count', 1, [`region:${region}`]);
+
+
     if (playerName) {
       if (typeof playerName !== "object") playerName = [playerName];
       const t0 = performance.now();
@@ -71,7 +85,7 @@ class VaingloryService {
         const t0 = performance.now();
         return vg.players.getByName(playerName).then(res => {
           const t1 = performance.now();
-          Analysis.timing(`api.players.name.request.${region}.timing`, t1 - t0);
+          Analysis.timing(`api.players.name.request.timing`, t1 - t0, [`region:${region}`]);
           resolve(res);
         })
       });
@@ -81,7 +95,7 @@ class VaingloryService {
       const t0 = performance.now();
       return vg.players.getById(playerId).then(res => {
         const t1 = performance.now();
-        Analysis.timing(`api.players.id.request.${region}.timing`, t1 - t0);
+        Analysis.timing(`api.players.id.request.timing`, t1 - t0, [`region:${region}`]);
         resolve(res);
       })
     });

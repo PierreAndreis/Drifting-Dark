@@ -69,8 +69,9 @@ class HeroesStats {
         if (err.message === "InvalidJSON") {
           return;
         }
+        return err;
         
-        setTimeout(() => { throw err; }); // Small Hack to keep the same error
+        // setTimeout(() => { throw err; }); // Small Hack to keep the same error
       }));
     };
 
