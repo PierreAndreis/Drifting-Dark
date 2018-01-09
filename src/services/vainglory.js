@@ -38,8 +38,8 @@ class VaingloryService {
   matches (region, options) {
     let done = false;
 
-    Analysis.increment('api.calls', 1, region);
-    Analysis.increment('api.matches.request.count', 1, region);
+    Analysis.increment('api.calls', 1, [`region:${region}`]);
+    Analysis.increment('api.matches.request.count', 1, [`region:${region}`]);
     
     return Promise.race([
       new Promise((resolve, reject) => {
@@ -61,7 +61,7 @@ class VaingloryService {
   }
 
   match (matchId, region) {
-    Analysis.increment('api.calls', 1, region);
+    Analysis.increment('api.calls', 1, [`region:${region}`]);
     Analysis.increment('api.matches.single.request.count', 1, [`region:${region}`]);
 
     return vainglory.region(region).matches.single(matchId);
@@ -73,7 +73,7 @@ class VaingloryService {
 
     if (region) vg.setRegion(region);
 
-    Analysis.increment('api.calls', 1, region);
+    Analysis.increment('api.calls', 1, [`region:${region}`]);
     Analysis.increment('api.players.request.count', 1, [`region:${region}`]);
 
 
