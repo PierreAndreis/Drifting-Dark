@@ -7,6 +7,7 @@ import VaingloryService from "~/services/vainglory";
 
 import {createPlayer} from "~/transforms/playerProfile.js";
 
+const DEBUG = true;
 
 class VGPlayerLookup {
 
@@ -17,6 +18,7 @@ class VGPlayerLookup {
   async findPlayerAPI(playerName) {
     const foundRegions = [];
     const regionsCalls = [];
+
     // Add all the regions that we are going to search;
     Config.VAINGLORY.REGIONS.forEach(r => regionsCalls.push(VaingloryService.getPlayer({playerName, region: r})));
     
@@ -35,11 +37,10 @@ class VGPlayerLookup {
       }
       foundRegions.push(...players.player);
     }
-
-    
     if (foundRegions.length === 1) return foundRegions[0];
     else {
       const sorted = sortBy(foundRegions, false, "createdAt", (a) => new Date(a));
+      
       return sorted[0];
     }
   }
@@ -50,12 +51,20 @@ class VGPlayerLookup {
 
       const get = async () => {
         let res;
+
+        if (DEBUG) logger.debug(`[LOOKUP] SEARCHING FOR ${playerName}`);
+
         if (!region) res = await this.findPlayerAPI(playerName);
         else res = await vainglory.getPlayer({playerName, region});
-        if (!res || res.errors) return {};
+        if (!res || res.errors) {
+          if (DEBUG) logger.debug(`[LOOKUP] NOT FOUND ${playerName}`);
+          return {};
+        }
+
+        if (DEBUG) logger.debug(`[LOOKUP] FOUND ${playerName} AT ${res.raw.attributes.shardId}`)
 
         return createPlayer(res);
-      }
+      };
 
       return await CacheService.preferCache(key, get, {
         expireSeconds: Config.CACHE.REDIS_LOOKUP_CACHE_EXPIRE, 
