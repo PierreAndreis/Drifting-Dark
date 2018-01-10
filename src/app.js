@@ -5,6 +5,8 @@ import bodyParser   from "body-parser";
 import datadog      from "connect-datadog";
 import noBots       from "express-nobots";
 
+import morgan from "morgan";
+
 import logger       from "~/lib/logger"
 import Cors         from "cors";     // Cross Request
 
@@ -27,6 +29,8 @@ app.use(Cors());
 // Security Headers
 app.use(helmet());
 app.use(noBots({block:true}));
+
+app.use(morgan(':remote-addr - :method :url :status - :response-time ms'))
 
 // Datadog
 app.use(datadog(dd_options));
