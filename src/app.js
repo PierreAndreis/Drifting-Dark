@@ -3,7 +3,6 @@ import path         from "path";
 import helmet       from "helmet";
 import bodyParser   from "body-parser";
 import datadog      from "connect-datadog";
-import noBots       from "express-nobots";
 
 import morgan from "morgan";
 
@@ -30,12 +29,14 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(Cors());
 // Security Headers
 app.use(helmet());
-app.use(noBots({block:true}));
 
-morgan.token('remote-addr', function (req) {
-    return req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-});
-app.use(morgan(':remote-addr - :method :url :status - :response-time ms'))
+
+// morgan.token('remote-addr', function (req) {
+//     console.log(req.ip);
+//     return req.ip;
+// });
+
+// app.use(morgan(':remote-addr - :method :url :status - :response-time ms'))
 
 // Datadog
 app.use(datadog(dd_options));

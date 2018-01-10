@@ -35,7 +35,6 @@
     "dddos": "^0.1.1",
     "express": "^4.16.2",
     "express-limiter": "^1.6.1",
-    "express-nobots": "^1.0.4",
     "helmet": "^3.9.0",
     "ioredis": "^3.2.2",
     "kue": "^0.11.6",

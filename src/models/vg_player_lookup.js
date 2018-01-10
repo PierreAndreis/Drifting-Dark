@@ -7,7 +7,7 @@ import VaingloryService from "~/services/vainglory";
 
 import {createPlayer} from "~/transforms/playerProfile.js";
 
-const DEBUG = true;
+const DEBUG = false;
 
 class VGPlayerLookup {
 
