@@ -1,4 +1,5 @@
 import {sortBy} from "~/lib/utils";
+import logger from "~/lib/logger";
 import Config   from "~/config";
 
 import CacheService     from "~/services/cache";
@@ -26,7 +27,12 @@ class VGPlayerLookup {
       let players = result[i];
       // TODO: handle all other errors, maybe make a util function to handle all other errors except 404
       // https://github.com/seripap/vainglory/blob/master/src/Errors.js
-      if (players.errors) continue;
+      if (players.errors) {
+        if (players.message === Config.VAINGLORY.RESPONSES.REPLY_429_MSG) {
+          logger.warn("API ERROR!", players.errors);
+        }
+        continue;
+      }
       foundRegions.push(...players.player);
     }
 
@@ -44,7 +50,6 @@ class VGPlayerLookup {
 
       const get = async () => {
         let res;
-
         if (!region) res = await this.findPlayerAPI(playerName);
         else res = await vainglory.getPlayer({playerName, region});
         if (!res || res.errors) return {};
@@ -52,7 +57,10 @@ class VGPlayerLookup {
         return createPlayer(res);
       }
 
-    return await CacheService.preferCache(key, get, {expireSeconds: Config.CACHE.REDIS_LOOKUP_CACHE_EXPIRE});
+      return await CacheService.preferCache(key, get, {
+        expireSeconds: Config.CACHE.REDIS_LOOKUP_CACHE_EXPIRE, 
+        expireSecondsEmpty: Config.CACHE.REDIS_LOOKUP_MISS_CACHE_EXPIRE
+      });
     } catch (error) {
       console.log(error);
     }

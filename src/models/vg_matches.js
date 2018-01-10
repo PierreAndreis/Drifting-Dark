@@ -51,6 +51,9 @@ class VGMatches {
     let done  = false;
     let pages = 0;
 
+    // todo: handle 429 API REQUEST LIMIT
+    // handle api being down :<
+
     while (!done) {
       const pagesRes = await get(pages);
       pagesRes.forEach((pg) => {
@@ -58,11 +61,7 @@ class VGMatches {
         else res.push(...pg.match.map(match => MatchTransform.input.json(match)));
       });
       pages++;
-    }
-
-    // Remove duplicates.
-    // There is a bug that is causing this
-    // Most likely Madglory End
+    };
 
     const matchesId = new Set([]);
 
@@ -97,7 +96,8 @@ class VGMatches {
     };
 
     return CacheService.preferCache(key, get, { 
-      expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE
+      expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE,
+      expireSecondsEmpty: Config.CACHE.REDIS_EMPTY
     });
 
   }
@@ -112,7 +112,7 @@ class VGMatches {
     };
 
     return CacheService.preferCache(key, get, { 
-      expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE
+      expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE,
     });
   }
 

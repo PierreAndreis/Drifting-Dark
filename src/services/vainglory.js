@@ -49,6 +49,11 @@ class VaingloryService {
           Analysis.timing(`api.matches.request.timing`, t1 - t0, [`region:${region}`]);
           if (!done) Analysis.increment(`api.matches.request.success`, 1, [`region:${region}`]);
           done = true;
+
+          if (res.rateLimit.remaining < 15) {
+            logger.warn(`API RATE LIMIT IS ${res.rateLimit.remaining}`)
+          }
+
           resolve(res);
         });
       }),

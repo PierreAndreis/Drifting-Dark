@@ -1,4 +1,5 @@
 import RedisService from "./redis";
+import lodash       from "lodash";
 
 const DEFAULT_CACHE_EXPIRE_SECONDS = 3600 * 24 * 30; // 30 days
 const DEFAULT_LOCK_EXPIRE_SECONDS = 3600 * 24 * 40000; // 100+ years
@@ -64,7 +65,7 @@ class CacheService {
     return RedisService.del(key);
   }
 
-  async preferCache(key, fn, {expireSeconds, ignoreNull, category} = {}) {
+  async preferCache(key, fn, {expireSeconds, expireSecondsEmpty, ignoreEmpty, category} = {}) {
     const rawKey = key;
     key = REDIS.PREFIX + ':' + key;
 
@@ -96,10 +97,14 @@ class CacheService {
 
     const value = await fn();
 
-    if ((value !== null && value !== void 0) || !ignoreNull) {
+    const isEmpty = lodash.isEmpty(value);
 
+    if (!(isEmpty && ignoreEmpty)) {
+      
+      const seconds = (isEmpty && expireSecondsEmpty) ? expireSecondsEmpty : expireSeconds;
+      
       RedisService.set(key, JSON.stringify(value)).then(function() {
-        return RedisService.expire(key, expireSeconds);
+        return RedisService.expire(key, seconds);
       });
     }
     return value;
