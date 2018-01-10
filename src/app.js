@@ -3,6 +3,7 @@ import path         from "path";
 import helmet       from "helmet";
 import bodyParser   from "body-parser";
 import datadog      from "connect-datadog";
+import noBots       from "express-nobots";
 
 import logger       from "~/lib/logger"
 import Cors         from "cors";     // Cross Request
@@ -25,6 +26,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(Cors());
 // Security Headers
 app.use(helmet());
+app.use(noBots({block:true}));
 
 // Datadog
 app.use(datadog(dd_options));
