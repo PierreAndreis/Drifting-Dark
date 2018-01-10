@@ -37,9 +37,9 @@ const logger = createLogger({
 // `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
 // 
 // if (process.env.NODE_ENV !== 'production') {
-  logger.add(new transports.Console({
-      format: consoleFormat,
-  }));
+  // logger.add(new transports.Console({
+  //     format: consoleFormat,
+  // }));
 // }
 
 export default logger;

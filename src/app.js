@@ -21,6 +21,8 @@ const dd_options = {
 
 
 app.disable("x-powered-by");
+app.enable('trust proxy');
+app.set('trust proxy', () => { return true; });
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -30,6 +32,9 @@ app.use(Cors());
 app.use(helmet());
 app.use(noBots({block:true}));
 
+morgan.token('remote-addr', function (req) {
+    return req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+});
 app.use(morgan(':remote-addr - :method :url :status - :response-time ms'))
 
 // Datadog
