@@ -1,12 +1,14 @@
-import * as lodash from "lodash";
+import * as lodash   from "lodash";
 import {performance} from "perf_hooks";
-import Analysis from "../lib/analysis";
-import vg          from "vainglory";
+import vg            from "vainglory";
+
+import logger        from "~/lib/logger";
+import Analysis      from "~/lib/analysis";
 
 import Config from "~/config";
 
 const RESULT_PER_PAGE = 50;
-const TIMEOUT_REQUEST_MS = 50000;
+const TIMEOUT_REQUEST_MS = 7000;
 /**
  * todoschema,
  * verify region
