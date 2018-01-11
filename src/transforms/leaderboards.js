@@ -29,6 +29,7 @@ const LeaderboardPlayer = ([playerId, points], type, position, data) => {
     winRate:  lodash.get(stats, "winRate", "0%"),
     kp:       lodash.get(stats, "kp",      "0%"),
     games:    lodash.get(stats, "games",      0),
+    wins:     lodash.get(stats, "wins",       0),
     topHeroes: heroes,
   }
 }

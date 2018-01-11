@@ -37,7 +37,7 @@ class LeaderboardsControllers {
       const result = sorted.map((each, position) => {
         let data = stats[each[0]].value;
 
-        return LeaderboardsTransform.player(each, type, position, data);
+        return LeaderboardsTransform.player(each, type, (position + offset), data);
       });
       return result;
     };
