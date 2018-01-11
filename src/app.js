@@ -3,8 +3,7 @@ import path         from "path";
 import helmet       from "helmet";
 import bodyParser   from "body-parser";
 import datadog      from "connect-datadog";
-
-import morgan from "morgan";
+// import morgan       from "morgan";
 
 import logger       from "~/lib/logger"
 import Cors         from "cors";     // Cross Request
@@ -30,12 +29,6 @@ app.use(Cors());
 // Security Headers
 app.use(helmet());
 
-
-// morgan.token('remote-addr', function (req) {
-//     console.log(req.ip);
-//     return req.ip;
-// });
-
 // app.use(morgan(':remote-addr - :method :url :status - :response-time ms'))
 
 // Datadog
@@ -43,6 +36,7 @@ app.use(datadog(dd_options));
 
 app.use("/", (req, res, next) => {
   if (req.headers && req.headers["user-agent"] && req.headers["user-agent"].includes("bot")) {
+    logger.warn(`Blocked ${req.ip}. Headers: ${req.headers}`);
     res.status(403).send(
       "Sorry, not allowed headerless or bots"
     );
@@ -53,8 +47,6 @@ app.use("/", (req, res, next) => {
 
 // Routes
 app.use("/", routes);
-
-
 
 app.get("/", (req, res) => {
   res.status(200).send(
