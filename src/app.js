@@ -41,9 +41,20 @@ app.use(helmet());
 // Datadog
 app.use(datadog(dd_options));
 
+app.use("/", (req, res, next) => {
+  if (req.headers && req.headers["user-agent"] && req.headers["user-agent"].includes("bot")) {
+    res.status(403).send(
+      "Sorry, not allowed headerless or bots"
+    );
+    return;
+  }
+  next();
+})
 
 // Routes
 app.use("/", routes);
+
+
 
 app.get("/", (req, res) => {
   res.status(200).send(
