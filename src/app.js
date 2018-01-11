@@ -35,8 +35,8 @@ app.use(helmet());
 app.use(datadog(dd_options));
 
 app.use("/", (req, res, next) => {
-  if (req.headers && req.headers["user-agent"] && req.headers["user-agent"].includes("bot")) {
-    logger.warn(`Blocked ${req.ip}. Headers: ${req.headers}`);
+  if (!(req.headers || req.headers["user-agent"]) || req.headers["user-agent"].includes("bot")) {
+    logger.warn(`Blocked ${req.ip}. No Header or bot`);
     res.status(403).send(
       "Sorry, not allowed headerless or bots"
     );
