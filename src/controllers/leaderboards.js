@@ -16,9 +16,9 @@ class LeaderboardsControllers {
   async getRange(type, region, {limit, offset}) {
 
     limit = limit && parseInt(limit, 10);
-    offset = offset && parseInt(offset, 10);
+    offset = (offset && parseInt(offset, 10)) || 0;
 
-    const startAt = offset || 0;
+    const startAt = offset;
     const endAt = limit && limit < LIMIT_PER_PAGE ? startAt + limit : startAt + LIMIT_PER_PAGE;
 
     const cacheKey = `LeaderboardCache:${type}:${region}:${startAt}:${endAt}`;
