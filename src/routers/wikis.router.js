@@ -1,7 +1,7 @@
-import Showdown from "showdown"
+import Showdown from "showdown";
 
-// /wiki/:type/:section
-export const playerFind = async (req, res, next) => {
+/* /wiki/:type/:section */
+export const wiki = async (req, res, next) => {
   const { type, section } = req.params;
   const converter         = Showdown.Converter();
   const md                = ''; // todo: get the md file
