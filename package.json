@@ -45,6 +45,7 @@
     "node-cron": "^1.2.1",
     "node-dogstatsd": "0.0.7",
     "node-fetch": "^1.7.3",
+    "showdown": "^1.8.6",
     "vainglory": "^1.3.6",
     "winston": "^3.0.0-rc1"
   },

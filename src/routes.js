@@ -31,6 +31,9 @@ routes.get("/pro/history", ProHistory);
 /* Leaderboards Routers */
 routes.get("/leaderboard/:type/:region", leaderboard);
 
+// Wiki Routers    :type = hero/item etc  and :section = lore/abilities/stats etc
+routes.get("/wiki/:type/:section", wiki)
+
 /** Tournament Routers */
 // routes.get("/tourney_entry/:region/:matchId",  Tournament.EntryRoute);
 // routes.get("/tournament/global",               Tournament.AllStatsRoute);
