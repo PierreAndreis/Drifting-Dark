@@ -1,10 +1,11 @@
-import cluster from "cluster";
-import cron from "node-cron";
+import cluster      from "cluster";
+import cron         from "node-cron";
 
-import logger from "./lib/logger";
+import logger       from "./lib/logger";
 
-import ProHistory from "~/services/prohistory";
-import HeroesStats from "~/services/heroes";
+import ProHistory   from "~/services/prohistory";
+import HeroesStats  from "~/services/heroes";
+import Wiki         from "~/services/wiki";
 
 //  # ┌────────────── second (optional)
 //  # │ ┌──────────── minute
@@ -39,12 +40,17 @@ const crons = [
     name: "HeroStats - Cache Generate",
     interval: everyMinute(5),
     fn: () => HeroesStats.cacheStats(),
-  }
-]
+  },
+  {
+    name: "Wiki Update Check",
+    interval: everyHour(1),
+    fn: Wiki,
+  },
+];
 
 if (cluster.isMaster) {
- crons.forEach(c => cron.schedule(c.interval, () => {
-   logger.verbose(`${c.name} is running`);
-   c.fn()
- }));
+  crons.forEach(c => cron.schedule(c.interval, () => {
+    logger.verbose(`${c.name} is running`);
+    c.fn();
+  }));
 }
