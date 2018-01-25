@@ -1,11 +1,10 @@
 import transformHeroesStats     from "~/transforms/heroesStats.js";
-import {merge, sortBy}                  from "~/lib/utils.js";
+import {merge, sortBy}          from "~/lib/utils.js";
 import Telemetry                from "~/transforms/telemetry.js";
-import MatchesModel             from "~/models/vg_matches.js";
 import HeroesModel              from "~/models/vg_heroes.js";
 
 import logger                   from "~/lib/logger";
-import CacheService              from "~/services/cache";
+import CacheService             from "~/services/cache";
 
 const cacheKeyUnique = "HeroesStatsMatchesID";
 const cacheKeyStore = "HeroesStatsMatches";

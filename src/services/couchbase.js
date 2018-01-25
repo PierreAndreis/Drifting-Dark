@@ -1,12 +1,17 @@
 import c       from "couchbase";
 import Promise from "bluebird";
 
+import logger from "~/lib/logger";
 import Config from "~/config";
 
 const couchbase = Promise.promisifyAll(c);
 
 const cluster = new couchbase.Cluster(Config.COUCHBASE.HOST);
 
+// NOTES:
+// We are swalloing a lot of errors in here, maybe fix this?
+
+// To allow couchbase 5.0> uncomment the following line;
 // cluster.authenticate(Config.COUCHBASE.USERNAME, Config.COUCHBASE.PASSWORD);
 
 class CouchBase {
@@ -54,7 +59,8 @@ class CouchBase {
     }
     catch (e) {
       if (e.message === "bad cas passed") return false;
-      console.log(`ERROR WHILE INSERTING ${name}=`, e.message, {args: arguments});
+      // ERROR IS BEING SWALLED
+      logger.warn(`Error on couchbase upsert: ${e.message}`)
       return e.message;
     }
   }
@@ -71,7 +77,7 @@ class CouchBase {
 
     }
     catch (e) {
-      if (e.code !== 13) console.warn(e);
+      // if (e.code !== 13) console.warn(e);
       return undefined;
     }
   }

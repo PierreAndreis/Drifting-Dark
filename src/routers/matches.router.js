@@ -23,6 +23,7 @@ export const telemetry = async (req, res, next) => {
   res.json(reply);
 };
 
+
 // todo: loop to get more pages... get also at the same time another batch of 28 days before now
 // export const test = async (req, res, next) => {
 //   const { name } = req.params;
@@ -47,7 +48,3 @@ export const telemetry = async (req, res, next) => {
 //   res.json(reply);
 // };
 
-export const ProHistory = async (req, res, next) => {
-  const reply = await MatchesController.ProMatches();
-  res.json(reply);
-};

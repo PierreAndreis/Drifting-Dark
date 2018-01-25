@@ -1,32 +1,34 @@
-import { Router } from "express"; // WebServer
+import { Router } from "express";
 
-import { playerFind, playerStats }         from "./routers/players.router";
-import { latestMatches, test, ProHistory, details, telemetry } from "./routers/matches.router";
-import { leaderboard } from "./routers/leaderboards.router";
-import { heroesStats } from "./routers/heroes.router";
+import * as PlayerRouter  from "./routers/players.router";
+import * as MatchesRouter from "./routers/matches.router";
+import { leaderboard }    from "./routers/leaderboards.router";
+import { heroesStats }    from "./routers/heroes.router";
+
+import * as Pro from "./routers/pro.router";
 
 // import * as Tournament from "./routers/tournament.router";
 
 const routes = Router();
 
 /** PlayerLookup Routers */
-routes.get("/player/:name/find", playerFind);
+routes.get("/player/:name/find", PlayerRouter.playerFind);
 
 /** PlayerLookup Routers ?gameMode=&season= */
-routes.get("/player/:name/stats", playerStats);
+routes.get("/player/:name/stats", PlayerRouter.playerStats);
 
-/** Matches Routers ?page=&gameMode[]= */
-routes.get("/matches/:name", latestMatches);
+/** Matches Routers ?page=&gameMode[]=&limit=&patch[]= */
+routes.get("/matches/:name", MatchesRouter.latestMatches);
 
-routes.get("/matches/:id/:region/details", details);
+routes.get("/matches/:id/:region/details", MatchesRouter.details);
 
-routes.get("/matches/:id/:region/telemetry", telemetry);
+routes.get("/matches/:id/:region/telemetry", MatchesRouter.telemetry);
 
 /** Heroes Stats Routers */
 routes.get("/heroes/:type/:region", heroesStats);
 
 /** Pro Routers */
-routes.get("/pro/history", ProHistory);
+routes.get("/pro/history", Pro.ProHistory);
 
 /* Leaderboards Routers */
 routes.get("/leaderboard/:type/:region", leaderboard);

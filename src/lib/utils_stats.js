@@ -33,7 +33,6 @@ function getRate(wins, games, divider = 100) {
   let res = math.round(math.eval(`${wins} / ${games}`) * divider, 1);
   if (lodash.isNaN(res)) res = 0;
   return res + "%";
-
 }
 
 function getMinutes(s) {

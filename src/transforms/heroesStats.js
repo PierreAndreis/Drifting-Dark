@@ -1,6 +1,7 @@
 import * as lodash from "lodash";
-import {merge} from "./../lib/utils";
-import MatchesModel from "./../models/vg_matches";
+import {merge}     from "./../lib/utils";
+
+import MatchesController from "./../controllers/vg_matches.js";
 
 import logger from "./../lib/logger";
 
@@ -82,7 +83,7 @@ const getTelemetryStats = async (match) => {
     throw Error("InvalidJSON");
   }
 
-  const telem = await MatchesModel.getMatchTelemetry(match.telemetry.URL, match.id);
+  const telem = await MatchesController.getMatchTelemetry(match.telemetry.URL, match.id);
   let averageTier = 0;
   
   match.players.forEach(p => averageTier += p.tier);

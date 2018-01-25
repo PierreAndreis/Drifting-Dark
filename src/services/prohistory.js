@@ -1,16 +1,15 @@
 import lodash from "lodash";
 
-import MatchController from "../controllers/vg_matches";
-import MatchModel      from "../models/vg_matches";
+import ProHistory   from "./../controllers/prohistory";
+import ProTransform from "./../transforms/prohistory";
 
-import prohistory   from "../transforms/prohistory";
-import ProTransform from "../transforms/prohistory";
+import MatchesController from "./../controllers/vg_matches";
 
 import CacheService from "./cache";
-import {sortBy}     from "../lib/utils";
-import logger       from "../lib/logger";
+import {sortBy}     from "./../lib/utils";
+import logger       from "./../lib/logger";
 
-import Pros from "../resources/pro";
+import Pros from "./../resources/pro";
 
 const PROS_PER_QUEUE = 10;
 const PROS_LIMIT_HISTORY = 50;
@@ -28,21 +27,22 @@ const getCounter = async () => {
 
 export default async () => {
 
-  let proHistory = await MatchModel.getProHistory();
+  let proHistory = await ProHistory.get();
   const counter = await getCounter();
   const player = Pros[counter];
 
-  const matches = await MatchController.getMatchesByName(player.name, {gameMode: "Ranked"});
+  const matches = await MatchesController.getMatchesByName(player.name, {gameMode: "Ranked"});
 
   for (let i = 0; i < matches.length; i++) {
     let m = matches[i];
 
-    const thisMatch = proHistory.find(({matchId, proInfo}) => (matchId === m.id && proInfo.name === player.name));
-    if (!!thisMatch) continue;
+    const thisMatch = proHistory.filter(({matchId, proInfo}) => (matchId === m.id && proInfo.name === player.name));
+    if (proHistory.length > 1) continue;
 
     // Add this match to the beginning of the array
-    const match = ProTransform.create(m, player);
     // Somehow some matches are coming without the user we want.. Maybe name change?
+    
+    const match = ProTransform.create(m, player);
     if (match) proHistory.push(match);
   }
   // After the loop resort everything.
@@ -51,5 +51,5 @@ export default async () => {
   // Cut down the array to how many matches we want
   proHistory = proHistory.slice(0, PROS_LIMIT_HISTORY);
 
-  MatchModel.setProHistory(proHistory);
+  ProHistory.set(proHistory);
 };

@@ -10,15 +10,10 @@ import { merge } from "~/lib/utils";
 const PLAYERDB = new CouchbaseService("players");
 
 class VGPlayersStats extends BaseCouchbase {
-
   async get(playerId) {
     const key = playerId;
-
-    const stats = await this.find(key);
-    return stats;
-
+    return await this.find(key);
   }
-
 }
 
 export default new VGPlayersStats(PLAYERDB);
