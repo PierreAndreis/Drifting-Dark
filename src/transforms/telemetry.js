@@ -80,7 +80,8 @@ class Telemetry {
       }
     }
 
-    const startGame = telemetry.find((t) => t.type === "BuyItem");
+    let startGame = telemetry.find((t) => t.type === "BuyItem");
+    if (!startGame) telemetry.find((t) => t.type === "LevelUp");
 
     const startTime = Date.parse(startGame.time);
     
