@@ -80,7 +80,7 @@ class Telemetry {
       }
     }
 
-    const startGame = telemetry.find((t) => t.type === "PlayerFirstSpawn");
+    const startGame = telemetry.find((t) => t.type === "BuyItem");
 
     const startTime = Date.parse(startGame.time);
     

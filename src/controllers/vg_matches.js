@@ -59,19 +59,20 @@ class MatchesController {
 
   // To get a specific match
   async getMatchByMatchId(matchId, region, output) {
-    const match = await VaingloryService.match(id, region);
+    const match = await VaingloryService.match(matchId, region);
     if (match.errors) return {errors: match.messages}; // todo error handler
     let m = MatchTransform.input.json(match);
-    if (output) m = MatchTransform.output.json(id, m);
+    if (output) m = MatchTransform.output.json(matchId, m);
     return m;
   }
 
   async getMatchTelemetry(matchId, region) {
     const match = await this.getMatchByMatchId(matchId, region);
-    const key = `telemetry:${telemetryUrl}`;
+    // return match;
+    const key = `telemetry:${match.telemetry.URL}`;
 
     const get = async () => {
-      const telemetry = await TelemetryTransform(telemetryUrl, matchId);
+      const telemetry = await TelemetryTransform(match.telemetry.URL, matchId);
       return telemetry;
     };
 
