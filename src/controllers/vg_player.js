@@ -128,7 +128,7 @@ class PlayerController {
 
       // stats = VPRService.update(stats);
 
-      stats = PlayerController.migrate(stats);
+      stats = this.migrate(stats);
 
 
       // Saving on database
