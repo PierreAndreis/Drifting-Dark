@@ -90,7 +90,7 @@ class MatchInput {
 
       // const rankvst = lodash.get(player, "player.stats.rankPoints.ranked", 0);
       let tier = player._stats.skillTier;
-      const role = findRole(player);
+      const role = findRole(player._stats);
 
       if (typeof tier !== "number") {
         const tierN = TIER3_NAMES.find(t => t.name === player._stats.skillTier);
