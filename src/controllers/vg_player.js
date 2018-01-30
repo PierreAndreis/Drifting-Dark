@@ -19,6 +19,17 @@ import MatchesController   from "~/controllers/vg_matches";
 
 
 class PlayerController {
+
+  migrate(stats) {
+    // Removing bad name on gameModes
+    if (stats.patches && stats.patches["2.12"] && stats.patches["2.12"]["gameMode"] && stats.patches["2.12"]["gameMode"]["private_party_vg_5v5"]) {
+      stats.patches["2.12"]["gameMode"]["5v5 Private"] = merge(stats.patches["2.12"]["gameMode"]["5v5 Private"], lodash.cloneDeep(stats.patches["2.12"]["gameMode"]["private_party_vg_5v5"]));
+      delete stats.patches["2.12"]["gameMode"]["private_party_vg_5v5"];
+    } 
+
+    return stats;
+  }
+
   lookupName(playerName, region) {
     if (!playerName) return {};
     if (!region) return PlayerLookupModel.getByName(playerName);
@@ -116,6 +127,9 @@ class PlayerController {
       }
 
       // stats = VPRService.update(stats);
+
+      stats = PlayerController.migrate(stats);
+
 
       // Saving on database
       PlayerStatsModel.upsert(player.id, stats);
