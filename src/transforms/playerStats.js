@@ -183,14 +183,6 @@ class PlayerStatsInput {
 
   // Run once per match
   generateGameModes(match, player, roster) {
-
-    // Small fix for 1.2.0-beta version of Vainglory Package
-    // Where there is a misstype on Battle Royale
-    // Also being used on models/matches.js
-    const gameMode = (       match.gameMode == "Battle Royal"
-                      ||     match.gameMode == "Private Battle Royal"
-                      ) ? `${match.gameMode}e` : match.gameMode;
-
     return {
       [gameMode]: this.generateTotal("gameMode", match, player, roster)
     };

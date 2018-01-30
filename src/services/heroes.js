@@ -16,7 +16,7 @@ const REGIONS = ["", "na", "eu", "sa", "ea", "sg", "cn"];
 
 const DEBUG = false;
 
-const gameModesAllowed = ["Ranked"];
+const gameModesAllowed = ["Ranked", "Casual 5v5"];
 
 class HeroesStats {
 
