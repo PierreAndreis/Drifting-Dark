@@ -22,10 +22,6 @@ class PlayerController {
 
   migrate(stats) {
     // Removing bad name on gameModes
-    if (stats.name === "physiX") {
-      stats.patches["2.12"]["gameModes"]["Private 5v5"] = stats.patches["2.12"]["gameModes"]["5v5 Private"];
-      delete stats.patches["2.12"]["gameModes"]["5v5 Private"];
-    }
     
     if (stats.patches && stats.patches["2.12"] && stats.patches["2.12"]["gameModes"] && stats.patches["2.12"]["gameModes"]["private_party_vg_5v5"]) {
       stats.patches["2.12"]["gameModes"]["Private 5v5"] = merge(stats.patches["2.12"]["gameModes"]["Private 5v5"], lodash.cloneDeep(stats.patches["2.12"]["gameModes"]["private_party_vg_5v5"]));
