@@ -22,6 +22,9 @@ class PlayerController {
 
   migrate(stats) {
     // Removing bad name on gameModes
+    if (stats.name === "physiX") {
+      console.log(stats.patches["2.12"]["gameMode"]["private_party_vg_5v5"]);
+    }
     if (stats.patches && stats.patches["2.12"] && stats.patches["2.12"]["gameMode"] && stats.patches["2.12"]["gameMode"]["private_party_vg_5v5"]) {
       stats.patches["2.12"]["gameMode"]["5v5 Private"] = merge(stats.patches["2.12"]["gameMode"]["5v5 Private"], lodash.cloneDeep(stats.patches["2.12"]["gameMode"]["private_party_vg_5v5"]));
       delete stats.patches["2.12"]["gameMode"]["private_party_vg_5v5"];
@@ -110,7 +113,9 @@ class PlayerController {
     // if there is no stats, or if the next cache is older than the current date
     // we will fetch new stats and merge with old stats 
     // or create if there is no stats
-    if (!stats || new Date(stats.nextCache) < new Date()) {
+
+    // opts.raw is a way to force to refresh
+    if (!stats || new Date(stats.nextCache) < new Date() || opts.raw) {
       logger.silly(`updating ${playerName}`);
       const t0 = performance.now();
 
