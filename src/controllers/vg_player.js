@@ -23,11 +23,11 @@ class PlayerController {
   migrate(stats) {
     // Removing bad name on gameModes
     if (stats.name === "physiX") {
-      console.log(stats.patches["2.12"]["gameMode"]["private_party_vg_5v5"]);
+      console.log(stats.patches["2.12"]["gameModes"]["private_party_vg_5v5"]);
     }
-    if (stats.patches && stats.patches["2.12"] && stats.patches["2.12"]["gameMode"] && stats.patches["2.12"]["gameMode"]["private_party_vg_5v5"]) {
-      stats.patches["2.12"]["gameMode"]["5v5 Private"] = merge(stats.patches["2.12"]["gameMode"]["5v5 Private"], lodash.cloneDeep(stats.patches["2.12"]["gameMode"]["private_party_vg_5v5"]));
-      delete stats.patches["2.12"]["gameMode"]["private_party_vg_5v5"];
+    if (stats.patches && stats.patches["2.12"] && stats.patches["2.12"]["gameModes"] && stats.patches["2.12"]["gameModes"]["private_party_vg_5v5"]) {
+      stats.patches["2.12"]["gameModes"]["5v5 Private"] = merge(stats.patches["2.12"]["gameModes"]["5v5 Private"], lodash.cloneDeep(stats.patches["2.12"]["gameMode"]["private_party_vg_5v5"]));
+      delete stats.patches["2.12"]["gameModes"]["private_party_vg_5v5"];
     } 
 
     return stats;
