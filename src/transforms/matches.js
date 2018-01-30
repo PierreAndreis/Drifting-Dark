@@ -85,21 +85,12 @@ class MatchInput {
   generatePlayers(players, roster, blueVstSum, redVstSum) {
 
     let p = [];
-    
-    players = players.sort((a, b) => {
-      /**/ if (a.stats.farm > b.stats.farm) return 1;
-      else if (a.stats.farm < b.stats.farm) return -1;
-      else return 0;
-    });
-
-    const rolesToPick = ["Carry", "Jungler", "Captain"];
 
     lodash.forEach(players, (player) => {
 
-      const role = rolesToPick.pop();
-
       // const rankvst = lodash.get(player, "player.stats.rankPoints.ranked", 0);
       let tier = player._stats.skillTier;
+      const role = findRole(player);
 
       if (typeof tier !== "number") {
         const tierN = TIER3_NAMES.find(t => t.name === player._stats.skillTier);
