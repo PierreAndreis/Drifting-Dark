@@ -183,8 +183,9 @@ class PlayerStatsInput {
 
   // Run once per match
   generateGameModes(match, player, roster) {
+
     return {
-      [gameMode]: this.generateTotal("gameMode", match, player, roster)
+      [match.gameMode]: this.generateTotal("gameMode", match, player, roster)
     };
   }
 }
