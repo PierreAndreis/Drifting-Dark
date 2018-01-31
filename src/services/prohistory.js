@@ -36,8 +36,9 @@ export default async () => {
   for (let i = 0; i < matches.length; i++) {
     let m = matches[i];
 
-    const thisMatch = proHistory.filter(({matchId, proInfo}) => (matchId === m.id && proInfo.name === player.name));
-    if (thisMatch.length > 1) continue;
+    const thisMatch = proHistory.find(({matchId, proInfo}) => (matchId === m.id && proInfo.name === player.name));
+    // if the match already exist with the same player name and matchId, then we should skip.
+    if (thisMatch) continue;
 
     // Add this match to the beginning of the array
     // Somehow some matches are coming without the user we want.. Maybe name change?
