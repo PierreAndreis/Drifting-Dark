@@ -66,13 +66,18 @@ class MatchesController {
     return m;
   }
 
-  async getMatchTelemetry(matchId, region) {
-    const match = await this.getMatchByMatchId(matchId, region);
-    // return match;
-    const key = `telemetry:${match.telemetry.URL}`;
+  async getMatchTelemetry({telemetryLink, matchId, region}) {
+
+    if (!telemetryLink) {
+      const match = await this.getMatchByMatchId(matchId, region);
+      if (match.errors) return match;
+      telemetryLink = match.telemetry.URL;
+    }
+
+    const key = `telemetry:${telemetryLink}`;
 
     const get = async () => {
-      const telemetry = await TelemetryTransform(match.telemetry.URL, matchId);
+      const telemetry = await TelemetryTransform(telemetryLink, matchId);
       return telemetry;
     };
 

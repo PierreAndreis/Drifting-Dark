@@ -17,6 +17,7 @@ SELECT actor, SUM(bans) as bans, SUM(games) as games, SUM(wins) as wins
 FROM heroes 
 WHERE patchVersion = '2.11' 
 AND TONUMBER(tier) > 24
+AND gameMode = 'Ranked'
 ${region && `AND region = '${region}'`}
 GROUP BY actor 
 ORDER BY bans DESC

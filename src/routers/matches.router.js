@@ -19,7 +19,7 @@ export const details = async (req, res, next) => {
 // matches/:id/:region/telem
 export const telemetry = async (req, res, next) => {
     const { id, region } = req.params;
-  const reply = await MatchesController.getMatchTelemetry(id, region);
+  const reply = await MatchesController.getMatchTelemetry({matchId: id, region});
   res.json(reply);
 };
 

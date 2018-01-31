@@ -83,7 +83,7 @@ const getTelemetryStats = async (match) => {
     throw Error("InvalidJSON");
   }
 
-  const telem = await MatchesController.getMatchTelemetry(match.telemetry.URL, match.id);
+  const telem = await MatchesController.getMatchTelemetry({telemetryLink: match.telemetry.URL, matchId: match.id});
   let averageTier = 0;
   
   match.players.forEach(p => averageTier += p.tier);

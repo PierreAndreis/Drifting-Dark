@@ -62,15 +62,17 @@ class HeroesStats {
     let res = [];
 
     const matches = await this.getMatches(cacheKeyStore, MATCHES_PROCESS_BATCH);
+
     for (let index = 0; index < matches.length; index++) {
+
       const match = matches[index];
+
       res.push(transformHeroesStats(match).catch(err => {
         if (err.message === "InvalidJSON") {
           return;
         }
-        return err;
-        
-        // setTimeout(() => { throw err; }); // Small Hack to keep the same error
+        logger.warn(err);
+        throw err;
       }));
     };
 
@@ -94,7 +96,7 @@ class HeroesStats {
       return heroes;
     }
     catch(e) {
-      console.warn("ProcessFailed:", e);
+      // console.warn("ProcessFailed:", e);
       logger.warn(`[HeroStats] Process Failed: ${e}`);
       matches.forEach(match => this.retryMatch(cacheKeyStore, match));
       return false;
