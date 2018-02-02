@@ -14,7 +14,7 @@ const MATCHES_PROCESS_BATCH = 150;
 const MATCHES_SAVE_BATCH = 100; // `MATCHES_PROCESS_BATCH` matches in each batch
 const REGIONS = ["", "na", "eu", "sa", "ea", "sg", "cn"];
 
-const DEBUG = false;
+const DEBUG = true;
 
 const gameModesAllowed = ["Ranked", "Casual 5v5"];
 
@@ -23,13 +23,11 @@ class HeroesStats {
   async addMatch(match) {
     // Only support MatchesTransform.input jsons
     try {
-      logger.debug(`[${match.id} - ${match.gameMode}: ${gameModesAllowed.includes(match.gameMode)}`);
-      
       if (!gameModesAllowed.includes(match.gameMode)) return;
 
       const duplicated = await CacheService.unique(cacheKeyUnique, match.id);
       if (!duplicated) {
-        // return console.warn(`[HEROSTATS] Avoiding duplicates: ${match.id}`);
+        if (match.gameMode === "Casual 5v5") console.warn(`[HEROSTATS] Avoiding duplicates: ${match.id}`);
         return;
       }
       if (DEBUG) logger.info(`Adding Heroes Match ID ${match.id}`)
@@ -81,7 +79,7 @@ class HeroesStats {
     try {
       let promiseRes = await Promise.all(res);
       promiseRes = promiseRes.filter((n) => n != undefined); 
-      if (DEBUG) logger.info(`[HeroStats] Matches Processed=${promiseRes.length}`);
+      if (DEBUG) logger.info(`[HeroStats] Matches Processed = ${promiseRes.length}`);
 
       // Organize better so we can merge
       let heroes = {};
@@ -94,7 +92,6 @@ class HeroesStats {
       });
 
       CacheService.arrayAppend(cacheKeyProcessed, heroes, true);
-
       return heroes;
     }
     catch(e) {
