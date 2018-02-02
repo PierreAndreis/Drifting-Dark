@@ -24,22 +24,27 @@ class LeaderboardsControllers {
     const cacheKey = `LeaderboardCache:${type}:${region}:${startAt}:${endAt}`;
     
     const get = async () => {
-      const Leaderboard = new LeaderboardsService(type, region);
-      const getList = await Leaderboard.range(startAt, endAt - 1);
-      const sorted = lodash.chunk(getList, 2);
-      const arrayOfPlayerId = sorted.map(p => p[0]);
+      try {
+        const Leaderboard = new LeaderboardsService(type, region);
+        const getList = await Leaderboard.range(startAt, endAt - 1);
+        const sorted = lodash.chunk(getList, 2);
+        const arrayOfPlayerId = sorted.map(p => p[0]);
 
-      if (!(arrayOfPlayerId.length > 0)) return [];
-      
-      const stats = await PlayerStatsModel.get(arrayOfPlayerId);
-      if (!stats) throw Error("Leaderboard error.");
+        if (!(arrayOfPlayerId.length > 0)) return [];
+        
+        const stats = await PlayerStatsModel.get(arrayOfPlayerId);
+        if (!stats) throw Error({result: stats, playerId: arrayOfPlayerId});
 
-      const result = sorted.map((each, position) => {
-        let data = stats[each[0]].value;
+        const result = sorted.map((each, position) => {
+          let data = stats[each[0]].value;
 
-        return LeaderboardsTransform.player(each, type, (position + offset), data);
-      });
-      return result;
+          return LeaderboardsTransform.player(each, type, (position + offset), data);
+        });
+        return result;
+      }
+      catch(e) {
+        logger.warn(`Error in Leadeboard: ${JSON.stringify(e)}`);
+      }
     };
 
     return CacheService.preferCache(cacheKey, get, { 

@@ -23,6 +23,8 @@ class HeroesStats {
   async addMatch(match) {
     // Only support MatchesTransform.input jsons
     try {
+      logger.debug(`[${match.id} - ${match.gameMode}: ${gameModesAllowed.includes(match.gameMode)}`);
+      
       if (!gameModesAllowed.includes(match.gameMode)) return;
 
       const duplicated = await CacheService.unique(cacheKeyUnique, match.id);
