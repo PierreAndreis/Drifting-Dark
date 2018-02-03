@@ -25,8 +25,8 @@ class HeroesStats {
     try {
       if (!gameModesAllowed.includes(match.gameMode)) return;
 
-      const duplicated = await CacheService.unique(cacheKeyUnique, match.id);
-      if (!duplicated) {
+      const unique = await CacheService.unique(cacheKeyUnique, match.id);
+      if (!unique) {
         if (match.gameMode === "Casual 5v5") console.warn(`[HEROSTATS] Avoiding duplicates: ${match.id}`);
         return;
       }

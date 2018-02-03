@@ -76,6 +76,7 @@ const generateHeroesStats = (match, player) => {
 }
 
 const getTelemetryStats = async (match) => {
+
   let heroes = {};
 
   if (!match.telemetry && !match.telemetry.URL) {
@@ -92,14 +93,14 @@ const getTelemetryStats = async (match) => {
 
   for (const pick of telem.draft) {
     if (pick.Type !== "HeroBan") continue;
-    heroes[pick.Hero] = {
+    heroes[pick.Hero] = merge(heroes[pick.Hero], {
       actor:        pick.Hero,
       tier:         "" + averageTier,
       patchVersion: match.patchVersion,
       gameMode:     match.gameMode,
       region:       match.shardId,
       bans:         1,
-    };
+    });
   }
 
   const facts = telem.facts;
@@ -110,7 +111,7 @@ const getTelemetryStats = async (match) => {
     const itemPath = translateItemPath(actor.items);
     const player = match.players.find(p => name === p.actor);
 
-      heroes[name] = {
+      heroes[name] = merge(heroes[name], {
         totalhealed: actor.healed,
         totaldamage: actor.damage,
         abilitypicks: {
@@ -125,7 +126,7 @@ const getTelemetryStats = async (match) => {
         itemswin: {
           [itemPath]: (player.winner) ? 1 : 0,
         },
-      }
+      });
   }));
 
   return heroes;
@@ -134,9 +135,8 @@ const getTelemetryStats = async (match) => {
 export default async (match) => {
   let heroes = {};
   for (const player of match.players) {
-    heroes[player.actor] = generateHeroesStats(match, player);
+    heroes[player.actor] = merge(heroes[player.actor], generateHeroesStats(match, player));
   }
-
 
   const telemetry = await getTelemetryStats(match);
   heroes = merge(heroes, telemetry);
