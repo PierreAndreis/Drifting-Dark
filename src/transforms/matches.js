@@ -100,8 +100,8 @@ class MatchInput {
       } else return current;
     }, {_stats: {farm: 999999}}); // Small hack on default reduce so its value is never met
 
-    let junglerId = jungler.player.id;
-    let captainId = captain.player.id;
+    let junglerId = (jungler.player) ? jungler.player.id : "";
+    let captainId = (captain.player) ? captain.player.id : "";
 
     lodash.forEach(players, (player) => {
 
