@@ -21,7 +21,7 @@ const translateItemPath = (itemPath) => {
     if (item && item !== []) {
       res.push(item.short);
     }
-    if (res.length > 3) break;
+    // if (res.length > 3) break;
   }
 
   return res.join(",");
@@ -32,10 +32,11 @@ const generateHeroesStats = (match, player) => {
   const afkOrNo     = (player.firstAfkTime !== -1) ? 1 : 0;
 
   const stats = {
-    gameMode:     match.gameMode,
-    matchId:      match.id,
-    patchVersion: match.patchVersion,
-    region:       match.shardId,
+    gameMode:       match.gameMode,
+    matchId:        match.id,
+    patchVersion:   match.patchVersion,
+    region:         match.shardId,
+    duration:       match.duration,
     actor:          player.actor,
     tier:           "" + player.tier,
     wins:           winner,
@@ -55,7 +56,6 @@ const generateHeroesStats = (match, player) => {
     lane:           player.nonJungleMinionKills,
     jungle:         player.minionKills,
     turretCaptures: player.turretCaptures,
-    duration:       match.duration,
     teammates:      {},
     enemies:        {}
   };

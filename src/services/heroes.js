@@ -6,7 +6,8 @@ import HeroesModel              from "~/models/vg_heroes.js";
 import logger                   from "~/lib/logger";
 import CacheService             from "~/services/cache";
 
-const cacheKeyUnique = "HeroesStatsMatchesID";
+const cacheKeyUnique = (gameMode, patchVersion) => `HeroesStatsMatchesID:${patchVersion}:${gameMode}`;
+
 const cacheKeyStore = "HeroesStatsMatches";
 const cacheKeyProcessed = "HeroesStats";
 
@@ -25,9 +26,9 @@ class HeroesStats {
     try {
       if (!gameModesAllowed.includes(match.gameMode)) return;
 
-      const unique = await CacheService.unique(cacheKeyUnique, match.id);
+      const unique = await CacheService.unique(cacheKeyUnique(match.gameMode, match.patchVersion), match.id);
       if (!unique) {
-        if (match.gameMode === "Casual 5v5") console.warn(`[HEROSTATS] Avoiding duplicates: ${match.id}`);
+        if (DEBUG) console.warn(`[HEROSTATS] Avoiding duplicates: ${match.id}`);
         return;
       }
       if (DEBUG) logger.info(`Adding Heroes Match ID ${match.id}`)
