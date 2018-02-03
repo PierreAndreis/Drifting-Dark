@@ -109,7 +109,6 @@ class MatchesController {
       m = m.map(match => MatchTransform.output.json(playerId, match));
       return m;
     };
-
     return CacheService.preferCache(key, get, { 
       expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE,
       expireSecondsEmpty: Config.CACHE.REDIS_EMPTY

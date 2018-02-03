@@ -2,6 +2,7 @@ import * as lodash from "lodash";
 
 import { getKDA, getRate, getAvg, getMinutes } from "~/lib/utils_stats";
 import TIER3_NAMES from "~/resources/tiers_name";
+import T3_ITEMS from "~/resources/items_t3";
 
 import VPRService from "~/services/vpr";
 
@@ -13,9 +14,9 @@ const findRole = (player) => {
   const laneCS   = player.nonJungleMinionKills;
   const jungleCS = player.jungleKills;
   const farm     = player.minionKills;
-
-  if (laneCS > jungleCS && farm > 45) role = "Carry";
-  if (laneCS < jungleCS && farm > 45) role = "Jungler";
+  
+  if (jungleCS > 20) role = "Jungler";
+  else if (farm > 25) role = "Carry";
 
   return role;
 }
@@ -86,11 +87,30 @@ class MatchInput {
 
     let p = [];
 
+    let jungler = players.reduce((prev, current) => {
+      // console.log(curre.stats);
+      if (prev._stats.jungleKills > current._stats.jungleKills) return prev;
+      else return current;
+    }, {_stats: {jungleKills: -1}}); // Small hack on default reduce so its value is never met
+    
+
+    let captain = players.reduce((prev, current) => {
+      if (prev._stats.farm < current._stats.farm || jungler.player.id === current.player.id) {
+        return prev;
+      } else return current;
+    }, {_stats: {farm: 999999}}); // Small hack on default reduce so its value is never met
+
+    let junglerId = jungler.player.id;
+    let captainId = captain.player.id;
+
     lodash.forEach(players, (player) => {
 
       // const rankvst = lodash.get(player, "player.stats.rankPoints.ranked", 0);
       let tier = player._stats.skillTier;
-      const role = findRole(player._stats);
+      let role = "Carry";
+      if (junglerId === player.player.id) role = "Jungler";
+      else if (captainId === player.player.id) role = "Captain";
+      // const role = jungler.player.name === player.player.name ? "Jungler" : detectRoleBasedOnItems(player.stats.items);
 
       if (typeof tier !== "number") {
         const tierN = TIER3_NAMES.find(t => t.name === player._stats.skillTier);
@@ -153,42 +173,36 @@ class MatchOutput {
       let roster = rosters.find(r => r.side === player.side);
 
       return {    
-        id:        player.id,
-        me:        (playerId && player.id === playerId),
-        side:      player.side,
-        name:      player.name,
-        region:    player.shardId,
-        tier:      player.tier,
-        
-        skillTier: player.skillTier,
-        winner:    player.winner,
-
-        rankvst:  player.rankvst,
-        blitzvst: player.blitzvst,
-        
-        hero: player.actor,
-        role: player.role,
-        aces: player.aces, 
+        id            : player.id,
+        me            : (playerId && player.id === playerId),
+        side          : player.side,
+        name          : player.name,
+        region        : player.shardId,
+        tier          : player.tier,
+        skillTier     : player.skillTier,
+        winner        : player.winner,
+        rankvst       : player.rankvst,
+        blitzvst      : player.blitzvst,
+        hero          : player.actor,
+        role          : player.role,
+        aces          : player.aces,
         turretCaptures: player.turretCaptures,
-
-        kp: getRate((player.kills + player.assists), roster.heroKills),
-
-        kills: player.kills,
-        deaths: player.deaths,
-        assists: player.assists,
-        kda: getKDA(player.kills, player.deaths, player.assists),
-
-        cs: parseInt(player.farm, 10),
-        csMin: getAvg(player.farm, matchMinutes),
-
-        afk: (player.firstAfkTime !== -1 || player.wentAfk),
-
-        gold: parseInt(player.gold, 10),
-        goldMin: getAvg(player.gold, matchMinutes),
-        goldShare: getRate(player.gold, roster.gold),
-
-        items: player.items,
-        vprChange: player.vprDiff || 0,
+        kp            : getRate((player.kills + player.assists), roster.heroKills),
+        kills         : player.kills,
+        deaths        : player.deaths,
+        assists       : player.assists,
+        kda           : getKDA(player.kills, player.deaths, player.assists),
+        cs            : parseInt(player.farm, 10),
+        nonJungle     : parseInt(player.nonJungleMinionKills, 10),
+        minionKills   : parseInt(player.minionKills, 10),
+        jungleCs      : parseInt(player.jungleKills, 10),
+        csMin         : getAvg(player.farm, matchMinutes),
+        afk           : (player.firstAfkTime !== -1 || player.wentAfk),
+        gold          : parseInt(player.gold, 10),
+        goldMin       : getAvg(player.gold, matchMinutes),
+        goldShare     : getRate(player.gold, roster.gold),
+        items         : player.items,
+        vprChange     : player.vprDiff || 0,
         
       }
 
