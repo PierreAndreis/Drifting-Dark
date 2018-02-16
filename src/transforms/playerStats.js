@@ -233,7 +233,12 @@ class PlayerStatsOutput {
       const thisSeason = findSeasonByPatch(patch);
       seasonsAvailable.add(thisSeason);
 
-      Object.keys(data.gameModes).forEach((name) => gameModesAvailable.add(name));
+      Object.keys(data.gameModes).forEach((name) => {
+        // We need to filter those game modes out that there is no match played,
+        // this is possible because of afk matches not being counted
+        if (!data.gameModes[name].games) return;
+        gameModesAvailable.add(name);
+      });
 
       if (!lodash.isEmpty(season) && !season.includes(thisSeason)) return;
 
@@ -326,6 +331,11 @@ class PlayerStatsOutput {
     } = stats;
 
     const thisKP = kills + assists;
+
+    if (!games) {
+      // If there is an AFK and he hasn't played any other match but with an AFK
+      return {}
+    }
 
     return {
       name,
