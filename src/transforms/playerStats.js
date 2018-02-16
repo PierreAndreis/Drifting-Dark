@@ -104,7 +104,9 @@ class PlayerStatsInput {
     if (!afk && (wasThereAnAfk && !winner)) {
       // If there was an afk, and this player wasn't the afk and lost the game,
       // we will not count stats.
-      return {};
+      return {
+        gamesWithAfk: 1
+      };
     }
 
     return {
