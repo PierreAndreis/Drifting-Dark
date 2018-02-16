@@ -102,6 +102,8 @@ class PlayerStatsInput {
     const wasThereAnAfk = match.players.find(p => p.side === player.side && p.wentAfk);
 
     if (!afk && (wasThereAnAfk && !winner)) {
+      // If there was an afk, and this player wasn't the afk and lost the game,
+      // we will not count stats.
       return {};
     }
 
