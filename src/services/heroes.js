@@ -73,6 +73,7 @@ class HeroesStats {
           return;
         }
         logger.warn(err);
+        err.matchId = match.id;
         throw err;
       }));
     };
@@ -96,9 +97,8 @@ class HeroesStats {
       return heroes;
     }
     catch(e) {
-      // console.warn("ProcessFailed:", e);
-      logger.warn(`[HeroStats] Process Failed: ${e}`);
-      matches.forEach(match => this.retryMatch(cacheKeyStore, match));
+      logger.warn(`[HeroStats] Process Failed: on matchId [${e.matchId}] ${e}`);
+      matches.forEach(match => match.id !== e.matchId && this.retryMatch(cacheKeyStore, match));
       return false;
     }
   }
