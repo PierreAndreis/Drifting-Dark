@@ -99,6 +99,12 @@ class PlayerStatsInput {
 
     const redSide = (player.side !== "left/blue") ? 1 : 0;
 
+    const wasThereAnAfk = match.players.find(p => p.side === player.side && p.wentAfk);
+
+    if (!afk && (wasThereAnAfk && !winner)) {
+      return {};
+    }
+
     return {
       type:           type,
       wins:           winner,
