@@ -169,6 +169,7 @@ class PlayerStatsInput {
       if (p.name === player.name) return;
       playedWith[p.id] = {
         name: p.name,
+        lastMatch: match.createdAt,
         wins: (p.winner) ? 1 : 0,
         games: 1,
       }
@@ -290,7 +291,11 @@ class PlayerStatsOutput {
     lodash.forEach(data.Roles, (roleStats, roleName) => roles.push(this.translateStats(roleStats, roleName)));
 
     const playedWith = [];
-    lodash.forEach(data.playedWith, (playerWithData, playerId) => playedWith.push(playerWithData));
+    lodash.forEach(data.playedWith, (playerWithData, playerId) => {
+      if (playerWithData.games > 3) {
+        playedWith.push(playerWithData);
+      }
+    });
 
     return {
       ...this.translateStats(data, gameMode),
