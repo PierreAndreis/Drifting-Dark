@@ -11,27 +11,88 @@ import * as Pro from "./routers/pro.router";
 
 const routes = Router();
 
-/** PlayerLookup Routers */
-routes.get("/player/:name/find", PlayerRouter.playerFind);
+const routers = [
+  {
+    name    : "Player/Find",
+    enabled : true,
+    async   : true,
+    router  : "/player/:name/find",
+    resolver: PlayerRouter.playerFind,
+  },
+  {
+    name    : "Player/Stats",
+    enabled : true,
+    async   : true,
+    router  : "/player/:name/stats",
+    resolver: PlayerRouter.playerStats,
+  },
+  {
+    name    : "Matches/List",
+    enabled : true,
+    async   : true,
+    router  : "/matches/:name",
+    resolver: MatchesRouter.latestMatches,
+  },
+  {
+    name    : "Matches/Details",
+    enabled : true,
+    async   : true,
+    router  : "/matches/:id/:region/details",
+    resolver: MatchesRouter.details,
+  },
+  {
+    name    : "Matches/Details",
+    enabled : true,
+    async   : true,
+    router  : "/matches/:id/:region/telemetry",
+    resolver: MatchesRouter.telemetry,
 
-/** PlayerLookup Routers ?gameMode=&season= */
-routes.get("/player/:name/stats", PlayerRouter.playerStats);
+  },
+  {
+    name    : "Heroes/Stats",
+    enabled : true,
+    async   : true,
+    router  : "/heroes/:type/:region",
+    resolver: heroesStats,
 
-/** Matches Routers ?page=&gameMode[]=&limit=&patch[]= */
-routes.get("/matches/:name", MatchesRouter.latestMatches);
+  },
+  {
+    name    : "Pro/History",
+    enabled : true,
+    async   : true,
+    router  : "/pro/history",
+    resolver: Pro.ProHistory,
+  },
+  {
+    name    : "Leaderboard",
+    enabled : true,
+    async   : true,
+    router  : "/leaderboard/:type/:region",
+    resolver: leaderboard,
+  }
+];
 
-routes.get("/matches/:id/:region/details", MatchesRouter.details);
+routers.forEach((r) => {
+  routes.get(r.router, async (req, res, next) => {
+    try {
+      await r.resolver(req, res, next);
+    }
+    catch(err) {
+      const response = {
+        routerName: r.name,
+        routerUrl: r.router,
+        args: req.params,
+        queries: req.query,
+      }
 
-routes.get("/matches/:id/:region/telemetry", MatchesRouter.telemetry);
+      console.warn("Error!", response, err);
 
-/** Heroes Stats Routers */
-routes.get("/heroes/:type/:region", heroesStats);
-
-/** Pro Routers */
-routes.get("/pro/history", Pro.ProHistory);
-
-/* Leaderboards Routers */
-routes.get("/leaderboard/:type/:region", leaderboard);
+      res.status(500).json({
+        error: response
+      });
+    }
+  })
+})
 
 /** Tournament Routers */
 // routes.get("/tourney_entry/:region/:matchId",  Tournament.EntryRoute);
