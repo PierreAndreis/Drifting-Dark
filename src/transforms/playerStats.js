@@ -290,10 +290,16 @@ class PlayerStatsOutput {
     if (lodash.isEmpty(stats)) return { errors: "Not found" }; //todo better response error handling
 
     const heroes = [];
-    lodash.forEach(data.Heroes, (heroStats, heroName) => heroes.push(this.translateStats(heroStats, heroName)));
+    lodash.forEach(data.Heroes, (heroStats, heroName) => {
+      const r = this.translateStats(heroStats, heroName);
+      if (r) heroes.push(r);
+    });
 
     const roles = [];
-    lodash.forEach(data.Roles, (roleStats, roleName) => roles.push(this.translateStats(roleStats, roleName)));
+    lodash.forEach(data.Roles, (roleStats, roleName) => {
+      const r = this.translateStats(roleStats, roleName);
+      if (r) roles.push(r);
+    });
 
     const playedWith = [];
     lodash.forEach(data.playedWith, (playerWithData, playerId) => {
@@ -334,7 +340,7 @@ class PlayerStatsOutput {
 
     if (!games) {
       // If there is an AFK and he hasn't played any other match but with an AFK
-      return {}
+      return false;
     }
 
     return {
