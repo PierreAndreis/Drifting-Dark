@@ -15,7 +15,7 @@ const cacheKey = "HeroesStats";
 const QUERY_GET_LATEST = (region) => `
 SELECT actor, SUM(bans) as bans, SUM(games) as games, SUM(wins) as wins
 FROM heroes 
-WHERE patchVersion = '3.00' 
+WHERE patchVersion = '3.0' 
 AND TONUMBER(tier) > 15
 AND gameMode = 'Ranked'
 ${region && `AND region = '${region}'`}
