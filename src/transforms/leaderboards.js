@@ -1,7 +1,7 @@
 import lodash from "lodash";
 import PlayerStatsTransform from "./playerStats";
 import {sortBy} from "./../lib/utils";
-import { latestSeason }       from "~/resources/dictionaries";
+import { latestSeason } from "~/resources/dictionaries";
 
 let LATEST_SEASON = latestSeason;
 

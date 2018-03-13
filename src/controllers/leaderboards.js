@@ -1,6 +1,7 @@
 import lodash from "lodash";
 
 import Config from "~/config";
+import logger from "~/lib/logger";
 
 import CacheService from "~/services/cache";
 

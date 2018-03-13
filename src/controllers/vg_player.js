@@ -20,6 +20,7 @@ import MatchesController   from "~/controllers/vg_matches";
 
 class PlayerController {
 
+  /*
   migrate(stats) {
     // Removing bad name on gameModes
     
@@ -30,6 +31,7 @@ class PlayerController {
 
     return stats;
   }
+  */
 
   lookupName(playerName, region) {
     if (!playerName) return {};
@@ -93,7 +95,7 @@ class PlayerController {
     const LeaderboardRegional = new LeaderboardService(type, region);
 
     const promises = [
-      LeaderboardGlobal  .updateAndGet(playerId, points).then(rank => res.global = rank),
+      LeaderboardGlobal.updateAndGet(playerId, points).then(rank => res.global = rank),
       LeaderboardRegional.updateAndGet(playerId, points).then(rank => res.regional = rank)
     ]
 
@@ -121,17 +123,17 @@ class PlayerController {
       
       // If this player exists... and has played a match recently...
       if (stats.region) {
+
+        // todo: find a way of making sure the player has at least 10 wins on recent season
         const promises = [
           this.rankUpdate("ranked", player.id, stats.region, stats.rankVst).then(res => stats.rankedRanking = res),
           this.rankUpdate("blitz", player.id, stats.region, stats.blitzVst).then(res => stats.blitzRanking = res),
-        ]
+        ];
 
         await Promise.all(promises);
       }
 
       // stats = VPRService.update(stats);
-
-      stats = this.migrate(stats);
 
 
       // Saving on database
