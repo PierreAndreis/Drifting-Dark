@@ -137,7 +137,11 @@ class PlayerController {
 
 
       // Saving on database
-      PlayerStatsModel.upsert(player.id, stats);
+      if (player.name) {
+        // XX Somehow couchbase is failing and player stats are getting replaced.
+        // as a small hack, not really effective, avoid saving if the player doesn't exist
+        PlayerStatsModel.upsert(player.id, stats);
+      }
 
       const result = performance.now() - t0;
 
