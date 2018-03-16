@@ -3,6 +3,7 @@ import * as lodash from "lodash";
 import { getKDA, getRate, getAvg, getMinutes } from "~/lib/utils_stats";
 import TIER3_NAMES from "~/resources/tiers_name";
 import T3_ITEMS from "~/resources/items_t3";
+import GAMEMODE from "~/resources/gamemodes";
 
 import VPRService from "~/services/vpr";
 
@@ -28,7 +29,11 @@ const addSeconds = (date, seconds) => {
 
 class MatchInput {
   json(match) {
-    const gameMode = (match.gameMode === "Battle Royal" || match.gameMode === "Private Battle Royal") ? `${match.gameMode}e` : match.gameMode;
+
+    let gameMode = match.gameMode;
+
+    let unfilteredGameMode = GAMEMODE.find(g => g.serverName === match.gameMode);
+    if (unfilteredGameMode) gameMode = unfilteredGameMode.name;
 
     return {
       id:      match.data.id,
@@ -142,8 +147,8 @@ class MatchOutput {
     const {
       id,
       shardId,
-      gameMode,
       createdAt,
+      gameMode,
       duration,
       patchVersion,
       players,

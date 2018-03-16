@@ -21,7 +21,6 @@ const translateItemPath = (itemPath) => {
     if (item && item !== []) {
       res.push(item.short);
     }
-    // if (res.length > 3) break;
   }
 
   return res.join(",");
@@ -31,14 +30,17 @@ const generateHeroesStats = (match, player) => {
   const winner      = (player.winner) ? 1 : 0;
   const afkOrNo     = (player.firstAfkTime !== -1) ? 1 : 0;
 
+  let minutesRounded = Math.ceil((match.duration / 60) / 10) * 10;
+
   const stats = {
     gameMode:       match.gameMode,
     matchId:        match.id,
     patchVersion:   match.patchVersion,
     region:         match.shardId,
     duration:       match.duration,
+    tier:           match.averageTier,
+    durations:      {[minutesRounded]: {games: 1, wins: winner}},
     actor:          player.actor,
-    tier:           "" + player.tier,
     wins:           winner,
     krakenCap:      player.krakenCaptures,
     crystalSentry:  player.crystalMineCaptures,
@@ -85,17 +87,12 @@ const getTelemetryStats = async (match) => {
   }
 
   const telem = await MatchesController.getMatchTelemetry({telemetryLink: match.telemetry.URL, matchId: match.id});
-  let averageTier = 0;
-  
-  match.players.forEach(p => averageTier += p.tier);
-
-  averageTier = parseInt(averageTier / match.players.length);
 
   for (const pick of telem.draft) {
     if (pick.Type !== "HeroBan") continue;
     heroes[pick.Hero] = merge(heroes[pick.Hero], {
       actor:        pick.Hero,
-      tier:         "" + averageTier,
+      tier:         match.averageTier,
       patchVersion: match.patchVersion,
       gameMode:     match.gameMode,
       region:       match.shardId,
@@ -134,6 +131,15 @@ const getTelemetryStats = async (match) => {
 
 export default async (match) => {
   let heroes = {};
+
+  let averageTier = 0;
+  
+  match.players.forEach(p => averageTier += p.tier);
+
+  averageTier = parseInt(averageTier / match.players.length);
+
+  match.averageTier = averageTier;
+
   for (const player of match.players) {
     heroes[player.actor] = merge(heroes[player.actor], generateHeroesStats(match, player));
   }

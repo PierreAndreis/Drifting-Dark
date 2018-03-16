@@ -45,4 +45,8 @@ export default [{
 {
   name: 'Casual 5v5',
   serverName: '5v5_pvp_casual',
+},
+{
+  name: 'Ranked 5v5',
+  serverName: '5v5_pvp_ranked'
 }];

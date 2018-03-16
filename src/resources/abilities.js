@@ -110,4 +110,7 @@ export default {
   HERO_ABILITY_VARYA_A_NAME: "varya_a",
   HERO_ABILITY_VARYA_B_NAME: "varya_b",
   HERO_ABILITY_VARYA_C_NAME: "varya_c",
+  HERO_ABILITY_TONY_A_NAME: "tony_a",
+  HERO_ABILITY_TONY_B_NAME: "tony_b",
+  HERO_ABILITY_TONY_C_NAME: "tony_c",
 }

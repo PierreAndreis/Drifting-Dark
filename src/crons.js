@@ -1,4 +1,5 @@
 import cluster from "cluster";
+import {performance} from "perf_hooks";
 import cron from "node-cron";
 
 import logger from "./lib/logger";
@@ -43,8 +44,11 @@ const crons = [
 ]
 
 if (cluster.isMaster) {
- crons.forEach(c => cron.schedule(c.interval, () => {
+ crons.forEach(c => cron.schedule(c.interval, async () => {
    logger.verbose(`${c.name} is running`);
-   c.fn()
+   const t0 = performance.now();
+   await c.fn();
+   const result = performance.now() - t0;
+   logger.verbose(`${c.name} is done in ${result.toFixed(0)}ms`)
  }));
 }

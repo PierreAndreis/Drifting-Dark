@@ -20,18 +20,16 @@ import MatchesController   from "~/controllers/vg_matches";
 
 class PlayerController {
 
-  /*
   migrate(stats) {
     // Removing bad name on gameModes
     
-    if (stats.patches && stats.patches["2.12"] && stats.patches["2.12"]["gameModes"] && stats.patches["2.12"]["gameModes"]["private_party_vg_5v5"]) {
-      stats.patches["2.12"]["gameModes"]["Private 5v5"] = merge(stats.patches["2.12"]["gameModes"]["Private 5v5"], lodash.cloneDeep(stats.patches["2.12"]["gameModes"]["private_party_vg_5v5"]));
-      delete stats.patches["2.12"]["gameModes"]["private_party_vg_5v5"];
+    if (stats.patches && stats.patches["3.1"] && stats.patches["3.1"]["gameModes"] && stats.patches["3.1"]["gameModes"]["5v5_pvp_ranked"]) {
+      stats.patches["3.1"]["gameModes"]["Ranked 5v5"] = merge(stats.patches["3.1"]["gameModes"]["Ranked 5v5"], lodash.cloneDeep(stats.patches["3.1"]["gameModes"]["5v5_pvp_ranked"]));
+      delete stats.patches["3.1"]["gameModes"]["5v5_pvp_ranked"];
     } 
 
     return stats;
   }
-  */
 
   lookupName(playerName, region) {
     if (!playerName) return {};
@@ -134,12 +132,13 @@ class PlayerController {
       }
 
       // stats = VPRService.update(stats);
-
+      stats = this.migrate(stats);
 
       // Saving on database
       if (player.name) {
         // XX Somehow couchbase is failing and player stats are getting replaced.
         // as a small hack, not really effective, avoid saving if the player doesn't exist
+        
         PlayerStatsModel.upsert(player.id, stats);
       }
 

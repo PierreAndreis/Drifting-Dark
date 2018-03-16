@@ -3,6 +3,7 @@ import path         from "path";
 import helmet       from "helmet";
 import bodyParser   from "body-parser";
 import datadog      from "connect-datadog";
+import compression  from "compression";
 // import morgan       from "morgan";
 
 import logger       from "~/lib/logger"
@@ -28,6 +29,9 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(Cors());
 // Security Headers
 app.use(helmet());
+
+// compression gzip
+app.use(compression());
 
 // app.use(morgan(':remote-addr - :method :url :status - :response-time ms'))
 
