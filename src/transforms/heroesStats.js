@@ -38,7 +38,7 @@ const generateHeroesStats = (match, player) => {
     patchVersion:   match.patchVersion,
     region:         match.shardId,
     duration:       match.duration,
-    tier:           match.averageTier,
+    tier:           "" + match.averageTier,
     durations:      {[minutesRounded]: {games: 1, wins: winner}},
     actor:          player.actor,
     wins:           winner,
@@ -92,7 +92,7 @@ const getTelemetryStats = async (match) => {
     if (pick.Type !== "HeroBan") continue;
     heroes[pick.Hero] = merge(heroes[pick.Hero], {
       actor:        pick.Hero,
-      tier:         match.averageTier,
+      tier:         "" + match.averageTier,
       patchVersion: match.patchVersion,
       gameMode:     match.gameMode,
       region:       match.shardId,
