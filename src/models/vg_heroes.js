@@ -15,9 +15,9 @@ const cacheKey = "HeroesStats";
 const QUERY_GET_LATEST = (region) => `
 SELECT actor, SUM(bans) as bans, SUM(games) as games, SUM(wins) as wins
 FROM heroes 
-WHERE patchVersion = '3.0' 
-AND TONUMBER(tier) > 15
-AND gameMode = 'Ranked'
+WHERE patchVersion = '3.1' 
+${/*AND TONUMBER(tier) > 15*/''}
+AND gameMode = 'Ranked 5v5'
 ${region && `AND region = '${region}'`}
 GROUP BY actor 
 ORDER BY bans DESC
