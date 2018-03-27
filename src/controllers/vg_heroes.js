@@ -1,14 +1,11 @@
 import HeroesModel from "../models/vg_heroes";
 
-const allowedTypes = ["pickrate", "winrate", "banrate", "raw"];
-
 class HeroesController {
-  
-  getStats(type, region) {
-    if (!allowedTypes.includes(type)) return {errors: "Type not allowed."};
-    return HeroesModel.getStats(type, region);
-  }
+  async byName(heroName, region) {
+    if (!heroName) return await HeroesModel.getStats("list", region);
 
+    return await HeroesModel.getHeroStats(heroName, region);
+  }
 }
 
 export default new HeroesController();

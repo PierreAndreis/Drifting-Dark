@@ -30,9 +30,9 @@ function getKDA(kills, deaths, assists) {
  * @param {float} games
  */
 function getRate(wins, games, divider = 100) {
-  let res = math.round(math.eval(`${wins} / ${games}`) * divider, 1);
-  if (lodash.isNaN(res)) res = 0;
-  return res + "%";
+  let res = math.round(math.eval(`${wins} / ${games}`) * divider, 2);
+  if (lodash.isNaN(res)) res = 0.00;
+  return parseFloat(formatFixed(res, 2));
 }
 
 function getMinutes(s) {

@@ -37,7 +37,7 @@ const crons = [
     fn: () => HeroesStats.saveMatches(),
   },
   {
-    name: "HeroStats - Cache Generate",
+    name: "HeroStats - List Cache Generate",
     interval: everyMinute(5),
     fn: () => HeroesStats.cacheStats(),
   }

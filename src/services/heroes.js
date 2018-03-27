@@ -152,18 +152,15 @@ class HeroesStats {
 
   async cacheStats() {
 
-    const sortStats = (stats, type) => {
-      const sorted = sortBy(stats, false, type, n => parseFloat(n));
-      return sorted.map(m => ({name: m.actor, [type]: m[type]}));
-    }
+    // const sortStats = (stats, type) => {
+    //   const sorted = sortBy(stats, false, type, n => parseFloat(n));
+    //   return sorted.map(m => ({name: m.actor, [type]: m[type]}));
+    // }
 
     for (let region of REGIONS) {
-      const stats = await HeroesModel.heroStats(region);
+      const stats = await HeroesModel.heroListStats(region);
       if (!region) region = "all";
-      HeroesModel.saveStats("raw",      region, stats);
-      HeroesModel.saveStats("pickrate", region, sortStats(stats, "pickRate"));
-      HeroesModel.saveStats("banrate",  region, sortStats(stats, "banRate"));
-      HeroesModel.saveStats("winrate",  region, sortStats(stats, "winRate"));
+      HeroesModel.saveStats("list", region, stats);
     };
   }
 

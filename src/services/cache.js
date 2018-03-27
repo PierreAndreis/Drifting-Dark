@@ -20,7 +20,6 @@ class CacheService {
     key = REDIS.PREFIX + ':' + key;
     let res = await RedisService.lrange(key, 0, -1);
     if (json && res) res = JSON.parse(res);
-
     return res;
   }
 
@@ -28,7 +27,19 @@ class CacheService {
     key = REDIS.PREFIX + ':' + key;
     let res = await RedisService.lpop(key);
     if (json && res) res = JSON.parse(res);
+    return res;
+  }
 
+  hashSet(key, field, value, json) {
+    key = REDIS.PREFIX + ":" + key;
+    if (json) value = JSON.stringify(value);
+    return RedisService.hset(key, field, value);
+  }
+
+  async hashGet(key, fields, json) {
+    key = REDIS.PREFIX + ":" + key;
+    let res = await RedisService.hmget(key, fields);
+    if (json && res) res = JSON.parse(res);
     return res;
   }
 

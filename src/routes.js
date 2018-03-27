@@ -52,7 +52,7 @@ const routers = [
     name    : "Heroes/Stats",
     enabled : true,
     async   : true,
-    router  : "/heroes/:type/:region",
+    router  : "/heroes/:region/:heroName*?",
     resolver: heroesStats,
 
   },

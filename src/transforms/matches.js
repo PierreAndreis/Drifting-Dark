@@ -7,6 +7,8 @@ import GAMEMODE from "~/resources/gamemodes";
 
 import VPRService from "~/services/vpr";
 
+import MVP from "~/lib/mvp";
+
 const VPR_ENABLED = false;
 
 const findRole = (player) => {
@@ -82,9 +84,12 @@ class MatchInput {
       players = VPRService.implementVPRChanges(players, rosters);
     }
 
+    // Insert score property to each participant
+    players = MVP(players, rosters, gameMode);
+
     return {
-    players,
-    rosters
+      players,
+      rosters
     };
   }
   
@@ -92,18 +97,23 @@ class MatchInput {
 
     let p = [];
 
-    let jungler = players.reduce((prev, current) => {
-      // console.log(curre.stats);
-      if (prev._stats.jungleKills > current._stats.jungleKills) return prev;
+    // To prevent those that have highest non jungle farm to be a jungler. LOL
+    let highestFarm = players.reduce((current, next) => Math.max(current, next._stats.farm), 0);
+
+    // Most jungler camp kills is the jungler
+    let jungler = players.reduce((current, next) => {
+      if (next._stats.jungleKills > current._stats.jungleKills && highestFarm !== next._stats.farm) return next;
       else return current;
     }, {_stats: {jungleKills: -1}}); // Small hack on default reduce so its value is never met
-    
 
-    let captain = players.reduce((prev, current) => {
-      if (prev._stats.farm < current._stats.farm || jungler.player.id === current.player.id) {
-        return prev;
+
+    // Least farm is the captain, as long as it is not the jungler
+    let captain = players.reduce((current, next) => {
+      if (next._stats.farm < current._stats.farm && jungler.player.id !== next.player.id) {
+        return next;
       } else return current;
     }, {_stats: {farm: 999999}}); // Small hack on default reduce so its value is never met
+
 
     let junglerId = (jungler.player) ? jungler.player.id : "";
     let captainId = (captain.player) ? captain.player.id : "";
@@ -139,7 +149,7 @@ class MatchInput {
     });
     return p;
   }
-}
+};
 
 class MatchOutput {
   json(playerId, match) {
@@ -173,13 +183,22 @@ class MatchOutput {
 
     let matchMinutes = (match.duration / 60);
 
+    let mvpScore = players.reduce((n, p) => Math.max(n, p.score), 0);
+    // In private mode, everyone will have a mvp score of 1; 
+    // So to not have an MVP, we will set higher as 1
+    if (match.gameMode.toLowerCase().includes("private")) mvpScore = 1;
+
     let res = players.map(player => {
 
       let roster = rosters.find(r => r.side === player.side);
 
+      
+
       return {    
         id            : player.id,
         me            : (playerId && player.id === playerId),
+        mvp           : (player.score === mvpScore),
+        score         : player.score,
         side          : player.side,
         name          : player.name,
         region        : player.shardId,
@@ -216,7 +235,7 @@ class MatchOutput {
     return res;
 
   }
-}
+};
 
 export default {
   input: new MatchInput(),
