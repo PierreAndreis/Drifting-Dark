@@ -85,13 +85,7 @@ class MatchInput {
     }
 
     // Insert score property to each participant
-    try {
-      
       players = MVP(players, rosters, gameMode);
-    } catch (error) {
-      console.warn(players);
-      return e;
-    }
 
     return {
       players,
