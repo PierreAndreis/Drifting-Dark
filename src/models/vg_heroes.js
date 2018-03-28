@@ -177,20 +177,31 @@ class VGHeroes extends BaseCouchbase {
     return heroes;
   }
 
-  async getHeroStats(heroName, region) {
+  getHeroStats(heroName, region) {
     
-    const [list, [{totalGames}]] = await Promise.all([
-      this.query(query_test(heroName)),
-      this.query(QUERY_GET_ALL_MATCHES_COUNT())
-    ]);
+    const get = async () => {
+      const [list, [{totalGames}]] = await Promise.all([
+        this.query(query_test(heroName)),
+        this.query(QUERY_GET_ALL_MATCHES_COUNT())
+      ]);
 
-    if (lodash.isEmpty(list)) throw Error("Hero not found");
+      if (lodash.isEmpty(list)) {
+        logger.warn(`Hero ${heroName} not found on region ${region}`);
+        return [];
+      }
 
-    let merged = list.reduce((p, now) => merge(p, now.heroes), {totalGames});
+      let merged = list.reduce((p, now) => merge(p, now.heroes), {totalGames});
 
-    let transformed = HeroesOutputTransform(merged);
-    
-    return transformed;
+      let transformed = HeroesOutputTransform(merged);
+      
+      return transformed;
+    }
+
+    const key = `HeroesStats:${heroName}:${region}`;
+
+    return CacheService.preferCache(key, get, { 
+      expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE,
+    });
   }
 
   cacheKey(type, region) {
