@@ -85,7 +85,13 @@ class MatchInput {
     }
 
     // Insert score property to each participant
-    players = MVP(players, rosters, gameMode);
+    try {
+      
+      players = MVP(players, rosters, gameMode);
+    } catch (error) {
+      console.warn(players);
+      return e;
+    }
 
     return {
       players,
@@ -97,23 +103,66 @@ class MatchInput {
 
     let p = [];
 
-    // To prevent those that have highest non jungle farm to be a jungler. LOL
-    let highestFarm = players.reduce((current, next) => Math.max(current, next._stats.farm), 0);
+    // ===== ROLE ALGORITHM BY VYZEOX =====
+    let captain;
 
-    // Most jungler camp kills is the jungler
+    // To find the captain, we will first check for whoever has fountain.
+    // The assumption here is that captain WILL buy fountains. 
+    let fountainHolders = players.filter(p => p._stats.items.includes("Fountain of Renewal"));
+    
+    // If there is someone with fountain,
+    if (fountainHolders.length > 0) {
+      // we will set them as captain
+      captain = fountainHolders[0];
+
+      // In case there are more than just 1 with founta
+      if (fountainHolders.length > 1) {
+        // we will set as captain whoever has the lowest farm from those with fountain
+        captain = fountainHolders.reduce((current, next) => {
+          if (!current) return next;
+
+          if (current._stats.farm > next._stats.farm) return next;
+          else return current;
+        }, false);
+      }
+    }
+    else {
+      // In case no one has fountain, captain will be those with the least on (GOLD/(CS)^2) ratio
+      captain = players.reduce((current, next) => {
+        if (!current) return next;
+
+        let currentRatio = Math.pow((current._stats.farm / current._stats.gold), 2);
+        let newRatio = Math.pow((next._stats.farm / next._stats.gold), 2);
+        // Lowest ratio
+        if (currentRatio < newRatio) return current;
+        else return next;
+      }, false)
+
+    };
+    
+    // With the captain found, jungler will be the one with the lowest lane minions / jungle camps ratio
+    /**
+     * XXX: Vyzeox explanation
+     * lane minions / jungle camps should work because every laner should get the highest ratios - they should get the lowest amount of jungle * cs and highest amount of lane cs normally, which makes their lane minions / jungle camps ratio really high. Meanwhile, junglers take a * lot of jungle camps and a lot less lane minions. This means that you have a ratio that is a lot lower than the carries. 
+     * Numerator is low (low lane minion kills), denominator is high (high jungle camp kills) = low ratio.  Vice-versa = high ratio
+     * Lowest ratio = jungler
+     */
     let jungler = players.reduce((current, next) => {
-      if (next._stats.jungleKills > current._stats.jungleKills && highestFarm !== next._stats.farm) return next;
+
+      if (!current) return next;
+      // Sometimes we skip straight to the captain... if we do that, we will go straight to next then
+      if (current.player.id === captain.player.id) return next;
+
+      let currentRatio = (current._stats.nonJungleMinionKills / current._stats.jungleKills);
+      let newRatio     = (next._stats.nonJungleMinionKills / next._stats.jungleKills);
+
+      // Lowest ratio and not the jungler
+      if (newRatio < currentRatio && next.player.id !== captain.player.id) return next;
       else return current;
-    }, {_stats: {jungleKills: -1}}); // Small hack on default reduce so its value is never met
 
+    }, false);
 
-    // Least farm is the captain, as long as it is not the jungler
-    let captain = players.reduce((current, next) => {
-      if (next._stats.farm < current._stats.farm && jungler.player.id !== next.player.id) {
-        return next;
-      } else return current;
-    }, {_stats: {farm: 999999}}); // Small hack on default reduce so its value is never met
-
+    // ===== END OF ROLE ALGORITHM BY VYZEOX =====
 
     let junglerId = (jungler.player) ? jungler.player.id : "";
     let captainId = (captain.player) ? captain.player.id : "";

@@ -63,8 +63,8 @@ export default (players, rosters, gameMode) => {
     // let kdaScaled = kda/ kdaRelativeAvg[p.side];
     let kdaScaled = kda/ kdaRelativeAvg;
 
-    let avgsEnemy = teams[inverseTeam[p.side]][p.role];
-    let avgsTeam = teams[p.side][p.role];
+    let avgsEnemy = teams[inverseTeam[p.side]][p.role] || 1;
+    let avgsTeam = teams[p.side][p.role] || 1;
 
     let pointsScaled = 0;
 
@@ -72,6 +72,7 @@ export default (players, rosters, gameMode) => {
       pointsScaled += ((p.farm / avgsTeam.cs) * (p.gold / avgsTeam.gold)) * (avgsTeam.helper / avgsEnemy.helper);
     }
     else {
+
       pointsScaled += avgsTeam.helper / avgsEnemy.helper;
     }
 

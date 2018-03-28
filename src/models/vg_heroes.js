@@ -34,7 +34,7 @@ SUM(\`role\`.Carry.games) as carryGames,
 SUM(\`role\`.Captain.games) as captainGames
 FROM heroes 
 WHERE patchVersion = '${PATCH}' 
-${/*AND TONUMBER(tier) > 15*/''}
+AND TONUMBER(tier) > 15
 AND gameMode = '${GAME_MODE}'
 ${(region && `AND region = '${region}'`) || ""}
 GROUP BY actor 
@@ -47,14 +47,16 @@ FROM heroes
 WHERE actor = '${heroName}'
 AND gameMode = '${GAME_MODE}'
 AND patchVersion = '${PATCH}'
+AND TONUMBER(tier) > 15
 `;
 
 const QUERY_GET_ALL_MATCHES_COUNT = (region) => `
-SELECT (sum(x.games) / ${MAX_HEROES_PER_TEAM}) as totalGames 
-FROM heroes as x 
-WHERE x.patchVersion = '${PATCH}' 
+SELECT (sum(games) / ${MAX_HEROES_PER_TEAM}) as totalGames 
+FROM heroes
+WHERE patchVersion = '${PATCH}' 
+AND TONUMBER(tier) > 15
 ${(region && `AND region = '${region}'`) || ""}
-AND x.gameMode = '${GAME_MODE}'
+AND gameMode = '${GAME_MODE}'
 `;
 
 const calculateTier = (heroes) => {
