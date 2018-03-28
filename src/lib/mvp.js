@@ -38,7 +38,7 @@ export default (players, rosters, gameMode) => {
         cs += player.farm;
         gold += player.gold;
 
-        if (roleIndex === "Captain") helper += player.gold / Math.pow(player.farm, 3)
+        if (roleIndex === "Captain") helper += player.gold / Math.pow(player.farm, 0.33)
         else helper += player.farm * player.gold;
       });
 

@@ -11,19 +11,6 @@ import MVP from "~/lib/mvp";
 
 const VPR_ENABLED = false;
 
-const findRole = (player) => {
-  let role = "Captain";
-
-  const laneCS   = player.nonJungleMinionKills;
-  const jungleCS = player.jungleKills;
-  const farm     = player.minionKills;
-  
-  if (jungleCS > 20) role = "Jungler";
-  else if (farm > 25) role = "Carry";
-
-  return role;
-}
-
 const addSeconds = (date, seconds) => {
   date.setSeconds(date.getSeconds() + seconds);
   return date;

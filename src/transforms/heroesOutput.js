@@ -26,7 +26,7 @@ let transformAggregated = (obj, totalGames) => {
   return res.map((r, i, k) => ({
     key: r.key,
     category: r.category,
-    winRate: getRate(r.wins, r.games),
+    winRate: getRate(r.wins || 1, r.games),
     pickRate: getRate(r.games, totalGames),
   }));
 }
@@ -108,10 +108,6 @@ const getBuilds = (buildsPick, buildsWin, totalGames) => {
 }
 
 export default (payload) => {
-
-  // return payload;
-// 
-  // let roles = lodash.filter(payload.role, (r) => r.games / payload.games >= 0.33);
 
   return {
     name          : payload.actor,

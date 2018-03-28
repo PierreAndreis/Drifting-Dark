@@ -198,7 +198,7 @@ class VGHeroes extends BaseCouchbase {
     }
 
     const key = `HeroesStats:${heroName}:${region}`;
-
+    
     return CacheService.preferCache(key, get, { 
       expireSeconds: Config.CACHE.REDIS_MATCHES_CACHE_EXPIRE,
     });
