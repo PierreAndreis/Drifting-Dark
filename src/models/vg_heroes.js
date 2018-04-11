@@ -10,6 +10,8 @@ import { getRate } from "~/lib/utils_stats";
 
 import Config from "~/config";
 
+import Patches from "./../resources/patches";
+
 import CacheService     from "~/services/cache";
 import VaingloryService from "~/services/vainglory";
 
@@ -164,7 +166,7 @@ class VGHeroes extends BaseCouchbase {
     });
 
     ["winRate", "banRate", "pickRate"].forEach(property => {
-      const sorted = sortBy(heroes, false, property);
+      sortBy(heroes, false, property);
       heroes = heroes.map((h, index) => ({...h, rank: {...h.rank, [property]: index + 1}}));
     });
 
@@ -172,9 +174,45 @@ class VGHeroes extends BaseCouchbase {
     let today = new Date().toLocaleDateString();
 
     // Saving daily for historical
-    CacheService.hashSet(`Heroes:History:${region || "all"}`, today, {date: new Date().toString(), heroes: heroes}, true);
+    CacheService.hashSet(`Heroes:History:${region || "all"}`, today, {date: new Date().toString(), patchVersion: PATCH, heroes: heroes}, true);
 
     return heroes;
+  }
+
+  async getHistoricalByDate(heroName, region, amount) {
+
+    let dates = [];
+    
+    for (let i = 0; i < amount; i++) {
+      let today = new Date();
+      dates.push(new Date(new Date().setDate(today.getDate()-i)).toLocaleDateString());
+    }
+
+    let historical = await CacheService.hashGet(`Heroes:History:${region || "all"}`, dates, true);
+
+    if (heroName !== "all") {
+      historical = historical.map(result => result && result.heroes && result.heroes.find(hero => hero.name === heroName))
+    }
+
+    return historical.map((day, i) => ({...day, date: dates[i]}));
+  }
+
+  async getHistoricalByPatch(heroName, region, amount) {
+    // order by startAt, to always get latest
+    // then cut with only the ones we care
+    let patchesToSearch = sortBy(Patches, false, "startAt").slice(0, amount);
+
+    // Get the last date possible for that patch.
+    //  If it patch doesn't have an endAt, it's because it hasn't ended yet. For that, we will be getting today.
+    let dates = patchesToSearch.map(update => (update.endAt || new Date().toLocaleDateString()));
+    
+    let historical = await CacheService.hashGet(`Heroes:History:${region || "all"}`, dates, true);
+
+    if (heroName !== "all") {
+      historical = historical.map(result => result && result.heroes && result.heroes.find(hero => hero.name === heroName))
+    }
+
+    return historical.map((update, i) => ({...update, patch: patchesToSearch[i].version, date: dates[i]}));
   }
 
   getHeroStats(heroName, region) {
@@ -191,11 +229,14 @@ class VGHeroes extends BaseCouchbase {
       }
 
       let merged = list.reduce((p, now) => merge(p, now.heroes), {totalGames});
-
       let transformed = HeroesOutputTransform(merged);
+
+      
       
       return transformed;
     }
+
+    return get();
 
     const key = `HeroesStats:${heroName}:${region}`;
     

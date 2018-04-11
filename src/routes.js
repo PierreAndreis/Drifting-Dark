@@ -3,7 +3,7 @@ import { Router } from "express";
 import * as PlayerRouter  from "./routers/players.router";
 import * as MatchesRouter from "./routers/matches.router";
 import { leaderboard }    from "./routers/leaderboards.router";
-import { heroesStats }    from "./routers/heroes.router";
+import { heroesStats, heroesHistory }    from "./routers/heroes.router";
 
 import * as Pro from "./routers/pro.router";
 
@@ -49,12 +49,18 @@ const routers = [
 
   },
   {
+    name    : "Heroes/Stats/History",
+    enabled : true,
+    async   : true,
+    router  : "/heroes/:region/:heroName/history",
+    resolver: heroesHistory
+  },
+  {
     name    : "Heroes/Stats",
     enabled : true,
     async   : true,
     router  : "/heroes/:region/:heroName*?",
     resolver: heroesStats,
-
   },
   {
     name    : "Pro/History",

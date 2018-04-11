@@ -39,7 +39,12 @@ class CacheService {
   async hashGet(key, fields, json) {
     key = REDIS.PREFIX + ":" + key;
     let res = await RedisService.hmget(key, fields);
-    if (json && res) res = JSON.parse(res);
+    // console.log();
+    if (json && res) {
+      // In case of bulk
+      if (res.length > 1) res = res.map(r => JSON.parse(r));
+      else res = JSON.parse(res);
+    }
     return res;
   }
 
