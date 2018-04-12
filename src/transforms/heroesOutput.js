@@ -5,7 +5,9 @@ import { getKDA, getRate, getAvg }  from "~/lib/utils_stats";
 
 import logger from "./../lib/logger";
 
-import T3Items from "~/resources/items_t3";
+import T3Items, {SITUATIONAL_BOOTS, SITUATIONAL_DEFENSES} from "~/resources/items_t3";
+
+const LIMIT_ITEMS = 4;
 
 let transformAggregated = (obj, totalGames) => {
   let res = [];
@@ -17,6 +19,7 @@ let transformAggregated = (obj, totalGames) => {
         category: obj[i].category,
         wins: obj[i].wins || obj[i].win,
         games: obj[i].games,
+        variants: obj[i].variants,
       });
     }
   }
@@ -28,6 +31,7 @@ let transformAggregated = (obj, totalGames) => {
     category: r.category,
     winRate: getRate(r.wins || 1, r.games),
     pickRate: getRate(r.games, totalGames),
+    variants: r.variants
   }));
 }
 
@@ -83,20 +87,72 @@ const getSkills = (skillsPick, skillsWin, totalGames) => {
   return transformAggregated(res, totalGames);
 }
 
-const only3Relevant = (items) => {
-  
+const mergeRelevant = (builds) => {
+
+  let res = {};
+
+  let groups = {};
+
+  lodash.forEach(builds, items => {
+    let itemsTranslated = items.key
+    .split(",")
+    .filter(item => item && item !== "0")
+    .map(item => T3Items.find(l => l.short === item));
+
+
+    let testItems = [];
+
+    itemsTranslated.forEach((item, i) => {
+      // to protect meta where defense item is always in the third item
+      // if (i < 3) res.push(item);
+      /**/ if (SITUATIONAL_DEFENSES.includes(item.name)) testItems.push("*");
+      else if (SITUATIONAL_BOOTS.includes(item.name))    testItems.push("**");
+      else testItems.push(item.short);
+    });
+
+    const key = testItems.join(",");
+
+    groups[key] = [
+      ...(groups[key] ? groups[key] : []),
+      items
+    ];
+
+  });
+
+  lodash.forEach(groups, (items, key) => {
+    let totalGames = items.reduce((prev, item) => prev + item.games, 0);
+    let maiority = items.find(item => item.games > (totalGames * 0.8));
+
+    if (maiority) {
+      res[maiority.key] = maiority;
+    }
+    else {
+      let merged = items.reduce((prev, next) => merge(prev, next), res[key]);
+      merged.key = key;
+      res[key] = merged;
+    }
+  })
+
+  return res;
+}
+
+const limitItems = (items) => {
+  return items.split(",").slice(0, LIMIT_ITEMS).join(",");
 }
 
 const getBuilds = (buildsPick, buildsWin, totalGames) => {
   let res = {};
 
 
-    // Merge them both together. We should do like that in the future for all. I'm stupid for not doing it first
-  lodash.forEach(buildsPick, (games, i) => res[i] = merge(res[i], {key: i, category: only3Relevant(i), games}));
-  lodash.forEach(buildsWin, (wins, i) => res[i] = merge(res[i], {wins}));
+  // Merge them both together. We should do like that in the future for all. I'm stupid for not doing it first
+  lodash.forEach(buildsPick, (games, i) => res[limitItems(i)] = merge(res[limitItems(i)], {key: limitItems(i), games, variants: [i]}));
+  lodash.forEach(buildsWin, (wins, i) => res[limitItems(i)] = merge(res[limitItems(i)], {wins}));
 
-  
+  // res = lodash.filter(res, (value, index) => index.split(",").length > 3);
+
+  res = mergeRelevant(res);
   res = lodash.filter(res, (value, index) => index.split(",").length > 3 && value.games > 10);
+  // return res;
   res = lodash.sortBy(res, ['games', 'wins']);
   res.reverse();
   res = transformAggregated(res, totalGames);
@@ -110,6 +166,7 @@ const getBuilds = (buildsPick, buildsWin, totalGames) => {
 export default (payload) => {
 
   return {
+
     name          : payload.actor,
     winRate       : getRate(payload.wins, payload.games),
     pickRate      : getRate(payload.games, payload.totalGames),
@@ -121,7 +178,6 @@ export default (payload) => {
     playingWith   : transformAggregated(payload.teammates, payload.games),
 
     builds        : getBuilds(payload.itemspicks, payload.itemswin, payload.games),
-
     skills        : getSkills(payload.abilitypicks, payload.abilitywins, payload.games),
 
     goldPerMin    : getAvg(payload.gold, (payload.duration / 60)),

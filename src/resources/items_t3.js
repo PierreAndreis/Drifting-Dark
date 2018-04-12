@@ -31,4 +31,20 @@ export default [
     { id: 30, name: "Dragon\'s Eye"      , short: "DE", internalName: "", category: "Crystal" },
     { id: 31, name: "Spellsword"         , short: "SS", internalName: "", category: "Weapon"  },
     { id: 32, name: "Spellfire"          , short: "SF", internalName: "", category: "Crystal" },
+
+    { id: 98, name: "Situational Defense" , short: "*",  internalName: "", category: "Situational"},
+    { id: 99, name: "Situational Boots"   , short: "**", internalName: "", category: "Situational"},
+    
 ];
+
+export const SITUATIONAL_BOOTS = [
+    "Journey Boots",
+    "Halcyon Chargers"
+];
+
+export const SITUATIONAL_DEFENSES = [
+    "Metal Jacket",
+    "Atlas Pauldron",
+    "Aegis",
+    "Slumbering Husks",
+]
