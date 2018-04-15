@@ -21,9 +21,9 @@ class Leaderboards {
   }
 
   total() {
-    return Redis.zcount(this.name);
+    return Redis.zcard(this.name);
   }
-  
+
   async updateAndGet(playerId, score) {
     const res = await this.set(playerId, score);
     return await this.get(playerId) + 1;
