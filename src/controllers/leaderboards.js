@@ -79,11 +79,11 @@ class LeaderboardsControllers {
 
         if (playerRank === null) return {};
 
-        let startAt = playerRank - 5;
-        let endAt = playerRank + 5;
+        let startAt = playerRank - (LIMIT_PER_PAGE / 2);
+        let endAt = playerRank + (LIMIT_PER_PAGE / 2);
 
         const getList = await Leaderboard.range(startAt > 1 ? startAt : 0, endAt > 1 ? endAt : 0);
-        let res = await getPlayerIdsStats(getList, type, 0);
+        let res = await getPlayerIdsStats(getList, type, startAt > 1 ? startAt : 0);
 
         // Remove those with no games... really bad way of doing
         res.forEach(r => r.games < 1 && Leaderboard.remove(r.playerId));
