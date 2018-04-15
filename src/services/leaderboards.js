@@ -16,6 +16,10 @@ class Leaderboards {
     return Redis.zrevrange(this.name, start, end, "withscores");
   }
 
+  remove(playerId) {
+    return Redis.zrem(this.name, playerId)
+  }
+
   async updateAndGet(playerId, score) {
     const res = await this.set(playerId, score);
     return await this.get(playerId) + 1;

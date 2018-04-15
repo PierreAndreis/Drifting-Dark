@@ -5,6 +5,8 @@ import { getKDA, getRate, getAvg }  from "~/lib/utils_stats";
 
 import logger from "./../lib/logger";
 
+import Leaderboard from "./../services/leaderboards";
+
 import T3Items, {SITUATIONAL_BOOTS, SITUATIONAL_DEFENSES} from "~/resources/items_t3";
 
 const LIMIT_ITEMS = 4;
@@ -163,14 +165,53 @@ const getBuilds = (buildsPick, buildsWin, totalGames) => {
   }))
 }
 
-export default (payload) => {
+const rankedStats = (payload) => {
+  return [
+    {
+      name: "goldPerMin",
+      stats: getAvg(payload.gold, (payload.duration / 60)),
+    },
+    {
+      name: "killsPerGame",
+      stats: getAvg(payload.kills, payload.games),
+    },
+    {
+      name: "deathsPerGame",
+      stats: getAvg(payload.deaths, payload.games),
+    },
+    {
+      name: "assistsPerGame",
+      stats: getAvg(payload.assists, payload.games),
+    },
+    {
+      name: "farmPerGame",
+      stats: getAvg(payload.farm, payload.games),
+    },
+    {
+      name: "damagePerGame",
+      stats: getAvg(payload.totaldamage, payload.games),
+    },
+    {
+      name: "healingPerGame",
+      stats: getAvg(payload.totalhealed, payload.games)
+    },
+    {
+      name: "kda",
+      stats: getKDA(payload.kills, payload.deaths, payload.assists),
+    }
+  ];
+};  
 
+export default (payload) => {
+  
   return {
 
     name          : payload.actor,
     winRate       : getRate(payload.wins, payload.games),
     pickRate      : getRate(payload.games, payload.totalGames),
     banRate       : getRate(payload.bans, payload.totalGames),
+
+    stats         : rankedStats(payload),
 
     roles         : transformAggregated(payload.role, payload.games),
     durations     : transformAggregated(payload.durations, payload.games),
@@ -180,9 +221,5 @@ export default (payload) => {
     builds        : getBuilds(payload.itemspicks, payload.itemswin, payload.games),
     skills        : getSkills(payload.abilitypicks, payload.abilitywins, payload.games),
 
-    goldPerMin    : getAvg(payload.gold, (payload.duration / 60)),
-    killsPerGame  : getAvg(payload.kills, payload.games),
-    deathsPerGame : getAvg(payload.deaths, payload.games),
-    assistsPerGame: getAvg(payload.assists, payload.games),
   }
 }

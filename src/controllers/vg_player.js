@@ -1,5 +1,5 @@
 import {performance} from "perf_hooks";
-import * as lodash   from "lodash";
+import lodash from "lodash";
 
 import logger     from "~/lib/logger";
 import { merge }  from "~/lib/utils";
@@ -17,6 +17,11 @@ import MatchTransform       from "~/transforms/matches.js";
 
 import MatchesController   from "~/controllers/vg_matches";
 
+import { latestSeason } from "../resources/dictionaries";
+import Seasons from "../resources/seasons";
+
+let CURRENT_SEASON = Seasons[latestSeason];
+let MINIMUM_MATCHES_LEADERBOARD = 5;
 
 class PlayerController {
 
@@ -86,11 +91,15 @@ class PlayerController {
       regional: -1,
       points: points,
     }
-
-    if (parseInt(points, 10) < 1) return res;
     
     const LeaderboardGlobal   = new LeaderboardService(type, "all");
     const LeaderboardRegional = new LeaderboardService(type, region);
+
+    if (parseInt(points, 10) < 1) {
+      LeaderboardGlobal.remove(playerId);
+      LeaderboardRegional.remove(playerId);
+      return res;
+    }
 
     const promises = [
       LeaderboardGlobal.updateAndGet(playerId, points).then(rank => res.global = rank),
@@ -119,20 +128,32 @@ class PlayerController {
 
       stats = await this.update(player, stats);
       
-      // If this player exists... and has played a match recently...
+      // If this player exists...
       if (stats.region) {
 
-        // todo: find a way of making sure the player has at least 10 wins on recent season
+        let rankedGames = 0;
+        let blitzGames = 0;
+
+        // Look for matches on the current seasons
+        CURRENT_SEASON.forEach(patch => {
+          rankedGames += lodash.get(stats, `patches[${patch}].gameModes.Ranked.games`, 0);
+          blitzGames += lodash.get(stats, `patches[${patch}].gameModes.Blitz.games`, 0);
+        });
+
+        // and has X amount of matches this season...
+        let rankedPoints = rankedGames > MINIMUM_MATCHES_LEADERBOARD ? stats.rankVst  : -1;
+        let blitzPoints  = blitzGames  > MINIMUM_MATCHES_LEADERBOARD ? stats.blitzVst : -1;
+
         const promises = [
-          this.rankUpdate("ranked", player.id, stats.region, stats.rankVst).then(res => stats.rankedRanking = res),
-          this.rankUpdate("blitz", player.id, stats.region, stats.blitzVst).then(res => stats.blitzRanking = res),
+          this.rankUpdate("ranked", player.id, stats.region, rankedPoints).then(res => stats.rankedRanking = res),
+          this.rankUpdate("blitz", player.id, stats.region, blitzPoints).then(res => stats.blitzRanking = res)
         ];
 
         await Promise.all(promises);
       }
 
       // stats = VPRService.update(stats);
-      stats = this.migrate(stats);
+      // stats = this.migrate(stats);
 
       // Saving on database
       if (player.name) {

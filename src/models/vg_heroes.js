@@ -15,8 +15,10 @@ import Patches from "./../resources/patches";
 import CacheService     from "~/services/cache";
 import VaingloryService from "~/services/vainglory";
 
+
 import HeroesOutputTransform from "~/transforms/heroesOutput";
 import logger from "../lib/logger";
+import LeaderboardService from "../services/leaderboards";
 
 const HEROESDB = new CouchbaseService("heroes");
 
@@ -231,7 +233,22 @@ class VGHeroes extends BaseCouchbase {
       let merged = list.reduce((p, now) => merge(p, now.heroes), {totalGames});
       let transformed = HeroesOutputTransform(merged);
 
-      
+      // Leaderboard for individual stats
+      if (transformed) {
+        let promisesLeaderboard = [];
+        transformed.stats.forEach((stat) => {
+          let leaderboard = new LeaderboardService(`Heroes:${PATCH}:${stat.name}`, region);
+          promisesLeaderboard.push(leaderboard.updateAndGet(heroName, stat.stats));
+        });
+
+        let leaderboardResults = await Promise.all(promisesLeaderboard);
+        transformed.stats = transformed.stats.map(stat => {
+          return {
+            ...stat,
+            rank: leaderboardResults.shift(),
+          }
+        });
+      };
       
       return transformed;
     }

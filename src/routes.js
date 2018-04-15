@@ -2,7 +2,7 @@ import { Router } from "express";
 
 import * as PlayerRouter  from "./routers/players.router";
 import * as MatchesRouter from "./routers/matches.router";
-import { leaderboard }    from "./routers/leaderboards.router";
+import { leaderboard, leaderboardFindPlayer }    from "./routers/leaderboards.router";
 import { heroesStats, heroesHistory }    from "./routers/heroes.router";
 
 import * as Pro from "./routers/pro.router";
@@ -75,6 +75,13 @@ const routers = [
     async   : true,
     router  : "/leaderboard/:type/:region",
     resolver: leaderboard,
+  },
+  {
+    name    : "Leaderboard/FindPlayer",
+    enabled : true,
+    async   : true,
+    router  : "/leaderboard/:type/:region/:playerName",
+    resolver: leaderboardFindPlayer,
   }
 ];
 
@@ -84,6 +91,7 @@ routers.forEach((r) => {
       await r.resolver(req, res, next);
     }
     catch(err) {
+
       const response = {
         routerName: r.name,
         routerUrl: r.router,

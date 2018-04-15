@@ -15,7 +15,7 @@ export default [
     { id: 14, name: "Tyrant\'s Monocle"  , short: "TM", internalName: "", category: "Weapon"  },
     { id: 15, name: "Aftershock"         , short: "AS", internalName: "", category: "Crystal" },
     { id: 16, name: "Broken Myth"        , short: "BM", internalName: "", category: "Crystal" },
-    { id: 17, name: "War Treads"         , short: "WT", internalName: "", category: "Weapon"  },
+    { id: 17, name: "War Treads"         , short: "WT", internalName: "", category: "Utility" },
     { id: 18, name: "Atlas Pauldron"     , short: "AP", internalName: "", category: "Defense" },
     { id: 19, name: "Aegis"              , short: "AE", internalName: "", category: "Defense" },
     { id: 20, name: "Breaking Point"     , short: "BP", internalName: "", category: "Weapon"  },
@@ -32,6 +32,10 @@ export default [
     { id: 31, name: "Spellsword"         , short: "SS", internalName: "", category: "Weapon"  },
     { id: 32, name: "Spellfire"          , short: "SF", internalName: "", category: "Crystal" },
 
+    // 5v5
+    { id: 33, name: "Teleport Boots"     , short: "TS", internalName: "", category: "Weapon"  },
+    { id: 34, name: "Totem Enhancer"     , short: "TE", internalName: "", category: "Utility" },
+
     { id: 98, name: "Situational Defense" , short: "*",  internalName: "", category: "Situational"},
     { id: 99, name: "Situational Boots"   , short: "**", internalName: "", category: "Situational"},
     
@@ -39,12 +43,13 @@ export default [
 
 export const SITUATIONAL_BOOTS = [
     "Journey Boots",
-    "Halcyon Chargers"
+    "Halcyon Chargers",
+    "Teleport Boots"
 ];
 
 export const SITUATIONAL_DEFENSES = [
     "Metal Jacket",
     "Atlas Pauldron",
     "Aegis",
-    "Slumbering Husks",
-]
+    "Slumbering Husk",
+];
