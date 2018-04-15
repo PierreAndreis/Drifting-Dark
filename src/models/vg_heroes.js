@@ -235,10 +235,12 @@ class VGHeroes extends BaseCouchbase {
 
       // Leaderboard for individual stats
       if (transformed) {
+        
         let promisesLeaderboard = [];
         transformed.stats.forEach((stat) => {
           let leaderboard = new LeaderboardService(`Heroes:${PATCH}:${stat.name}`, region);
           promisesLeaderboard.push(leaderboard.updateAndGet(heroName, stat.stats));
+          promisesLeaderboard.push(leaderboard.count())
         });
 
         let leaderboardResults = await Promise.all(promisesLeaderboard);
@@ -246,6 +248,7 @@ class VGHeroes extends BaseCouchbase {
           return {
             ...stat,
             rank: leaderboardResults.shift(),
+            total: leaderboardResults.shift()
           }
         });
       };
