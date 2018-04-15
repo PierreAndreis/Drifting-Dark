@@ -80,9 +80,9 @@ class LeaderboardsControllers {
         if (playerRank === null) return {};
 
         let startAt = playerRank - 5;
-        let endAt = playerRank + 6;
+        let endAt = playerRank + 5;
 
-        const getList = await Leaderboard.range(startAt < 1 ? startAt : 0, endAt - 1 < 1 ? endAt : 0);
+        const getList = await Leaderboard.range(startAt > 1 ? startAt : 0, endAt > 1 ? endAt : 0);
         let res = await getPlayerIdsStats(getList, type, 0);
 
         // Remove those with no games... really bad way of doing
