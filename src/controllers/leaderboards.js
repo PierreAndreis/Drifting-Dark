@@ -73,7 +73,7 @@ class LeaderboardsControllers {
       try {
         const Leaderboard = new LeaderboardsService(type, region);
         let player = await PlayerLookupModel.getByName(playerName);
-        if (!player) return {};
+        if (!player) return [];
 
         let playerRank = await Leaderboard.get(player.id);
 
