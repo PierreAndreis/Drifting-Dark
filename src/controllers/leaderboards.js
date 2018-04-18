@@ -77,7 +77,7 @@ class LeaderboardsControllers {
 
         let playerRank = await Leaderboard.get(player.id);
 
-        if (playerRank === null) return {};
+        if (playerRank === null) return [];
 
         let startAt = playerRank - (LIMIT_PER_PAGE / 2);
         let endAt = playerRank + (LIMIT_PER_PAGE / 2);
