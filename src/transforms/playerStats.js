@@ -37,11 +37,12 @@ class PlayerStatsInput {
       ...res,
       name:      player.name,
       region:    player.shardId,
-      tier:      "" + player.tier,
-      rankVst:   "" + player.rankvst,
-      blitzVst:  "" + player.blitzvst,
+      tier:       "" + player.tier,
+      rankVst:    "" + player.rankvst,
+      blitzVst:   "" + player.blitzvst,
+      rank5v5Vst: "" + player.rank5v5vst,
       // we add 1 minute to the lastMatch so if we search using createdAt-start, 
-      // the last match won't show... we already calculated that.
+      // the last match won't show... the last match is already calculated.
       lastMatch: addMinutes(new Date(lastMatch.createdAt), 1),
       aka:       stats.aka,
       vpr:       stats.vpr,
@@ -225,8 +226,10 @@ class PlayerStatsOutput {
       patches, 
       info, 
       rankVst, 
+      rank5v5Vst,
       blitzVst,
       rankedRanking,
+      ranked5v5Ranking,
       blitzRanking
     } = playerStats;
 
@@ -258,7 +261,9 @@ class PlayerStatsOutput {
       aka,
       rankVst,
       blitzVst,
+      rank5v5Vst,
       rankedRanking,
+      ranked5v5Ranking,
       blitzRanking,
       seasonsAvailable,
       gameModesAvailable,

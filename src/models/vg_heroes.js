@@ -231,6 +231,8 @@ class VGHeroes extends BaseCouchbase {
       }
 
       let merged = list.reduce((p, now) => merge(p, now.heroes), {totalGames});
+
+      // return merged;
       let transformed = HeroesOutputTransform(merged);
 
       // Leaderboard for individual stats

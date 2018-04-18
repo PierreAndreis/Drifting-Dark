@@ -1,452 +1,342 @@
 export default [
   {
-    "name": "FlashX",
-    "position": "captain",
-    "region": "na",
-    "team": "Team SoloMid"
+      "name": "Chuck",
+      "team": "Team SoloMid"
   },
   {
-    "name": "BestChuckNa",
-    "position": "carry",
-    "region": "na",
-    "team": "Team SoloMid"
+      "name": "Hami",
+      "team": "Team SoloMid"
   },
   {
-    "name": "VONC",
-    "position": "jungler",
-    "region": "na",
-    "team": "Team SoloMid"
+      "name": "daniel",
+      "team": "Team SoloMid"
   },
   {
-    "name": "LuckyBread",
-    "position": "sub",
-    "region": "na",
-    "team": "Team SoloMid"
+      "name": "ShadedTalent",
+      "team": "Team SoloMid"
   },
   {
-    "name": "MackDaddyB",
-    "position": "captain",
-    "region": "na",
-    "team": "GankStars"
+      "name": "CozZ",
+      "team": "Team SoloMid"
   },
   {
-    "name": "LuluXiu",
-    "position": "carry",
-    "region": "na",
-    "team": "GankStars"
+      "name": "TiV0",
+      "team": "Team SoloMid"
   },
   {
-    "name": "XenoTek",
-    "position": "jungler",
-    "region": "na",
-    "team": "GankStars"
+      "name": "DNZio",
+      "team": "Tribe"
   },
   {
-    "name": "SuiJeneris",
-    "position": "sub",
-    "region": "na",
-    "team": "GankStars"
+      "name": "MaxGreen",
+      "team": "Tribe"
   },
   {
-    "name": "Chicken",
-    "position": "captain",
-    "region": "na",
-    "team": "Hammers"
+      "name": "gabevizzle",
+      "team": "Tribe"
   },
   {
-    "name": "StartingAllOver",
-    "position": "carry",
-    "region": "na",
-    "team": "Hammers"
+      "name": "Oldskool",
+      "team": "Tribe"
   },
   {
-    "name": "Status",
-    "position": "jungler",
-    "region": "na",
-    "team": "Hammers"
+      "name": "iLoveJoseph",
+      "team": "Tribe"
   },
   {
-    "name": "Poli5208",
-    "position": "sub",
-    "region": "na",
-    "team": "Hammers"
+      "name": "ttigers",
+      "team": "Tribe"
   },
   {
-    "name": "Eliminate",
-    "position": "sub",
-    "region": "na",
-    "team": "Hammers"
+      "name": "Xelciar",
+      "team": "Tribe"
   },
   {
-    "name": "gabevizzle",
-    "position": "captain",
-    "region": "na",
-    "team": "Cloud9"
+      "name": "Invulnerable",
+      "team": "Vision Gaming"
   },
   {
-    "name": "Oldskool",
-    "position": "carry",
-    "region": "na",
-    "team": "Cloud9"
+      "name": "PvPWarrior",
+      "team": "Vision Gaming"
   },
   {
-    "name": "iLoveJoseph",
-    "position": "jungler",
-    "region": "na",
-    "team": "Cloud9"
+      "name": "NeonFire",
+      "team": "Vision Gaming"
   },
   {
-    "name": "Azurenai",
-    "position": "sub",
-    "region": "na",
-    "team": "Cloud9"
+      "name": "LightningT",
+      "team": "Vision Gaming"
   },
   {
-    "name": "R3cKeD",
-    "position": "jungler",
-    "region": "na",
-    "team": "Cloud9"
+      "name": "Pool",
+      "team": "Vision Gaming"
   },
   {
-    "name": "MaxGreen",
-    "position": "captain",
-    "region": "na",
-    "team": "Tribe Gaming"
+      "name": "GirlsOnBoys",
+      "team": "Hammers"
   },
   {
-    "name": "DNZio",
-    "position": "carry",
-    "region": "na",
-    "team": "Tribe Gaming"
+      "name": "YOOOONNGGJJAEEEE",
+      "team": "Hammers"
   },
   {
-    "name": "ttigers",
-    "position": "jungler",
-    "region": "na",
-    "team": "Tribe Gaming"
+      "name": "starboi",
+      "team": "Hammers"
   },
   {
-    "name": "Xelciar",
-    "position": "sub",
-    "region": "na",
-    "team": "Tribe Gaming"
+      "name": "StandinSolo",
+      "team": "Hammers"
   },
   {
-    "name": "HotSauceUT",
-    "position": "sub",
-    "region": "na",
-    "team": "Tribe Gaming"
+      "name": "Eliminate",
+      "team": "Hammers"
   },
   {
-    "name": "LostBoyToph",
-    "position": "captain",
-    "region": "na",
-    "team": "Tempo Storm"
+      "name": "papaJ0N",
+      "team": "Hammers"
   },
   {
-    "name": "Gaspy",
-    "position": "carry",
-    "region": "na",
-    "team": "Tempo Storm"
+      "name": "Chicken",
+      "team": "Hammers"
   },
   {
-    "name": "Hide",
-    "position": "jungler",
-    "region": "na",
-    "team": "Tempo Storm"
+      "name": "Truth",
+      "team": "Nova"
   },
   {
-    "name": "God0fSins",
-    "position": "sub",
-    "region": "na",
-    "team": "Tempo Storm"
+      "name": "LoneDelphi",
+      "team": "Nova"
   },
   {
-    "name": "Odds",
-    "position": "sub",
-    "region": "na",
-    "team": "Tempo Storm"
+      "name": "FPG",
+      "team": "Nova"
   },
   {
-    "name": "starboi",
-    "position": "captain",
-    "region": "na",
-    "team": "Nova Esports"
+      "name": "StartingAllOver",
+      "team": "Nova"
   },
   {
-    "name": "Truth",
-    "position": "carry",
-    "region": "na",
-    "team": "Nova Esports"
+      "name": "Eeko",
+      "team": "Nova"
   },
   {
-    "name": "LoneDelphi",
-    "position": "jungler",
-    "region": "na",
-    "team": "Nova Esports"
+      "name": "BradIey",
+      "team": "Nova"
   },
   {
-    "name": "Eeko",
-    "position": "sub",
-    "region": "na",
-    "team": "Nova Esports"
+      "name": "eVoL",
+      "team": "Rogue"
   },
   {
-    "name": "eddyal",
-    "position": "sub",
-    "region": "na",
-    "team": "Nova Esports"
+      "name": "Sibs",
+      "team": "Rogue"
   },
   {
-    "name": "eVoL",
-    "position": "captain",
-    "region": "na",
-    "team": "Rogue"
+      "name": "PONtheoriginal",
+      "team": "Rogue"
   },
   {
-    "name": "Hami",
-    "position": "carry",
-    "region": "na",
-    "team": "Rogue"
+      "name": "louisvuittondon",
+      "team": "Rogue"
   },
   {
-    "name": "PONtheoriginal",
-    "position": "jungler",
-    "region": "na",
-    "team": "Rogue"
+      "name": "JFMAMJJASOND",
+      "team": "Rogue"
   },
   {
-    "name": "Sibs",
-    "position": "sub",
-    "region": "na",
-    "team": "Rogue"
+      "name": "IraqiZorro",
+      "team": "Slimy Salamanders"
   },
   {
-    "name": "justman00",
-    "position": "captain",
-    "region": "eu",
-    "team": "mousesports"
+      "name": "PEC0",
+      "team": "Slimy Salamanders"
   },
   {
-    "name": "Tr1cKy",
-    "position": "carry",
-    "region": "eu",
-    "team": "mousesports"
+      "name": "MICSHE",
+      "team": "Slimy Salamanders"
   },
   {
-    "name": "ImtheDoom",
-    "position": "jungler",
-    "region": "eu",
-    "team": "mousesports"
+      "name": "R3cKeD",
+      "team": "Slimy Salamanders"
   },
   {
-    "name": "Loere",
-    "position": "sub",
-    "region": "eu",
-    "team": "mousesports"
+      "name": "Status",
+      "team": "Slimy Salamanders"
   },
   {
-    "name": "physiX",
-    "position": "sub",
-    "region": "eu",
-    "team": "mousesports"
+      "name": "Jazville",
+      "team": "Tilt Rehab"
   },
   {
-    "name": "Raph",
-    "position": "captain",
-    "region": "eu",
-    "team": "SK Gaming"
+      "name": "Maokaii",
+      "team": "Tilt Rehab"
   },
   {
-    "name": "KValafar",
-    "position": "carry",
-    "region": "eu",
-    "team": "SK Gaming"
+      "name": "AllyPeterson",
+      "team": "Tilt Rehab"
   },
   {
-    "name": "Tyruzz",
-    "position": "jungler",
-    "region": "eu",
-    "team": "SK Gaming"
+      "name": "Arkaik",
+      "team": "Tilt Rehab"
   },
   {
-    "name": "Bayu",
-    "position": "sub",
-    "region": "eu",
-    "team": "SK Gaming"
+      "name": "Esmei",
+      "team": "Tilt Rehab"
   },
   {
-    "name": "Hegman",
-    "position": "sub",
-    "region": "eu",
-    "team": "SK Gaming"
+      "name": "Cenoo",
+      "team": "Tilt Rehab"
   },
   {
-    "name": "HellsDevil",
-    "position": "captain",
-    "region": "eu",
-    "team": "Team Qlash"
+      "name": "Pajama",
+      "team": "Tilt Rehab"
   },
   {
-    "name": "Mercilles",
-    "position": "carry",
-    "region": "eu",
-    "team": "Team Qlash"
+      "name": "PRZ",
+      "team": "Team Queso"
   },
   {
-    "name": "AgOny",
-    "position": "jungler",
-    "region": "eu",
-    "team": "Team Qlash"
+      "name": "TetnoJJ",
+      "team": "Team Queso"
   },
   {
-    "name": "HFGuy",
-    "position": "sub",
-    "region": "eu",
-    "team": "Team Qlash"
+      "name": "Palmatoro",
+      "team": "Team Queso"
   },
   {
-    "name": "Flobby",
-    "position": "sub",
-    "region": "eu",
-    "team": "Team Qlash"
+      "name": "Hundor",
+      "team": "Team Queso"
   },
   {
-    "name": "KeanuNakoa",
-    "position": "captain",
-    "region": "eu",
-    "team": "G2 Esports"
+      "name": "Tyruzz",
+      "team": "Team Queso"
   },
   {
-    "name": "Hundor",
-    "position": "carry",
-    "region": "eu",
-    "team": "G2 Esports"
+      "name": "Hegman",
+      "team": "Team Queso"
   },
   {
-    "name": "DarkPotato",
-    "position": "jungler",
-    "region": "eu",
-    "team": "G2 Esports"
+      "name": "AgOnyy",
+      "team": "Qlash"
   },
   {
-    "name": "D1ngo",
-    "position": "sub",
-    "region": "eu",
-    "team": "G2 Esports"
+      "name": "ImTheDoom",
+      "team": "Qlash"
   },
   {
-    "name": "Reddix",
-    "position": "sub",
-    "region": "eu",
-    "team": "G2 Esports"
+      "name": "justman00",
+      "team": "Qlash"
   },
   {
-    "name": "TetnoJJ",
-    "position": "captain",
-    "region": "eu",
-    "team": "FNATIC"
+      "name": "L3oN",
+      "team": "Qlash"
   },
   {
-    "name": "nettetoilette",
-    "position": "carry",
-    "region": "eu",
-    "team": "FNATIC"
+      "name": "nettetoilette",
+      "team": "Qlash"
   },
   {
-    "name": "Palmatoro",
-    "position": "jungler",
-    "region": "eu",
-    "team": "FNATIC"
+      "name": "Disowned",
+      "team": "Qlash"
   },
   {
-    "name": "kaerl",
-    "position": "sub",
-    "region": "eu",
-    "team": "FNATIC"
+      "name": "Kaerl",
+      "team": "Qlash"
   },
   {
-    "name": "KLast",
-    "position": "captain",
-    "region": "eu",
-    "team": "SaltyPotatoes"
+      "name": "KeanuNakoa",
+      "team": "Rising Lotus"
   },
   {
-    "name": "Sn3aKy",
-    "position": "carry",
-    "region": "eu",
-    "team": "SaltyPotatoes"
+      "name": "Loere",
+      "team": "Rising Lotus"
   },
   {
-    "name": "ThejoKeR",
-    "position": "jungler",
-    "region": "eu",
-    "team": "SaltyPotatoes"
+      "name": "TentacioN",
+      "team": "Rising Lotus"
   },
   {
-    "name": "KraQz",
-    "position": "sub",
-    "region": "eu",
-    "team": "SaltyPotatoes"
+      "name": "solicitude",
+      "team": "Rising Lotus"
   },
   {
-    "name": "ESQuire",
-    "position": "sub",
-    "region": "eu",
-    "team": "SaltyPotatoes"
+      "name": "KraQa",
+      "team": "Rising Lotus"
   },
   {
-    "name": "Mowglie",
-    "position": "captain",
-    "region": "eu",
-    "team": "Dynasty"
+      "name": "NomadVagabond",
+      "team": "Rising Lotus"
   },
   {
-    "name": "PTLam",
-    "position": "carry",
-    "region": "eu",
-    "team": "Dynasty"
+      "name": "Sn3aKy",
+      "team": "Salty Potatoes"
   },
   {
-    "name": "Rikumeza",
-    "position": "jungler",
-    "region": "eu",
-    "team": "Dynasty"
+      "name": "ESQuire",
+      "team": "Salty Potatoes"
   },
   {
-    "name": "IBaguette",
-    "position": "sub",
-    "region": "eu",
-    "team": "Dynasty"
+      "name": "TheJoKeR",
+      "team": "Salty Potatoes"
   },
   {
-    "name": "TriisFeegle",
-    "position": "sub",
-    "region": "eu",
-    "team": "Dynasty"
+      "name": "Aristocr4tic",
+      "team": "Salty Potatoes"
   },
   {
-    "name": "AeOn",
-    "position": "captain",
-    "region": "eu",
-    "team": "Calamity Reborn"
+      "name": "KLast",
+      "team": "Salty Potatoes"
   },
   {
-    "name": "L3oN",
-    "position": "carry",
-    "region": "eu",
-    "team": "Calamity Reborn"
+      "name": "AeOn",
+      "team": "Salty Potatoes"
   },
   {
-    "name": "Gh0st83",
-    "position": "jungler",
-    "region": "eu",
-    "team": "Calamity Reborn"
+      "name": "SF4NTU",
+      "team": "Equinox"
   },
   {
-    "name": "corteZ",
-    "position": "sub",
-    "region": "eu",
-    "team": "Calamity Reborn"
+      "name": "Jaing",
+      "team": "Equinox"
+  },
+  {
+      "name": "AlexSS",
+      "team": "Equinox"
+  },
+  {
+      "name": "KieraN",
+      "team": "Equinox"
+  },
+  {
+      "name": "LuGa",
+      "team": "Equinox"
+  },
+  {
+      "name": "viKING",
+      "team": "Equinox"
+  },
+  {
+      "name": "b0re",
+      "team": "Equinox"
+  },
+  {
+      "name": "Reddix",
+      "team": "Wolves"
+  },
+  {
+      "name": "Chrysior",
+      "team": "Wolves"
+  },
+  {
+      "name": "ThePaprika",
+      "team": "Wolves"
+  },
+  {
+      "name": "Keygasza",
+      "team": "Wolves"
+  },
+  {
+      "name": "Asero1d",
+      "team": "Wolves"
   }
 ]

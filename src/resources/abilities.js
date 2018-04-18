@@ -113,4 +113,7 @@ export default {
   HERO_ABILITY_TONY_A_NAME: "tony_a",
   HERO_ABILITY_TONY_B_NAME: "tony_b",
   HERO_ABILITY_TONY_C_NAME: "tony_c",
+  HERO_ABILITY_MALENE_A1_NAME: "malene_a",
+  HERO_ABILITY_MALENE_B1_NAME: "malene_b",
+  HERO_ABILITY_MALENE_C1_NAME: "malene_c",
 }

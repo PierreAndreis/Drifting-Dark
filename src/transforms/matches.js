@@ -168,6 +168,7 @@ class MatchInput {
         shardId:  player.player.shardId,
         rankvst:  lodash.get(player, "player.stats.rankPoints.ranked", 0),
         blitzvst: lodash.get(player, "player.stats.rankPoints.blitz", 0),
+        rank5v5vst: lodash.get(player, "player.stats.rankPoints.ranked_5v5", 0),
         actor:    player.actor,
         side:     roster.stats.side,
         aces:     roster.stats.acesEarned,
@@ -237,6 +238,7 @@ class MatchOutput {
         winner        : player.winner,
         rankvst       : player.rankvst,
         blitzvst      : player.blitzvst,
+        rank5v5vst    : player.rank5v5vst,
         hero          : player.actor,
         role          : player.role,
         aces          : player.aces,
@@ -255,7 +257,7 @@ class MatchOutput {
         gold          : parseInt(player.gold, 10),
         goldMin       : getAvg(player.gold, matchMinutes),
         goldShare     : getRate(player.gold, roster.gold),
-        items         : player.items,
+        items         : player.items.filter(itemName => itemName !== "Vision Totem" && itemName !== "Healing Flask"),
         vprChange     : player.vprDiff || 0,
         
       }

@@ -12,7 +12,7 @@ import logger       from "./../lib/logger";
 import Pros from "./../resources/pro";
 
 const PROS_PER_QUEUE = 10;
-const PROS_LIMIT_HISTORY = 150;
+const PROS_LIMIT_HISTORY = 155;
 const PROS_COUNTER_KEY = "PRO_HISTORY_COUNTER";
 
 const getCounter = async () => {

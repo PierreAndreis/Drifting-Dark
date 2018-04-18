@@ -49,4 +49,8 @@ export default [{
 {
   name: 'Ranked 5v5',
   serverName: '5v5_pvp_ranked'
+},
+{
+  name: 'Private Ranked 5v5',
+  serverName: 'private_party_draft_match_5v5'
 }];

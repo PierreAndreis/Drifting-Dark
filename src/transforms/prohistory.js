@@ -10,6 +10,7 @@ class ProStats {
     return {
       createdAt: match.createdAt,
       matchId:   match.id,
+      region:    match.shardId,
       proInfo,
       actor:    playerStats.hero,
       tier:     playerStats.tier,

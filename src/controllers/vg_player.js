@@ -133,20 +133,24 @@ class PlayerController {
 
         let rankedGames = 0;
         let blitzGames = 0;
+        let ranked5v5Games = 0;
 
         // Look for matches on the current seasons
         CURRENT_SEASON.forEach(patch => {
           rankedGames += lodash.get(stats, `patches[${patch}].gameModes.Ranked.games`, 0);
           blitzGames += lodash.get(stats, `patches[${patch}].gameModes.Blitz.games`, 0);
+          ranked5v5Games += lodash.get(stats, `patches[${patch}].gameModes.Ranked 5v5.games`, 0);
         });
 
         // and has X amount of matches this season...
         let rankedPoints = rankedGames > MINIMUM_MATCHES_LEADERBOARD ? stats.rankVst  : -1;
         let blitzPoints  = blitzGames  > MINIMUM_MATCHES_LEADERBOARD ? stats.blitzVst : -1;
+        let ranked5v5Points  = ranked5v5Games  > MINIMUM_MATCHES_LEADERBOARD ? stats.rank5v5Vst : -1;
 
         const promises = [
           this.rankUpdate("ranked", player.id, stats.region, rankedPoints).then(res => stats.rankedRanking = res),
-          this.rankUpdate("blitz", player.id, stats.region, blitzPoints).then(res => stats.blitzRanking = res)
+          this.rankUpdate("blitz", player.id, stats.region, blitzPoints).then(res => stats.blitzRanking = res),
+          this.rankUpdate("ranked5v5", player.id, stats.region, ranked5v5Points).then(res => stats.ranked5v5Ranking = res)
         ];
 
         await Promise.all(promises);
