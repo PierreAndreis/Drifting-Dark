@@ -258,8 +258,6 @@ class VGHeroes extends BaseCouchbase {
       return transformed;
     }
 
-    return get();
-
     const key = `HeroesStats:${heroName}:${region}`;
     
     return CacheService.preferCache(key, get, { 
