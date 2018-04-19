@@ -184,20 +184,50 @@ class VGHeroes extends BaseCouchbase {
 
   async getHistoricalByDate(heroName, region, amount) {
 
-    let dates = [];
+    let dates = {};
+    let patchesToSearch = sortBy(Patches, false, "startAt");
+
+    let amountAlready = 0;
+    let currentPatch = 0;
+    let today = new Date();
+
+    while (amountAlready < amount) {
+      let dateToFind = new Date(new Date().setDate(today.getDate()-amountAlready));
+      let patch = patchesToSearch[currentPatch];
+
+
+      let start = new Date(patch.startAt);
+      let end = new Date(patch.endAt || today); // null so it gets today
+
+      if (start <= dateToFind && end >= dateToFind) {
+        dates[patch.version] = merge(dates[patch.version], [dateToFind]);
+        amountAlready++;
+      }
+      else currentPatch++;
+    }
     
-    for (let i = 0; i < amount; i++) {
-      let today = new Date();
-      dates.push(new Date(new Date().setDate(today.getDate()-i)).toLocaleDateString());
-    }
+    let res = [];
 
-    let historical = await CacheService.hashGet(`Heroes:History:${PATCH}:${region || "all"}`, dates, true);
+    for (let patch in dates) {
+      res.push(CacheService.hashGet(`Heroes:History:${patch}:${region || "all"}`, dates[patch], true).then(r => {
+        return r.map((result, i) => {
+          let heroes = result && result.heroes;
 
-    if (heroName !== "all") {
-      historical = historical.map(result => result && result.heroes && result.heroes.find(hero => hero.name === heroName))
-    }
+          // If there is a specific hero, we will filter to only that
+          if (heroes && heroName !== "list") {
+            heroes = heroes.find(result.heroes.find(hero => hero.name === heroName))
+          }
 
-    return historical.map((day, i) => ({...day, date: dates[i]}));
+          return {
+            patch: patch,
+            date: dates[patch][i],
+            ...heroes,
+          }
+        });
+      }));
+    };
+
+    return Promise.all(res).then(r => r.flatten())
   }
 
   async getHistoricalByPatch(heroName, region, amount) {
@@ -222,7 +252,7 @@ class VGHeroes extends BaseCouchbase {
 
         return {
           patch: update.version,
-          date: lastdate,
+          date: lastDate,
           ...heroes,
         }
       });

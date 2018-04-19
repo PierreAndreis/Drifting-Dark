@@ -41,9 +41,8 @@ class CacheService {
     let res = await RedisService.hmget(key, fields);
     // console.log();
     if (json && res) {
-      // In case of bulk
-      if (res.length > 1) res = res.map(r => JSON.parse(r));
-      else res = JSON.parse(res);
+      res = res.map(r => JSON.parse(r));
+      // else res = JSON.parse(res);
     }
     return res;
   }
