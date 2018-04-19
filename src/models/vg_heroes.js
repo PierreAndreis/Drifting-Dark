@@ -187,6 +187,8 @@ class VGHeroes extends BaseCouchbase {
     let dates = {};
     let patchesToSearch = sortBy(Patches, false, "startAt");
 
+    console.log(patchesToSearch);
+
     let amountAlready = 0;
     let currentPatch = 0;
     let today = new Date();
