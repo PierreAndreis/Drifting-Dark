@@ -187,11 +187,11 @@ class VGHeroes extends BaseCouchbase {
     let dates = {};
     let patchesToSearch = sortBy(Patches, false, "startAt");
 
-    console.log(patchesToSearch);
-
     let amountAlready = 0;
     let currentPatch = 0;
     let today = new Date();
+    // Add 1 second so today will always be in the future. This way we will match patches with no endAt
+    today.setSeconds(today.getSeconds() + 1);
 
     while (amountAlready < amount) {
       let dateToFind = new Date(new Date().setDate(today.getDate()-amountAlready));
@@ -200,9 +200,8 @@ class VGHeroes extends BaseCouchbase {
 
       let start = new Date(patch.startAt);
       let end = new Date(patch.endAt || today); // null so it gets today
-
-      if (start <= dateToFind && end >= dateToFind) {
-        dates[patch.version] = merge(dates[patch.version], [dateToFind]);
+      if (start < dateToFind && end >= dateToFind) {
+        dates[patch.version] = merge(dates[patch.version], [dateToFind.toLocaleDateString()]);
         amountAlready++;
       }
       else currentPatch++;
