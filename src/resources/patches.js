@@ -37,7 +37,7 @@ export default [
   {
     "version": "2.9",
     "startAt": "2017-10-11",
-    "endAt": "2018-11-07",
+    "endAt": "2017-11-07",
   },
   {
     "version": "2.10",
@@ -62,7 +62,7 @@ export default [
   {
     "version": "3.1",
     startAt: "2018-03-14",
-    endAt: "2018-4-17",
+    endAt: "2018-04-17",
   },
   {
     "version": "3.2",
