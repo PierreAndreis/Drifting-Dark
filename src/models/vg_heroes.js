@@ -25,7 +25,7 @@ const HEROESDB = new CouchbaseService("heroes");
 const cacheKey = "HeroesStats";
 
 let MAX_HEROES_PER_TEAM = 10;
-const PATCH = "3.1";
+const PATCH = "3.2";
 const GAME_MODE = "Ranked 5v5";
 
 const QUERY_GET_LATEST = (region) => `
@@ -212,11 +212,10 @@ class VGHeroes extends BaseCouchbase {
     for (let patch in dates) {
       res.push(CacheService.hashGet(`Heroes:History:${patch}:${region || "all"}`, dates[patch], true).then(r => {
         return r.map((result, i) => {
-          let heroes = result && result.heroes;
-
+          let heroes = result;
           // If there is a specific hero, we will filter to only that
           if (heroes && heroName !== "list") {
-            heroes = heroes.find(hero => hero.name === heroName);
+            heroes = result && result.heroes.find(hero => hero.name === heroName);
           }
 
           return {
@@ -244,11 +243,11 @@ class VGHeroes extends BaseCouchbase {
       let patchRes = await CacheService.hashGet(`Heroes:History:${update.version}:${region || "all"}`, lastDate, true);
 
       return patchRes.map((result) => {
-        let heroes = result && result.heroes;
+        let heroes = result;
 
         // If there is a specific hero, we will filter to only that
         if (heroes && heroName !== "list") {
-          heroes = heroes.find(hero => hero.name === heroName);
+          heroes = result && result.heroes.find(hero => hero.name === heroName);
         }
 
         return {

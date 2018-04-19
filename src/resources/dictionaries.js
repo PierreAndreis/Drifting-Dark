@@ -1,6 +1,8 @@
 import ABILITIES from "./abilities";
 import GAMEMODES from "./gamemodes";
 import SEASONS   from "./seasons";
+import SkillTiers from "./tiers_numbers";
+
 // Blitz => blitz_pvp_ranked
 export const dirtyGameMode = (cleanGameMode) => {
   const info = GAMEMODES.find(gm => gm.name === cleanGameMode);
@@ -23,6 +25,25 @@ export const findSeasonByPatch = (patchVersion) => {
     }
   };
   return season;
+}
+
+export const getTier = (rankpoints) => {
+  let skillTier = -1;
+  rankpoints = Number(rankpoints);
+
+  // Lol at those with more than 3000
+  if (rankpoints > 3000) return 29;
+
+  for(let tier in SkillTiers[0]) {
+    let obj = SkillTiers[0][tier];
+    if ((obj.starts <= rankpoints) && (obj.ends >= rankpoints)) {
+      skillTier = tier;
+      break;
+    }
+  }
+
+
+  return skillTier;
 }
 
 export const latestSeason = Object.keys(SEASONS)[Object.keys(SEASONS).length - 1];

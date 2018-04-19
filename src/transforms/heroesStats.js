@@ -6,6 +6,7 @@ import MatchesController from "./../controllers/vg_matches.js";
 import logger from "./../lib/logger";
 
 import T3Items from "~/resources/items_t3";
+import { getTier } from "../resources/dictionaries";
 
 const translateSkillPath = (skillPath) => {
   return skillPath.map(skill => /_(.+)/.exec(skill)[1]);
@@ -133,10 +134,25 @@ export default async (match) => {
   let heroes = {};
 
   let averageTier = 0;
+
+  let gameMode = match.gameMode;
+  let tierProperty = "tier";
+
+  if (match.patchVersion >= "3.2" && gameMode.includes("5v5")) {
+    tierProperty = "rank5v5vst";
+  }
   
-  match.players.forEach(p => averageTier += p.tier);
+  match.players.forEach(p => averageTier += p[tierProperty]);
 
   averageTier = parseInt(averageTier / match.players.length);
+
+  if (tierProperty === "rank5v5vst") {
+
+    console.log("before=", averageTier);
+    averageTier = getTier(averageTier);
+
+    console.log("after=", averageTier);
+  }
 
   match.averageTier = averageTier;
 
