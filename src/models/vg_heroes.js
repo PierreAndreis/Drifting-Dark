@@ -216,7 +216,7 @@ class VGHeroes extends BaseCouchbase {
 
           // If there is a specific hero, we will filter to only that
           if (heroes && heroName !== "list") {
-            heroes = heroes.find(result.heroes.find(hero => hero.name === heroName))
+            heroes = heroes.find(hero => hero.name === heroName);
           }
 
           return {
@@ -248,7 +248,7 @@ class VGHeroes extends BaseCouchbase {
 
         // If there is a specific hero, we will filter to only that
         if (heroes && heroName !== "list") {
-          heroes = heroes.find(result.heroes.find(hero => hero.name === heroName))
+          heroes = heroes.find(hero => hero.name === heroName);
         }
 
         return {
