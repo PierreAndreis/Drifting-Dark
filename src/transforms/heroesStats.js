@@ -147,11 +147,7 @@ export default async (match) => {
   averageTier = parseInt(averageTier / match.players.length);
 
   if (tierProperty === "rank5v5vst") {
-
-    console.log("before=", averageTier);
     averageTier = getTier(averageTier);
-
-    console.log("after=", averageTier);
   }
 
   match.averageTier = averageTier;

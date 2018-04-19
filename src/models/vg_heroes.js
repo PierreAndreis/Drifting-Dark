@@ -25,7 +25,7 @@ const HEROESDB = new CouchbaseService("heroes");
 const cacheKey = "HeroesStats";
 
 let MAX_HEROES_PER_TEAM = 10;
-const PATCH = "3.2";
+const PATCH = "3.1";
 const GAME_MODE = "Ranked 5v5";
 
 const QUERY_GET_LATEST = (region) => `
@@ -227,7 +227,7 @@ class VGHeroes extends BaseCouchbase {
       }));
     };
 
-    return Promise.all(res).then(r => r.flatten())
+    return Promise.all(res).then(r => r.flatten());
   }
 
   async getHistoricalByPatch(heroName, region, amount) {
@@ -258,7 +258,7 @@ class VGHeroes extends BaseCouchbase {
       });
     });
 
-    return Promise.all(heroes);
+    return Promise.all(heroes).then(r => r.flatten());
   }
 
   getHeroStats(heroName, region) {

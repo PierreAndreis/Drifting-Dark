@@ -105,6 +105,10 @@ class HeroesStats {
   }
 
   async saveMatches() {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("not saving anything because this isn't production=", process.env.NODE_ENV);
+      return;
+    }
     let promises = [];
 
     let matches = await this.getMatches(cacheKeyProcessed, MATCHES_SAVE_BATCH);
