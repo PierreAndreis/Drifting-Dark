@@ -239,8 +239,10 @@ class VGHeroes extends BaseCouchbase {
 
       // Get the last date possible for that patch.
       //  If it patch doesn't have an endAt, it's because it hasn't ended yet. For that, we will be getting today.
-      let lastDate = (update.endAt || new Date().toLocaleDateString());
-      let patchRes = await CacheService.hashGet(`Heroes:History:${update.version}:${region || "all"}`, lastDate, true);
+      let lastDate = (update.endAt || new Date());
+      
+      let patchRes = await CacheService.hashGet(`Heroes:History:${update.version}:${region || "all"}`, 
+        new Date(lastDate).toLocaleDateString(), true);
 
       return patchRes.map((result) => {
         let heroes = result;
@@ -276,7 +278,6 @@ class VGHeroes extends BaseCouchbase {
 
       let merged = list.reduce((p, now) => merge(p, now.heroes), {totalGames});
 
-      // return merged;
       let transformed = HeroesOutputTransform(merged);
 
       // Leaderboard for individual stats
