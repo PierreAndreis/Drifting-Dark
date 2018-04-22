@@ -8,7 +8,7 @@ export default [
       "team": "Team SoloMid"
   },
   {
-      "name": "daniel",
+      "name": "danieI",
       "team": "Team SoloMid"
   },
   {

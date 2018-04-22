@@ -11,7 +11,7 @@ import T3Items, {SITUATIONAL_BOOTS, SITUATIONAL_DEFENSES} from "~/resources/item
 
 const LIMIT_ITEMS = 4;
 
-let transformAggregated = (obj, totalGames) => {
+let transformAggregated = (obj, totalGames, raw) => {
   let res = [];
 
   if (!lodash.isArray(obj)) {
@@ -28,10 +28,12 @@ let transformAggregated = (obj, totalGames) => {
 
   else res = obj;
 
+  if (raw) return res;
+
   return res.map((r, i, k) => ({
-    key: r.key,
+    key:      r.key,
     category: r.category,
-    winRate: getRate(r.wins || 1, r.games),
+    winRate:  getRate(r.wins || 1, r.games),
     pickRate: getRate(r.games, totalGames),
     variants: r.variants
   }));
@@ -73,7 +75,7 @@ let adjustSkills = (order) => {
 
 
 
-const getSkills = (skillsPick, skillsWin, totalGames) => {
+const getSkills = (skillsPick, skillsWin, totalGames, getRaw) => {
   let res = {};
 
   // Merge them both together. We should do like that in the future for all. I'm stupid for not doing it first
@@ -86,7 +88,7 @@ const getSkills = (skillsPick, skillsWin, totalGames) => {
   res = lodash.sortBy(res, ['games', 'wins']);
   res.reverse();
 
-  return transformAggregated(res, totalGames);
+  return transformAggregated(res, totalGames, getRaw);
 }
 
 const mergeRelevant = (builds) => {
@@ -202,7 +204,31 @@ const rankedStats = (payload) => {
   ];
 };  
 
+const getCategoriesRate = (skills, totalGames) => {
+  let categories =  Array.from(new Set(skills.map(f => f.category)));
+
+  
+  return transformAggregated(categories.map(category => {
+    let wins = 0;
+    let games = 0;
+
+    skills.forEach(s => {
+      if (s.category !== category) return;
+      wins += s.wins;
+      games += s.games;
+    });
+
+    return {
+      key: category,
+      wins: wins, 
+      games: games
+    }
+  }), totalGames);
+}
+
 export default (payload) => {
+
+  let categorySkills = getCategoriesRate(getSkills(payload.abilitypicks, payload.abilitywins, payload.games, true), payload.games);
   
   return {
 
@@ -219,6 +245,8 @@ export default (payload) => {
     playingWith   : transformAggregated(payload.teammates, payload.games),
 
     builds        : getBuilds(payload.itemspicks, payload.itemswin, payload.games),
+
+    categorySkills: lodash.sortBy(categorySkills, "pickRate").reverse(),
     skills        : getSkills(payload.abilitypicks, payload.abilitywins, payload.games),
 
   }

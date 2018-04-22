@@ -41,7 +41,7 @@ const crons = [
     interval: everyMinute(5),
     fn: () => HeroesStats.cacheStats(),
   }
-]
+];
 
 if (cluster.isMaster) {
  crons.forEach(c => cron.schedule(c.interval, async () => {
