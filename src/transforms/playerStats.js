@@ -351,6 +351,11 @@ class PlayerStatsOutput {
       redGames,
       redWins,
       vprChange,
+      healed,
+      objectiveDamage,
+      damage,
+      dealt,
+      taken,
     } = stats;
 
     const thisKP = kills + assists;
@@ -385,7 +390,12 @@ class PlayerStatsOutput {
       redGames,
       redWins,
       redWinRate:      getRate(redWins, redGames),
-    }
+      healed,
+      objectiveDamage,
+      damage,
+      dealt,
+      taken,
+    };
   }
 }
 
