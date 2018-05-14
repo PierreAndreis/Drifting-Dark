@@ -6,6 +6,7 @@ import { getKDA, getRate, getAvg }  from "~/lib/utils_stats";
 import { findSeasonByPatch } from "~/resources/dictionaries";
 
 import MatchTransform from "./matches";
+import TelemetryTransform from "./telemetry"
 
 const nowTime = () => new Date();
 
@@ -25,12 +26,12 @@ class PlayerStatsInput {
     }
 
     if (lodash.isEmpty(matches) || matches.errors) return res;
-    
+
     // const matches = (m.match) ? m.match.map(m => MatchTransform.input.json(m)) : m;
     const lastMatch = matches[0];
 
     const player = lastMatch.players.find(p => p.id === playerId);
-    
+
     const stats = this.generateStats(matches, playerId);
 
     return {
@@ -41,7 +42,7 @@ class PlayerStatsInput {
       rankVst:    "" + player.rankvst,
       blitzVst:   "" + player.blitzvst,
       rank5v5Vst: "" + player.rank5v5vst,
-      // we add 1 minute to the lastMatch so if we search using createdAt-start, 
+      // we add 1 minute to the lastMatch so if we search using createdAt-start,
       // the last match won't show... the last match is already calculated.
       lastMatch: addMinutes(new Date(lastMatch.createdAt), 1),
       aka:       stats.aka,
@@ -49,7 +50,7 @@ class PlayerStatsInput {
       patches:   stats.patches,
       info:      stats.info,
     }
-    
+
   }
 
   // Distribute the matches
@@ -69,11 +70,11 @@ class PlayerStatsInput {
       const _roles     = this.generateRoles    (match, player, roster);
       const _heroes    = this.generateHeroes   (match, player, roster);
       const _total     = this.generateTotal    ("total", match, player, roster);
-      const _friends   = this.generateFriends  (match, player, roster)
-      
+      const _friends   = this.generateFriends  (match, player, roster);
+
       patches[pv] = patches[pv] || {};
 
-      patches[pv]               = merge(patches[pv],     _total    );   
+      patches[pv]               = merge(patches[pv],     _total    );
       patches[pv]["gameModes"]  = merge(patches[pv]["gameModes"], _gameModes);
       patches[pv]["gameModes"]  = merge(patches[pv]["gameModes"], _roles    );
       patches[pv]["gameModes"]  = merge(patches[pv]["gameModes"], _heroes   );
@@ -93,7 +94,7 @@ class PlayerStatsInput {
     }
   }
 
-  generateTotal(type, match, player, roster) {
+  async generateTotal(type, match, player, roster) {
 
     const winner = (player.winner             ) ? 1 : 0;
     const afk    = (player.firstAfkTime !== -1) ? 1 : 0;
@@ -109,6 +110,9 @@ class PlayerStatsInput {
         gamesWithAfk: 1
       };
     }
+
+    const { facts } = await TelemetryTransform(match.telemetry.URL, match.id);
+    const heroFacts = facts[redSide ? 'red' : 'blue'][player.actor]
 
     return {
       type:           type,
@@ -132,6 +136,11 @@ class PlayerStatsInput {
       crystalSentry:  player.crystalMineCaptures,
       turretCaptures: player.turretCaptures,
       duration:       match.duration,
+      healed:           heroFacts.healed,
+      objectiveDamage:  heroFacts.objectiveDamage,
+      damage:           heroFacts.damage,
+      dealt:            heroFacts.dealt,
+      taken:            heroFacts.taken,
     }
   }
 
@@ -139,7 +148,7 @@ class PlayerStatsInput {
     return {
       skins:      [player.skinKey],
       itemGrants: player.itemGrants,
-      itemUses:   player.itemUses 
+      itemUses:   player.itemUses
     }
   }
 
@@ -147,15 +156,15 @@ class PlayerStatsInput {
 
     const role = player.role;
 
-    // Role shouldn't be a thing on anything not Ranked or Casual 
-    if (match.gameMode !== "Ranked" && 
-        match.gameMode !== "Casual" && 
-        match.gameMode !== "Casual 5v5" && 
+    // Role shouldn't be a thing on anything not Ranked or Casual
+    if (match.gameMode !== "Ranked" &&
+        match.gameMode !== "Casual" &&
+        match.gameMode !== "Casual 5v5" &&
         match.gameMode !== "Ranked 5v5") return false;
 
     return {
       [match.gameMode]: {
-        Roles: { 
+        Roles: {
           [role]: this.generateTotal("role", match, player, roster)
         }
       }
@@ -217,15 +226,15 @@ class PlayerStatsOutput {
 
 
     const {
-      id, 
-      name, 
-      lastCache, 
-      region, 
-      tier, 
-      aka, 
-      patches, 
-      info, 
-      rankVst, 
+      id,
+      name,
+      lastCache,
+      region,
+      tier,
+      aka,
+      patches,
+      info,
+      rankVst,
       rank5v5Vst,
       blitzVst,
       rankedRanking,
@@ -257,7 +266,7 @@ class PlayerStatsOutput {
       name,
       region,
       lastCache,
-      tier, 
+      tier,
       aka,
       rankVst,
       blitzVst,
