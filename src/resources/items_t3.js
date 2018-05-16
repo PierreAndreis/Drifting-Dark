@@ -26,7 +26,7 @@ export default [
     { id: 25, name: "Stormcrown"         , short: "SC", internalName: "", category: "Utility" },
     { id: 26, name: "Poisoned Shiv"      , short: "PS", internalName: "", category: "Weapon"  },
     { id: 27, name: "Nullwave Gauntlet"  , short: "NG", internalName: "", category: "Utility" },
-    { id: 28, name: "Echo"               , short: "EH", internalName: "", category: "Crystal" },
+    { id: 28, name: "Echo"               , short: "EC", internalName: "", category: "Crystal" },
     { id: 29, name: "Slumbering Husk"    , short: "SH", internalName: "", category: "Defense" },
     { id: 30, name: "Dragon\'s Eye"      , short: "DE", internalName: "", category: "Crystal" },
     { id: 31, name: "Spellsword"         , short: "SS", internalName: "", category: "Weapon"  },
