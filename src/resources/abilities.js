@@ -116,4 +116,7 @@ export default {
   HERO_ABILITY_MALENE_A1_NAME: "malene_a",
   HERO_ABILITY_MALENE_B1_NAME: "malene_b",
   HERO_ABILITY_MALENE_C1_NAME: "malene_c",
+  HERO_ABILITY_KENSEI_A_NAME: "kensei_a",
+  HERO_ABILITY_KENSEI_B_NAME: "kensei_b",
+  HERO_ABILITY_KENSEI_C_NAME: "kensei_c",
 }
