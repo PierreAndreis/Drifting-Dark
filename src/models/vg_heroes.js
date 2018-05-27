@@ -91,10 +91,10 @@ const calculateTier = (heroes) => {
     // default is average
     let tier = 2;
 
-    // if win rate is more than average and (ban rate is more than double the average or pick rate more than 1/4 of the average)
+    // if win rate is more than average and (ban rate is more than third the average or pick rate more than 1/4 of the average)
     // or win rate is more than 1.1 and pick rate more than 1/8 of the average
     // then it is tier 3 (average good)
-    if ((relative.winRate > 1 && (relative.banRate >= 2 || relative.pickRate >= 1.25) )
+    if ((relative.winRate > 1 && (relative.banRate >= 3 || relative.pickRate >= 1.25) )
     || (relative.winRate > 1.1 && relative.pickRate > 0.8)) {
       tier = 3;
     }
