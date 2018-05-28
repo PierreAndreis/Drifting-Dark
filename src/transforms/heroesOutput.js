@@ -138,6 +138,32 @@ const mergeRelevant = (builds) => {
   })
 
   return res;
+};
+
+// Not being used atm
+const clearVariants = (initial) => {
+
+  let res = {};
+
+  lodash.forEach(initial, (item, index) => {
+    let variants = lodash.map(item.variants, (item, ability) => ({...item, key: ability}));
+    variants = lodash.sortBy(variants, ["games", "wins"]);
+    variants.reverse();
+    variants = variants.filter(variant => ((item.games * 0.05) < variant.games) || variant.key !== "" );
+
+    res[index] = {
+      ...item,
+      variants: transformAggregated(variants, item.games).map(variant => ({
+        ...variant,
+        items: variant.key
+        .split(",")
+        .filter(item => item && item !== "0")
+        .map(item => T3Items.find(l => l.short === item).name)
+      }))
+    }
+  });
+
+  return res;
 }
 
 const limitItems = (items) => {
@@ -147,18 +173,18 @@ const limitItems = (items) => {
 const getBuilds = (buildsPick, buildsWin, totalGames) => {
   let res = {};
 
-
   // Merge them both together. We should do like that in the future for all. I'm stupid for not doing it first
-  lodash.forEach(buildsPick, (games, i) => res[limitItems(i)] = merge(res[limitItems(i)], {key: limitItems(i), games, variants: [i]}));
-  lodash.forEach(buildsWin, (wins, i) => res[limitItems(i)] = merge(res[limitItems(i)], {wins}));
+  lodash.forEach(buildsPick, (games, i) => res[limitItems(i)] = merge(res[limitItems(i)], {key: limitItems(i), games, variants: {[i]: {games}}}));
+  lodash.forEach(buildsWin, (wins, i) => res[limitItems(i)] = merge(res[limitItems(i)], {wins, variants: {[i]: {wins}}}));
 
   // res = lodash.filter(res, (value, index) => index.split(",").length > 3);
 
   res = mergeRelevant(res);
+  // res = clearVariants(res);
   res = lodash.filter(res, (value, index) => index.split(",").length > 3 && value.games > 10);
-  // return res;
   res = lodash.sortBy(res, ['games', 'wins']);
   res.reverse();
+  res = res.slice(0, 15);
   res = transformAggregated(res, totalGames);
 
   return res.map(r => ({
@@ -232,6 +258,8 @@ export default (payload) => {
   
   return {
 
+
+    builds        : getBuilds(payload.itemspicks, payload.itemswin, payload.games),
     name          : payload.actor,
     winRate       : getRate(payload.wins, payload.games),
     pickRate      : getRate(payload.games, payload.totalGames),
@@ -243,8 +271,6 @@ export default (payload) => {
     durations     : transformAggregated(payload.durations, payload.games),
     playingAgainst: transformAggregated(payload.enemies, payload.games),
     playingWith   : transformAggregated(payload.teammates, payload.games),
-
-    builds        : getBuilds(payload.itemspicks, payload.itemswin, payload.games),
 
     categorySkills: lodash.sortBy(categorySkills, "pickRate").reverse(),
     skills        : getSkills(payload.abilitypicks, payload.abilitywins, payload.games),
