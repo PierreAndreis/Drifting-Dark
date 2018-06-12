@@ -14,37 +14,37 @@ const VPR_ENABLED = false;
 const addSeconds = (date, seconds) => {
   date.setSeconds(date.getSeconds() + seconds);
   return date;
-}
+};
 
 class MatchInput {
   json(match) {
-
     let gameMode = match.gameMode;
 
-    let unfilteredGameMode = GAMEMODE.find(g => g.serverName === match.gameMode);
+    let unfilteredGameMode = GAMEMODE.find(
+      g => g.serverName === match.gameMode
+    );
     if (unfilteredGameMode) gameMode = unfilteredGameMode.name;
 
     return {
-      id:      match.data.id,
+      id: match.data.id,
       shardId: match.shardId,
       gameMode,
       endGameReason: match.data.attributes.stats.endGameReason,
-      createdAt:     match.createdAt,
-      duration:      match.duration,
-      patchVersion:  match.patchVersion,
+      createdAt: match.createdAt,
+      duration: match.duration,
+      patchVersion: match.patchVersion,
       // We will generate Rosters + Players
-              ...this.generateRosters(gameMode, match.rosters),
-      telemetry: this.generateTelemetry(match.assets[0]),
+      ...this.generateRosters(gameMode, match.rosters),
+      telemetry: this.generateTelemetry(match.assets[0])
     };
   }
 
   generateTelemetry(telemetry) {
-
-    if (!telemetry || !telemetry.URL) return {}
+    if (!telemetry || !telemetry.URL) return {};
 
     return {
-      name:       "telemetry",
-      URL:        telemetry.URL,
+      name: "telemetry",
+      URL: telemetry.URL
     };
   }
 
@@ -54,43 +54,42 @@ class MatchInput {
 
     const names = {
       "left/blue": "Blue",
-      "right/red": "Red",
+      "right/red": "Red"
     };
 
     // Let's separate the rosters
-    lodash.forEach(r, (roster) => {
-
+    lodash.forEach(r, roster => {
       rosters.push(roster.stats);
 
       // Now, lets create the players for this roster
       players.push(...this.generatePlayers(roster.participants, roster));
-
     });
-    
+
     if (gameMode === "Ranked" && VPR_ENABLED) {
       players = VPRService.implementVPRChanges(players, rosters);
     }
 
     // Insert score property to each participant
-      players = MVP(players, rosters, gameMode);
+    players = MVP(players, rosters, gameMode);
 
     return {
       players,
       rosters
     };
   }
-  
-  generatePlayers(players, roster, blueVstSum, redVstSum) {
 
+  generatePlayers(players, roster, blueVstSum, redVstSum) {
     let p = [];
 
     // ===== ROLE ALGORITHM BY VYZEOX =====
     let captain;
 
     // To find the captain, we will first check for whoever has fountain.
-    // The assumption here is that captain WILL buy fountains. 
-    let fountainHolders = players.filter(p => p._stats.items.includes("Fountain of Renewal"));
-    
+    // The assumption here is that captain WILL buy fountains.
+    let fountainHolders = players.filter(p =>
+      p._stats.items.includes("Fountain of Renewal")
+    );
+
     // If there is someone with fountain,
     if (fountainHolders.length > 0) {
       // we will set them as captain
@@ -106,50 +105,51 @@ class MatchInput {
           else return current;
         }, false);
       }
-    }
-    else {
+    } else {
       // In case no one has fountain, captain will be those with the least on (GOLD/(CS)^2) ratio
       captain = players.reduce((current, next) => {
         if (!current) return next;
 
-        let currentRatio = Math.pow((current._stats.farm / current._stats.gold), 2);
-        let newRatio = Math.pow((next._stats.farm / next._stats.gold), 2);
+        let currentRatio = Math.pow(
+          current._stats.farm / current._stats.gold,
+          2
+        );
+        let newRatio = Math.pow(next._stats.farm / next._stats.gold, 2);
         // Lowest ratio
         if (currentRatio < newRatio) return current;
         else return next;
-      }, false)
+      }, false);
+    }
 
-    };
-    
     // With the captain found, jungler will be the one with the lowest lane minions / jungle camps ratio
     /**
      * XXX: Vyzeox explanation
-     * lane minions / jungle camps should work because every laner should get the highest ratios - they should get the lowest amount of jungle * cs and highest amount of lane cs normally, which makes their lane minions / jungle camps ratio really high. Meanwhile, junglers take a * lot of jungle camps and a lot less lane minions. This means that you have a ratio that is a lot lower than the carries. 
+     * lane minions / jungle camps should work because every laner should get the highest ratios - they should get the lowest amount of jungle * cs and highest amount of lane cs normally, which makes their lane minions / jungle camps ratio really high. Meanwhile, junglers take a * lot of jungle camps and a lot less lane minions. This means that you have a ratio that is a lot lower than the carries.
      * Numerator is low (low lane minion kills), denominator is high (high jungle camp kills) = low ratio.  Vice-versa = high ratio
      * Lowest ratio = jungler
      */
     let jungler = players.reduce((current, next) => {
-
       if (!current) return next;
       // Sometimes we skip straight to the captain... if we do that, we will go straight to next then
       if (current.player.id === captain.player.id) return next;
 
-      let currentRatio = (current._stats.nonJungleMinionKills / current._stats.jungleKills);
-      let newRatio     = (next._stats.nonJungleMinionKills / next._stats.jungleKills);
+      let currentRatio =
+        current._stats.nonJungleMinionKills / current._stats.jungleKills;
+      let newRatio =
+        next._stats.nonJungleMinionKills / next._stats.jungleKills;
 
       // Lowest ratio and not the jungler
-      if (newRatio < currentRatio && next.player.id !== captain.player.id) return next;
+      if (newRatio < currentRatio && next.player.id !== captain.player.id)
+        return next;
       else return current;
-
     }, false);
 
     // ===== END OF ROLE ALGORITHM BY VYZEOX =====
 
-    let junglerId = (jungler.player) ? jungler.player.id : "";
-    let captainId = (captain.player) ? captain.player.id : "";
+    let junglerId = jungler.player ? jungler.player.id : "";
+    let captainId = captain.player ? captain.player.id : "";
 
-    lodash.forEach(players, (player) => {
-
+    lodash.forEach(players, player => {
       // const rankvst = lodash.get(player, "player.stats.rankPoints.ranked", 0);
       let tier = player._stats.skillTier;
       let role = "Carry";
@@ -158,33 +158,37 @@ class MatchInput {
       // const role = jungler.player.name === player.player.name ? "Jungler" : detectRoleBasedOnItems(player.stats.items);
 
       if (typeof tier !== "number") {
-        const tierN = TIER3_NAMES.find(t => t.name === player._stats.skillTier);
+        const tierN = TIER3_NAMES.find(
+          t => t.name === player._stats.skillTier
+        );
         tier = tierN && tierN.serverName ? tierN.serverName : tier;
       }
 
       p.push({
-        id:       player.player.id,
-        name:     player.player.name,
-        shardId:  player.player.shardId,
-        rankvst:  lodash.get(player, "player.stats.rankPoints.ranked", 0),
+        id: player.player.id,
+        name: player.player.name,
+        shardId: player.player.shardId,
+        rankvst: lodash.get(player, "player.stats.rankPoints.ranked", 0),
         blitzvst: lodash.get(player, "player.stats.rankPoints.blitz", 0),
-        rank5v5vst: lodash.get(player, "player.stats.rankPoints.ranked_5v5", 0),
-        actor:    player.actor,
-        side:     roster.stats.side,
-        aces:     roster.stats.acesEarned,
-        role:     role,
-          ...player.stats,
-        tier:     tier,
+        rank5v5vst: lodash.get(
+          player,
+          "player.stats.rankPoints.ranked_5v5",
+          0
+        ),
+        actor: player.actor,
+        side: roster.stats.side,
+        aces: roster.stats.acesEarned,
+        role: role,
+        ...player.stats,
+        tier: tier
       });
-
     });
     return p;
   }
-};
+}
 
 class MatchOutput {
   json(playerId, match) {
-
     const {
       id,
       shardId,
@@ -193,7 +197,7 @@ class MatchOutput {
       duration,
       patchVersion,
       players,
-      rosters,
+      rosters
     } = match;
 
     return {
@@ -205,26 +209,23 @@ class MatchOutput {
       duration,
       minutes: getMinutes(duration),
       patchVersion,
-      players: this.generatePlayers(playerId, {match, rosters, players}),
-      rosters: rosters,
-    }
+      players: this.generatePlayers(playerId, { match, rosters, players }),
+      rosters: rosters
+    };
   }
 
-  generatePlayers(playerId, {match, rosters, players}) {
-
-    let matchMinutes = (match.duration / 60);
+  generatePlayers(playerId, { match, rosters, players }) {
+    let matchMinutes = match.duration / 60;
 
     let mvpScore = players.reduce((n, p) => Math.max(n, p.score), 0);
-    // In private mode, everyone will have a mvp score of 1; 
+    // In private mode, everyone will have a mvp score of 1;
     // So to not have an MVP, we will set higher as 1
     if (match.gameMode.toLowerCase().includes("private")) mvpScore = 1;
 
     let res = players.map(player => {
-
       let roster = rosters.find(r => r.side === player.side);
 
-      
-
+      // prettier-ignore
       return {    
         id            : player.id,
         me            : (playerId && player.id === playerId),
@@ -257,19 +258,19 @@ class MatchOutput {
         gold          : parseInt(player.gold, 10),
         goldMin       : getAvg(player.gold, matchMinutes),
         goldShare     : getRate(player.gold, roster.gold),
-        items         : player.items.filter(itemName => itemName !== "Vision Totem" && itemName !== "Healing Flask"),
+        items         : player.items.filter(itemName => 
+          itemName !== "Vision Totem" || itemName !== "Healing Flask" || itemName !== "Scout Cam"
+        ),
         vprChange     : player.vprDiff || 0,
         
       }
-
     });
 
     return res;
-
   }
-};
+}
 
 export default {
   input: new MatchInput(),
-  output: new MatchOutput(),
+  output: new MatchOutput()
 };
