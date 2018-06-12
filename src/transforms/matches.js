@@ -259,7 +259,7 @@ class MatchOutput {
         goldMin       : getAvg(player.gold, matchMinutes),
         goldShare     : getRate(player.gold, roster.gold),
         items         : player.items.filter(itemName => 
-          itemName !== "Vision Totem" || itemName !== "Healing Flask" || itemName !== "Scout Cam"
+          itemName !== "Vision Totem" && itemName !== "Healing Flask" && itemName !== "Scout Cam"
         ),
         vprChange     : player.vprDiff || 0,
         
