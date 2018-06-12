@@ -1,4 +1,7 @@
-const tracer = require("dd-trace").init();
+const tracer = require("dd-trace").init({
+  debug: true,
+  experimental: true
+});
 
 import cluster from "cluster";
 import os from "os";
