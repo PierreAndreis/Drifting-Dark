@@ -5,7 +5,7 @@ const dogstatsd = new StatsD("localhost", 8125);
 
 const Analysis = {
   increment(key, tags) {
-    return dogstatsd.increment(key, undefined, tags);
+    return dogstatsd.increment(key, tags);
   },
 
   incrementBy(key, value, tags) {
