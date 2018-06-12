@@ -1,3 +1,4 @@
+// prettier-ignore
 export default [
     { id:  1, name: "Sorrowblade"        , short: "SB", internalName: "", category: "Weapon"  },
     { id:  2, name: "Shatterglass"       , short: "SG", internalName: "", category: "Crystal" },
@@ -42,14 +43,14 @@ export default [
 ];
 
 export const SITUATIONAL_BOOTS = [
-    "Journey Boots",
-    "Halcyon Chargers",
-    "Teleport Boots"
+  "Journey Boots",
+  "Halcyon Chargers",
+  "Teleport Boots"
 ];
 
 export const SITUATIONAL_DEFENSES = [
-    "Metal Jacket",
-    "Atlas Pauldron",
-    "Aegis",
-    "Slumbering Husk",
+  "Metal Jacket",
+  "Atlas Pauldron",
+  "Aegis",
+  "Slumbering Husk"
 ];

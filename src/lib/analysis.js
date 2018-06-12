@@ -1,11 +1,11 @@
 import { StatsD } from "node-dogstatsd";
-import logger     from "./logger";
+import logger from "./logger";
 
 const dogstatsd = new StatsD();
 
 const Analysis = {
   increment(key, tags) {
-    return dogstatsd.increment(key, tags);
+    return dogstatsd.increment(key, undefined, tags);
   },
 
   incrementBy(key, value, tags) {
@@ -23,8 +23,7 @@ const Analysis = {
   timing(key, time, tags) {
     return dogstatsd.timing(key, time, tags);
   }
-
-}
+};
 
 // dogstatsd.socket.on('error', function (exception) {
 //    return logger.warn("error event in socket.send(): " + exception);

@@ -119,4 +119,7 @@ export default {
   HERO_ABILITY_KENSEI_A_NAME: "kensei_a",
   HERO_ABILITY_KENSEI_B_NAME: "kensei_b",
   HERO_ABILITY_KENSEI_C_NAME: "kensei_c",
-}
+  HERO_ABILITY_KINETIC_A_NAME: "kinetic_a",
+  HERO_ABILITY_KINETIC_B_NAME: "kinetic_b",
+  HERO_ABILITY_KINETIC_C_NAME: "kinetic_c"
+};
