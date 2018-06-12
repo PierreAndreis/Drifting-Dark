@@ -1,7 +1,7 @@
 import { StatsD } from "node-dogstatsd";
 import logger from "./logger";
 
-const dogstatsd = new StatsD();
+const dogstatsd = new StatsD("localhost", 8125);
 
 const Analysis = {
   increment(key, tags) {
