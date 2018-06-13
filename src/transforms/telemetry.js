@@ -73,6 +73,7 @@ class Telemetry {
         totalDamage: {},
         totalDealt: {},
         skill: [],
+        items: [],
         objectiveDamage: 0,
         damage: 0,
         dealt: 0,
