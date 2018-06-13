@@ -27,24 +27,50 @@ export const findSeasonByPatch = (patchVersion) => {
   return season;
 }
 
-export const getTier = (rankpoints) => {
-  let skillTier = -1;
-  rankpoints = Number(rankpoints);
+// export const getTier = (rankpoints) => {
+//   let skillTier = -1;
+//   rankpoints = Number(rankpoints);
 
-  // Lol at those with more than 3000
-  if (rankpoints > 3000) return 29;
+//   // Lol at those with more than 3000
+//   if (rankpoints > 3000) return 29;
 
-  for(let tier in SkillTiers[0]) {
-    let obj = SkillTiers[0][tier];
-    if ((obj.starts <= rankpoints) && (obj.ends >= rankpoints)) {
-      skillTier = tier;
+//   for(let tier in SkillTiers[0]) {
+//     let obj = SkillTiers[0][tier];
+//     if ((obj.starts <= rankpoints) && (obj.ends >= rankpoints)) {
+//       skillTier = tier;
+//       break;
+//     }
+//   }
+
+
+//   return skillTier;
+// }
+
+export const getTier = points => {
+  points = Number(points);
+  let tierInfo;
+
+  for (let tier in SkillTiers) {
+    let t = SkillTiers[tier];
+    if (t.starts <= points && t.ends > points) {
+      tierInfo = tier;
+
       break;
     }
   }
 
+  if (!tierInfo) {
+    if (points === -1) tierInfo = 0;
+    if (points >= 3000) tierInfo = 30;
+  }
 
-  return skillTier;
-}
+  return tierInfo;
+
+  // return {
+  //   ...SkillTiers[tierInfo],
+  //   tier: Math.ceil(tierInfo / 3), // Bronze, Silver, Gold
+  // };
+};
 
 export const latestSeason = Object.keys(SEASONS)[Object.keys(SEASONS).length - 1];
 

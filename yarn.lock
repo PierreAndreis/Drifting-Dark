@@ -5237,9 +5237,9 @@ v8flags@^2.1.1:
   dependencies:
     user-home "^1.1.1"
 
-vainglory@^1.4.0:
+"vainglory@git://github.com/PierreAndreis/vainglory.git#patch-2":
   version "1.4.0"
-  resolved "https://registry.yarnpkg.com/vainglory/-/vainglory-1.4.0.tgz#32585fe27d0389c99b860c5aea4a2f8c3f465aa8"
+  resolved "git://github.com/PierreAndreis/vainglory.git#6eb365f249d8e2bfb6da70a793eab329ff84ab56"
   dependencies:
     babel-cli "^6.18.0"
     babel-core "^6.18.2"

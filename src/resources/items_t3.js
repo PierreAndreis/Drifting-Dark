@@ -37,6 +37,10 @@ export default [
     { id: 33, name: "Teleport Boots"     , short: "TS", internalName: "", category: "Weapon"  },
     { id: 34, name: "Totem Enhancer"     , short: "TE", internalName: "", category: "Utility" },
 
+    { id: 35, name: "Rooks Decree"       , short: "RD", internalName: "", category: "Utility" },
+    { id: 36, name: "Pulseweave"         , short: "PW", internalName: "", category: "Utility" },
+    { id: 37, name: "Capacitor Plate"    , short: "CP", internalName: "", category: "Utility" },
+
     { id: 98, name: "Situational Defense" , short: "*",  internalName: "", category: "Situational"},
     { id: 99, name: "Situational Boots"   , short: "**", internalName: "", category: "Situational"},
     

@@ -39,7 +39,7 @@
     "node-cron": "^1.2.1",
     "node-dogstatsd": "0.0.7",
     "node-fetch": "^1.7.3",
-    "vainglory": "^1.4.0",
+    "vainglory": "git://github.com/PierreAndreis/vainglory.git#patch-2",
     "winston": "^3.0.0-rc6"
   },
   "devDependencies": {
