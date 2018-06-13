@@ -299,7 +299,6 @@ export default payload => {
   );
 
   return {
-    builds: getBuilds(payload.itemspicks, payload.itemswin, payload.games),
     name: payload.actor,
     winRate: getRate(payload.wins, payload.games),
     pickRate: getRate(payload.games, payload.totalGames),
@@ -313,6 +312,7 @@ export default payload => {
     playingWith: transformAggregated(payload.teammates, payload.games),
 
     categorySkills: lodash.sortBy(categorySkills, "pickRate").reverse(),
+    builds: getBuilds(payload.itemspicks, payload.itemswin, payload.games),
     skills: getSkills(
       payload.abilitypicks,
       payload.abilitywins,

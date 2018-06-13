@@ -328,10 +328,20 @@ class VGHeroes extends BaseCouchbase {
 
         let leaderboardResults = await Promise.all(promisesLeaderboard);
         transformed.stats = transformed.stats.map(stat => {
+          let rank = leaderboardResults.shift();
+          let total = leaderboardResults.shift();
+
+          if (stat.name === "deathsPerGame") {
+            // For deaths, we inverse.
+            // Being low is good
+            rank = (total - rank + 1);
+          }
+
+
           return {
             ...stat,
-            rank: leaderboardResults.shift(),
-            total: leaderboardResults.shift()
+            rank,
+            total
           };
         });
       }
