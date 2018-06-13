@@ -280,12 +280,15 @@ class VGHeroes extends BaseCouchbase {
             result && result.heroes.find(hero => hero.name === heroName);
         }
 
+        if (!heroes) return false;
+
         return {
           patch: update.version,
           date: lastDate,
           ...heroes
         };
-      });
+      })
+      .filter(obj => Boolean(obj))
     });
 
     return Promise.all(heroes).then(r => r.flatten());
