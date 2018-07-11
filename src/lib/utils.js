@@ -1,5 +1,4 @@
-import * as lodash    from "lodash";
-import Config from "../config";
+import * as lodash from "lodash";
 /**
  * Merge two objects, summing the values if it is a number, otherwise it will replace with the newer value
  * @param {object} orig
@@ -33,9 +32,7 @@ export const merge = (orig, addition) => {
   }
 
 const removeDuplicatesArray = (arrArg) => {
-  return arrArg.filter((elem, pos, arr) => {
-    return arr.indexOf(elem) == pos;
-  });
+  return [...new Set(arrArg)]
 }
 
 //  Own Merge x 83.39 ops/sec ±0.82% (71 runs sampled)
@@ -90,6 +87,28 @@ export const merge_two = (orig, add) => {
   };
 
 }
+
+// // new Merge
+// function isObject(obj) {
+//   return obj ? obj.constructor === Object : false;
+// }
+
+// const kEntries = Symbol('Kyra-Merge');
+
+// expor (obj1, obj2) {
+//   if (!isObject(obj1)) return obj2;
+//   if (!obj2[kEntries])
+//       obj2[kEntries] = Object.entries(obj2);
+
+//   for (const [key, value] of obj2[kEntries]) {
+//       if (typeof value === 'number') obj1[key] += value;
+//       else if (isObject(value)) obj1[key] = merge(obj1[key], value);
+//       else if (Array.isArray(value)) obj1[key] = Array.isArray(obj1[key]) ? [...new Set(obj1[key].concat(value))] : value;
+//       else obj1[key] = value;
+//   }
+
+//   return obj1;
+// }
 
 export const sortBy = (array, desc, field, fn = function(x){return x}) => {
   return array.sort((a, b) => {
