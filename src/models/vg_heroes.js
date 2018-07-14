@@ -23,7 +23,7 @@ const HEROESDB = new CouchbaseService("heroes");
 const cacheKey = "HeroesStats";
 
 let MAX_HEROES_PER_TEAM = 10;
-const PATCH = "3.4";
+const PATCH = "3.5";
 const GAME_MODE = "Ranked 5v5";
 
 const QUERY_GET_LATEST = region => `
@@ -271,24 +271,25 @@ class VGHeroes extends BaseCouchbase {
         true
       );
 
-      return patchRes.map(result => {
-        let heroes = result;
+      return patchRes
+        .map(result => {
+          let heroes = result;
 
-        // If there is a specific hero, we will filter to only that
-        if (heroes && heroName !== "list") {
-          heroes =
-            result && result.heroes.find(hero => hero.name === heroName);
-        }
+          // If there is a specific hero, we will filter to only that
+          if (heroes && heroName !== "list") {
+            heroes =
+              result && result.heroes.find(hero => hero.name === heroName);
+          }
 
-        if (!heroes) return false;
+          if (!heroes) return false;
 
-        return {
-          patch: update.version,
-          date: lastDate,
-          ...heroes
-        };
-      })
-      .filter(obj => Boolean(obj))
+          return {
+            patch: update.version,
+            date: lastDate,
+            ...heroes
+          };
+        })
+        .filter(obj => Boolean(obj));
     });
 
     return Promise.all(heroes).then(r => r.flatten());
@@ -334,9 +335,8 @@ class VGHeroes extends BaseCouchbase {
           if (stat.name === "deathsPerGame") {
             // For deaths, we inverse.
             // Being low is good
-            rank = (total - rank + 1);
+            rank = total - rank + 1;
           }
-
 
           return {
             ...stat,
