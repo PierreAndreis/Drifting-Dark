@@ -19,6 +19,7 @@ import MatchesController   from "~/controllers/vg_matches";
 
 import { latestSeason } from "../resources/dictionaries";
 import Seasons from "../resources/seasons";
+import SendToVGPRIME from "../services/vgprime";
 
 let CURRENT_SEASON = Seasons[latestSeason];
 let MINIMUM_MATCHES_LEADERBOARD = 5;
@@ -28,11 +29,12 @@ class PlayerController {
   migrate(stats) {
     // Removing bad name on gameModes
     
-    if (stats.patches && stats.patches["3.1"] && stats.patches["3.1"]["gameModes"] && stats.patches["3.1"]["gameModes"]["5v5_pvp_ranked"]) {
-      stats.patches["3.1"]["gameModes"]["Ranked 5v5"] = merge(stats.patches["3.1"]["gameModes"]["Ranked 5v5"], lodash.cloneDeep(stats.patches["3.1"]["gameModes"]["5v5_pvp_ranked"]));
-      delete stats.patches["3.1"]["gameModes"]["5v5_pvp_ranked"];
-    } 
+    // if (stats.patches && stats.patches["3.1"] && stats.patches["3.1"]["gameModes"] && stats.patches["3.1"]["gameModes"]["5v5_pvp_ranked"]) {
+    //   stats.patches["3.1"]["gameModes"]["Ranked 5v5"] = merge(stats.patches["3.1"]["gameModes"]["Ranked 5v5"], lodash.cloneDeep(stats.patches["3.1"]["gameModes"]["5v5_pvp_ranked"]));
+    //   delete stats.patches["3.1"]["gameModes"]["5v5_pvp_ranked"];
+    // } 
 
+    // return stats;
     return stats;
   }
 
@@ -77,9 +79,12 @@ class PlayerController {
       const statsNew = PlayerStatsTransform.input.json(matches, id);
       stats = merge(oldStats, statsNew);
     }
-
     // Heroes Stats
-    if (matches !== [] && matches) HeroesStats.addMatches(matches);
+    // VGPRIME
+    if (matches && matches.length > 0) {
+      HeroesStats.addMatches(matches);
+      SendToVGPRIME(matches);
+    }
     
     return stats;
   }
