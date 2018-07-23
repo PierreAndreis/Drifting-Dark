@@ -13,5 +13,7 @@ export default matches => {
       }
     })
       .catch(err => console.warn("FAILED TO SEND MATCH TO VGPRIME=", err))
+      .then(res => res.text())
+      .then(r => console.log(r))
   );
 };
