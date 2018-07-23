@@ -83,7 +83,7 @@ class PlayerController {
     // VGPRIME
     if (matches && matches.length > 0) {
       HeroesStats.addMatches(matches);
-      // SendToVGPRIME(matches);
+      SendToVGPRIME(matches);
     }
     
     return stats;
