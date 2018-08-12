@@ -124,5 +124,8 @@ export default {
   HERO_ABILITY_KINETIC_C_NAME: "kinetic_c",
   HERO_ABILITY_ANKA_A_NAME: "anka_a",
   HERO_ABILITY_ANKA_B_NAME: "anka_b",
-  HERO_ABILITY_ANKA_C_NAME: "anka_c"
+  HERO_ABILITY_ANKA_C_NAME: "anka_c",
+  HERO_ABILITY_SILVERNAIL_A_NAME: "silvernail_a",
+  HERO_ABILITY_SILVERNAIL_B_NAME: "silvernail_b",
+  HERO_ABILITY_SILVERNAIL_C_NAME: "silvernail_c"
 };
