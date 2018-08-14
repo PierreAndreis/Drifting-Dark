@@ -75,8 +75,6 @@ export const getTier = points => {
 export const latestSeason = Object.keys(SEASONS)[Object.keys(SEASONS).length - 1];
 
 export const cleanAbility = (ability) => {
-  if (ability.includes("SILVERNAIL"), ABILITIES[ability]);
-
   if (!ABILITIES[ability]) console.warn(ability, "ability not found");
   return ABILITIES[ability] || null;
 };
