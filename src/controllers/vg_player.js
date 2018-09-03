@@ -44,6 +44,13 @@ class PlayerController {
     return PlayerLookupModel.getByName(playerName, region);
   }
 
+  lookupId(playerId, region) {
+    if (!playerId) return {};
+    if (playerId === "[PLAYER_UUID]") return {};
+    return PlayerLookupModel.getById(playerId);
+
+  }
+
   async update({id, region}, oldStats) {
 
     let stats;

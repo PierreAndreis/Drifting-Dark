@@ -1,10 +1,16 @@
 import PlayerController from "~/controllers/vg_player";
-import HeroesModel      from "~/models/vg_heroes";
 
  /** /player/:name/find */
 export const playerFind = async (req, res, next) => {
   const {name} = req.params;
   const reply = await PlayerController.lookupName(name);
+  res.json(reply);
+}
+
+ /** /player/:name/uuid/find */
+export const playerUuidFind = async (req, res, next) => {
+  const {uuid} = req.params;
+  const reply = await PlayerController.lookupId(uuid);
   res.json(reply);
 }
 

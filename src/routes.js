@@ -20,6 +20,13 @@ const routers = [
     resolver: PlayerRouter.playerFind,
   },
   {
+    name    : "Player/Find/Uuid",
+    enabled : true,
+    async   : true,
+    router  : "/player/:uuid/uuid/find",
+    resolver: PlayerRouter.playerUuidFind
+  },
+  {
     name    : "Player/Stats",
     enabled : true,
     async   : true,
