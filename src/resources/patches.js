@@ -86,6 +86,11 @@ export default [
   },
   {
     version: "3.6",
-    startAt: "2018-08-08"
+    startAt: "2018-08-08",
+    endAt: "2018-09-05"
+  },
+  {
+    version: "3.7",
+    startAt: "2018-09-05"
   }
 ];
