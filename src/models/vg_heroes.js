@@ -12,7 +12,6 @@ import Config from "~/config";
 import Patches from "./../resources/patches";
 
 import CacheService from "~/services/cache";
-import VaingloryService from "~/services/vainglory";
 
 import HeroesOutputTransform from "~/transforms/heroesOutput";
 import logger from "../lib/logger";
@@ -20,7 +19,7 @@ import LeaderboardService from "../services/leaderboards";
 
 const HEROESDB = new CouchbaseService("heroes");
 
-const cacheKey = "HeroesStats";
+// const cacheKey = "HeroesStats";
 
 let MAX_HEROES_PER_TEAM = 10;
 const PATCH = "3.7";
@@ -129,8 +128,6 @@ const calculateTier = heroes => {
       tier
     };
   });
-
-  return heroes;
 };
 
 class VGHeroes extends BaseCouchbase {
