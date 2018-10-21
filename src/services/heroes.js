@@ -84,8 +84,8 @@ class HeroesStats {
           if (err.message === "InvalidJSON") {
             return;
           }
-          logger.warn("o que foi isso?", err);
           err.matchId = match.id;
+          console.log("o que foi isso?", err);
           throw err;
         })
       );
