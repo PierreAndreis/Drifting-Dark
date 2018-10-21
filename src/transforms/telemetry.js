@@ -16,7 +16,8 @@ const NPC = [
   "*VainTurret*",
   "*VainCrystalAway*",
   "*Turret*",
-  "*PetalMinion*"
+  "*PetalMinion*",
+  "*KindredSocialPingsManifest*"
 ];
 
 const HEALS_TO_SKIP = [
@@ -91,11 +92,7 @@ class Telemetry {
         payload.Team === "Left" || payload.Team === "1" ? "blue" : "red";
 
       // If the actors are objects and not heroes continue to the next loop
-      if (
-        payload.isHero === 0 ||
-        NPC.includes(payload.Actor) ||
-        payload.Actor.includes("*KindredSocial")
-      ) {
+      if (payload.isHero === 0 || NPC.includes(payload.Actor)) {
         continue;
       }
 
