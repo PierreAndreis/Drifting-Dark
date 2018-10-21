@@ -95,7 +95,6 @@ class VGPlayerLookup {
         let res = await this.findPlayerAPI({ playerId });
 
         if (DEBUG) logger.debug(`[LOOKUP] SEARCHING FOR ${playerId}`);
-        console.log("res=", res);
 
         if (!res || res.errors) {
           if (DEBUG) logger.debug(`[LOOKUP] NOT FOUND ${playerId}`);

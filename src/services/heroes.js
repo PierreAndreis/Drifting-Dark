@@ -19,7 +19,7 @@ const MATCHES_SAVE_BATCH = 100; // `MATCHES_PROCESS_BATCH` matches in each batch
 // const MINIMUM_TIER = 18; // Not working yet
 const REGIONS = ["", "na", "eu", "sa", "ea", "sg", "cn"];
 
-const DEBUG = false;
+const DEBUG = true;
 
 const gameModesAllowed = ["Ranked", "Ranked 5v5"];
 
