@@ -34,8 +34,8 @@ class HeroesStats {
         match.id
       );
       if (!unique) {
-        if (DEBUG)
-          console.warn(`[HEROSTATS] Avoiding duplicates: ${match.id}`);
+        // if (DEBUG)
+        //   console.warn(`[HEROSTATS] Avoiding duplicates: ${match.id}`);
         return;
       }
       if (DEBUG) logger.info(`Adding Heroes Match ID ${match.id}`);
