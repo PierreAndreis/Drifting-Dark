@@ -91,7 +91,11 @@ class Telemetry {
         payload.Team === "Left" || payload.Team === "1" ? "blue" : "red";
 
       // If the actors are objects and not heroes continue to the next loop
-      if (payload.isHero === 0 || NPC.includes(payload.Actor)) {
+      if (
+        payload.isHero === 0 ||
+        NPC.includes(payload.Actor) ||
+        payload.Actor.includes("*KindredSocial")
+      ) {
         continue;
       }
 
@@ -99,7 +103,6 @@ class Telemetry {
         payload.Actor && payload.IsHero !== 0 && cleanActor(payload.Actor);
 
       // 3.8 bug
-      if (hero.includes("*KindredSocial")) continue;
 
       // if (!hero && payload.Hero) hero = cleanActor(payload.Hero)
       // else continue;
