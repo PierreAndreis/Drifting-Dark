@@ -16,27 +16,25 @@ const NPC = [
   "*VainTurret*",
   "*VainCrystalAway*",
   "*Turret*",
-  "*PetalMinion*",
+  "*PetalMinion*"
 ];
 
 const HEALS_TO_SKIP = [
   "Buff_SpawnStage_RechargeAndAlwaysSpeedBoost",
-  "Buff_Ace",
-]
+  "Buff_Ace"
+];
 
- // TODO: Add gold miner, crystal miner, and kraken
+// TODO: Add gold miner, crystal miner, and kraken
 const OBJECTIVES = [
   "*OuterTurret*",
   "*Turret*",
   "*VainTurret*",
   "*VainCrystalHome*",
-  "*VainCrystalAway*",
-]
+  "*VainCrystalAway*"
+];
 
 class Telemetry {
-
-  async json (url, id) {
-
+  async json(url, id) {
     const result = await fetch(url, {
       timeout: 10000,
       compress: true
@@ -47,8 +45,7 @@ class Telemetry {
 
     try {
       telemetry = await result.json();
-    }
-    catch(e) {
+    } catch (e) {
       // logger.warn(`Invalid Telemetry JSON: ${url}`, e);
       throw Error("InvalidJSON");
     }
@@ -58,12 +55,12 @@ class Telemetry {
       draft: [],
       facts: {
         blue: {},
-        red: {},
+        red: {}
       },
       vision: {
         blue: [],
-        red: [],
-      },
+        red: []
+      }
     };
 
     const rawFactHero = () => {
@@ -77,32 +74,40 @@ class Telemetry {
         objectiveDamage: 0,
         damage: 0,
         dealt: 0,
-        taken: 0,
-      }
-    }
+        taken: 0
+      };
+    };
 
-    let startGame = telemetry.find((t) => t.type === "BuyItem");
-    if (!startGame) telemetry.find((t) => t.type === "LevelUp");
+    let startGame = telemetry.find(t => t.type === "BuyItem");
+    if (!startGame) telemetry.find(t => t.type === "LevelUp");
 
     const startTime = Date.parse(startGame.time);
-    
+
     for (const data of telemetry) {
       // Find the difference between the current event and startTime which will be time of the match in game
       const difference = Date.parse(data.time) - startTime;
       const { payload } = data;
-      const team = payload.Team === "Left" || payload.Team === "1" ? "blue" : "red";
+      const team =
+        payload.Team === "Left" || payload.Team === "1" ? "blue" : "red";
 
       // If the actors are objects and not heroes continue to the next loop
       if (payload.isHero === 0 || NPC.includes(payload.Actor)) {
         continue;
-      };
+      }
 
-      let hero = (payload.Actor && payload.IsHero !== 0) && cleanActor(payload.Actor);
+      let hero =
+        payload.Actor && payload.IsHero !== 0 && cleanActor(payload.Actor);
+
+      // 3.8 bug
+      if (hero.includes("*KindredSocial")) continue;
+
       // if (!hero && payload.Hero) hero = cleanActor(payload.Hero)
       // else continue;
 
-      if (payload.Target && payload.TargetIsHero === 1) payload.Target = cleanActor(payload.Target);
-      if (payload.TargetActor && payload.TargetIsHero === 1) payload.TargetActor = cleanActor(payload.TargetActor);
+      if (payload.Target && payload.TargetIsHero === 1)
+        payload.Target = cleanActor(payload.Target);
+      if (payload.TargetActor && payload.TargetIsHero === 1)
+        payload.TargetActor = cleanActor(payload.TargetActor);
 
       const target = payload.Target;
       let draft = res.draft;
@@ -120,7 +125,7 @@ class Telemetry {
           draft.push({
             Type: data.type,
             Hero: cleanActor(payload.Hero),
-            Team: payload.Team,
+            Team: payload.Team
           });
           break;
 
@@ -132,7 +137,7 @@ class Telemetry {
             case "Flaregun":
               res.vision[team].push({
                 Location: payload.Position,
-                Name: payload.Ability,
+                Name: payload.Ability
               });
               break;
             default:
@@ -150,21 +155,21 @@ class Telemetry {
           factHero.items.push({
             Item: payload.Item,
             // If the value is like 5 minutes change it to look like 05: so it looks nicer with the 0
-            Time: `${minutes > 9 ? minutes : `0${minutes}`}:${seconds > 9 ? seconds : `0${seconds}`}`,
+            Time: `${minutes > 9 ? minutes : `0${minutes}`}:${
+              seconds > 9 ? seconds : `0${seconds}`
+            }`
           });
           break;
-          
+
         case "LearnAbility":
           const ability = cleanAbility(payload.Ability);
           factHero.skill.push(ability);
           break;
 
         case "DealDamage":
-
           if (OBJECTIVES.includes(payload.Target)) {
             factHero.objDamage += payload.Dealt;
-          }
-          else if (payload.TargetIsHero === 1){
+          } else if (payload.TargetIsHero === 1) {
             factHero.damage += payload.Damage;
             factHero.dealt += payload.Dealt;
 
@@ -176,9 +181,10 @@ class Telemetry {
             // Damage Taken
 
             const enemyTeam = payload.Team !== "Left" ? "blue" : "red";
-            if (!res.facts[enemyTeam][target]) res.facts[enemyTeam][target] = rawFactHero();
+            if (!res.facts[enemyTeam][target])
+              res.facts[enemyTeam][target] = rawFactHero();
             res.facts[enemyTeam][target].taken += payload.Dealt;
-            
+
             factHero.totalDamage[target] += payload.Damage;
             factHero.totalDealt[target] += payload.Dealt;
           }
@@ -193,9 +199,10 @@ class Telemetry {
           const { TargetActor, Healed } = payload;
           factHero.healed += Healed;
 
-          if (isNaN(factHero.totalHealed[TargetActor])) factHero.totalHealed[TargetActor] = Healed;
+          if (isNaN(factHero.totalHealed[TargetActor]))
+            factHero.totalHealed[TargetActor] = Healed;
           else factHero.totalHealed[TargetActor] += Healed;
-          
+
           break;
         }
 
@@ -207,9 +214,10 @@ class Telemetry {
           const Healed = Number(Vamp);
           factHero.healed += Healed;
 
-          if (isNaN(factHero.totalHealed[TargetActor])) factHero.totalHealed[TargetActor] = Healed;
+          if (isNaN(factHero.totalHealed[TargetActor]))
+            factHero.totalHealed[TargetActor] = Healed;
           else factHero.totalHealed[TargetActor] += Healed;
-          
+
           break;
         }
 
@@ -221,7 +229,7 @@ class Telemetry {
             Actor: typeOfKill ? cleanActor(payload.Killed) : hero,
             Time: `${Math.floor(difference / 60)}:${difference % 60}`,
             Gold: payload.Gold,
-            Position: payload.Position,
+            Position: payload.Position
           });
           break;
 
@@ -232,28 +240,26 @@ class Telemetry {
     let highestDamage = 0;
     let highestHealing = 0;
     let highestTaken = 0;
-    
+
     for (let x in res.facts) {
       for (let i in res.facts[x]) {
-        const p = res.facts[x][i]
+        const p = res.facts[x][i];
         highestDamage = Math.max(highestDamage, p.dealt);
         highestHealing = Math.max(highestHealing, p.healed);
-        highestTaken    = Math.max(highestTaken, p.taken);
+        highestTaken = Math.max(highestTaken, p.taken);
       }
     }
 
     for (let x in res.facts) {
       for (let i in res.facts[x]) {
         const p = res.facts[x][i];
-        p.damageShare  = getRate(p.dealt, highestDamage);
-        p.takenShare   = getRate(p.taken, highestTaken);
+        p.damageShare = getRate(p.dealt, highestDamage);
+        p.takenShare = getRate(p.taken, highestTaken);
         p.healingShare = getRate(p.healed, highestHealing);
       }
     }
-    
 
     return res;
-
   }
 }
 
