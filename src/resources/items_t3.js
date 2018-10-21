@@ -36,7 +36,7 @@ export default [
     // 5v5
     { id: 33, name: "Teleport Boots"     , short: "TS", internalName: "", category: "Weapon"  },
     { id: 34, name: "Totem Enhancer"     , short: "TE", internalName: "", category: "Utility" },
-    { id: 35, name: "Warmail"            , short: "WM", internalName: "", category: "Utility" },
+    { id: 35, name: "Warmail"            , short: "WM", internalName: "", category: "Defense" },
 
     { id: 35, name: "Rooks Decree"       , short: "RD", internalName: "", category: "Utility" },
     { id: 36, name: "Pulseweave"         , short: "PW", internalName: "", category: "Utility" },
@@ -57,5 +57,6 @@ export const SITUATIONAL_DEFENSES = [
   "Metal Jacket",
   "Atlas Pauldron",
   "Aegis",
-  "Slumbering Husk"
+  "Slumbering Husk",
+  "Warmail"
 ];
