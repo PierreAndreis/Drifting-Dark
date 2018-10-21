@@ -111,6 +111,15 @@ const getTelemetryStats = async match => {
       const itemPath = translateItemPath(actor.items);
       const player = match.players.find(p => name === p.actor);
 
+      if (!player) {
+        console.log(
+          "looking for ",
+          [name, actor],
+          " got ",
+          match.players.filter(p => p.actor)
+        );
+      }
+
       heroes[name] = merge(heroes[name], {
         totalhealed: actor.healed,
         totaldamage: actor.damage,
