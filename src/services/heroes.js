@@ -14,8 +14,8 @@ const cacheKeyUnique = (gameMode, patchVersion) =>
 const cacheKeyStore = "HeroesStatsMatches";
 const cacheKeyProcessed = "HeroesStats";
 
-const MATCHES_PROCESS_BATCH = 150;
-const MATCHES_SAVE_BATCH = 100; // `MATCHES_PROCESS_BATCH` matches in each batch
+const MATCHES_PROCESS_BATCH = 300;
+const MATCHES_SAVE_BATCH = 200; // `MATCHES_PROCESS_BATCH` matches in each batch
 // const MINIMUM_TIER = 18; // Not working yet
 const REGIONS = ["", "na", "eu", "sa", "ea", "sg", "cn"];
 
