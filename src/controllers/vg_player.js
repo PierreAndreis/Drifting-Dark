@@ -154,8 +154,6 @@ class PlayerController {
           ranked5v5Games += lodash.get(stats, `patches[${patch}].gameModes.Ranked 5v5.games`, 0);
         });
 
-        console.log("points", CURRENT_SEASON, rankedGames, blitzGames, ranked5v5Games)
-
         // and has X amount of matches this season...
         let rankedPoints = rankedGames > MINIMUM_MATCHES_LEADERBOARD ? stats.rankVst  : -1;
         let blitzPoints  = blitzGames  > MINIMUM_MATCHES_LEADERBOARD ? stats.blitzVst : -1;
