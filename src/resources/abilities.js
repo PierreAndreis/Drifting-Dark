@@ -133,5 +133,8 @@ export default {
   HERO_ABILITY_YATES_C_NAME: "yates_c",
   HERO_ABILITY_INARA_A_NAME: "inara_a",
   HERO_ABILITY_INARA_B_NAME: "inara_b",
-  HERO_ABILITY_INARA_C_NAME: "inara_c"
+  HERO_ABILITY_INARA_C_NAME: "inara_c",
+  HERO_ABILITY_MAGNUS_A_NAME: "magnus_a",
+  HERO_ABILITY_MAGNUS_B_NAME: "magnus_b",
+  HERO_ABILITY_MAGNUS_C_NAME: "magnus_c"
 };
