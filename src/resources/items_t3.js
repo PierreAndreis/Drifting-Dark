@@ -42,6 +42,10 @@ export default [
     { id: 36, name: "Pulseweave"         , short: "PW", internalName: "", category: "Utility" },
     { id: 37, name: "Capacitor Plate"    , short: "CP", internalName: "", category: "Utility" },
 
+    // 3.9
+    { id: 38, name: "Seraphic Shell"     , short: "CS", internalName: "", category: "Defense" },
+    { id: 39, name: "FlareLoader"        , short: "FL", internalName: "", category: "Utility" },
+
     { id: 98, name: "Situational Defense" , short: "*",  internalName: "", category: "Situational"},
     { id: 99, name: "Situational Boots"   , short: "**", internalName: "", category: "Situational"},
     
@@ -58,5 +62,6 @@ export const SITUATIONAL_DEFENSES = [
   "Atlas Pauldron",
   "Aegis",
   "Slumbering Husk",
-  "Warmail"
+  "Warmail",
+  "Seraphic Shell"
 ];
