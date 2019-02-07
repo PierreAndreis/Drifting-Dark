@@ -22,7 +22,7 @@ const HEROESDB = new CouchbaseService("heroes");
 // const cacheKey = "HeroesStats";
 
 let MAX_HEROES_PER_TEAM = 10;
-const PATCH = "3.9";
+const PATCH = "3.10";
 const GAME_MODE = "Ranked 5v5";
 
 const QUERY_GET_LATEST = region => `
