@@ -228,6 +228,11 @@ const getBuilds = (buildsPick, buildsWin, totalGames) => {
   );
   // only filter if it's a valid possibility
   if (possibleRes.length > 0) res = possibleRes;
+  else
+    res = lodash.filter(
+      res,
+      (value, index) => index.split(",").length > 3
+    );
 
   res = lodash.sortBy(res, ["games", "wins"]);
   res.reverse();
