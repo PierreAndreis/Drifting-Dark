@@ -233,7 +233,6 @@ const getBuilds = (buildsPick, buildsWin, totalGames) => {
   res.reverse();
   res = res.slice(0, 15);
   res = transformAggregated(res, totalGames);
-  console.log(res);
 
   return res.map(r => ({
     ...r,
