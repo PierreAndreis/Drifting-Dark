@@ -220,8 +220,6 @@ const getBuilds = (buildsPick, buildsWin, totalGames) => {
 
   // res = lodash.filter(res, (value, index) => index.split(",").length > 3);
 
-  console.log(res);
-
   res = mergeRelevant(res);
   // res = clearVariants(res);
   const possibleRes = lodash.filter(
@@ -235,15 +233,26 @@ const getBuilds = (buildsPick, buildsWin, totalGames) => {
   res.reverse();
   res = res.slice(0, 15);
   res = transformAggregated(res, totalGames);
+  console.log(res);
 
   return res.map(r => ({
     ...r,
     items: r.key
       .split(",")
-      .map(item => T3Items.find(l => l.short === item).name)
+      .map(translateItemShortToName)
+      .filter(Boolean)
   }));
 };
 
+const translateItemShortToName = shortName => {
+  const itemObj = T3Items.find(l => l.short === shortName);
+  if (!shortName) {
+    console.warn("Missing item:", shortName);
+    return false;
+  }
+
+  return itemObj.name;
+};
 const rankedStats = payload => {
   return [
     {
