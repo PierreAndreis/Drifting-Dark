@@ -90,10 +90,15 @@ const getSkills = (skillsPick, skillsWin, totalGames, getRaw) => {
 
   // Filter for only completed builds. 12 is the maximum level, so maximum of 12
   // Also, games should be higher than 50 games (??)
-  res = lodash.filter(
+  const possibleRes = lodash.filter(
     res,
     (value, index) => index.split(",").length === 12 && value.games > 50
   );
+
+  // only filter if it's a valid possibility
+  if (possibleRes.length > 0) res = possibleRes;
+  else res = res.slice(0, 5);
+
   res = lodash.sortBy(res, ["games", "wins"]);
   res.reverse();
 
@@ -209,10 +214,13 @@ const getBuilds = (buildsPick, buildsWin, totalGames) => {
 
   res = mergeRelevant(res);
   // res = clearVariants(res);
-  res = lodash.filter(
+  const possibleRes = lodash.filter(
     res,
     (value, index) => index.split(",").length > 3 && value.games > 10
   );
+  // only filter if it's a valid possibility
+  if (possibleRes.length > 0) res = possibleRes;
+
   res = lodash.sortBy(res, ["games", "wins"]);
   res.reverse();
   res = res.slice(0, 15);
