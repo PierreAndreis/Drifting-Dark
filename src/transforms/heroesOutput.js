@@ -114,7 +114,15 @@ const mergeRelevant = builds => {
     let itemsTranslated = items.key
       .split(",")
       .filter(item => item && item !== "0")
-      .map(item => T3Items.find(l => l.short === item));
+      .map(item => {
+        const itemObj = T3Items.find(l => l.short === item);
+
+        if (!itemObj) {
+          console.log("ITEM MISSING=", item);
+          return;
+        }
+        return itemObj;
+      });
 
     let testItems = [];
 
@@ -213,6 +221,7 @@ const getBuilds = (buildsPick, buildsWin, totalGames) => {
   // res = lodash.filter(res, (value, index) => index.split(",").length > 3);
 
   console.log(res);
+
   res = mergeRelevant(res);
   // res = clearVariants(res);
   const possibleRes = lodash.filter(
