@@ -97,7 +97,7 @@ const getSkills = (skillsPick, skillsWin, totalGames, getRaw) => {
 
   // only filter if it's a valid possibility
   if (possibleRes.length > 0) res = possibleRes;
-  else res = res.slice(0, 5);
+  else res = Object.values(res).slice(0, 15);
 
   res = lodash.sortBy(res, ["games", "wins"]);
   res.reverse();
