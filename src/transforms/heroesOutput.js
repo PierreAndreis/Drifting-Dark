@@ -97,9 +97,9 @@ const getSkills = (skillsPick, skillsWin, totalGames, getRaw) => {
 
   // only filter if it's a valid possibility
   if (possibleRes.length > 0) res = possibleRes;
-  else res = Object.values(res).slice(0, 15);
 
   res = lodash.sortBy(res, ["games", "wins"]);
+  res = res.slice(0, 5);
   res.reverse();
 
   return transformAggregated(res, totalGames, getRaw);
@@ -212,6 +212,7 @@ const getBuilds = (buildsPick, buildsWin, totalGames) => {
 
   // res = lodash.filter(res, (value, index) => index.split(",").length > 3);
 
+  console.log(res);
   res = mergeRelevant(res);
   // res = clearVariants(res);
   const possibleRes = lodash.filter(
