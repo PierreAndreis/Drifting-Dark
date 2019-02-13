@@ -106,6 +106,11 @@ export default [
   },
   {
     version: "3.10",
-    startAt: "2019-01-23"
+    startAt: "2019-01-23",
+    endAt: "2019-02-12"
+  },
+  {
+    version: "4.0",
+    startAt: "2019-02-12"
   }
 ];

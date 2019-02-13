@@ -139,5 +139,8 @@ export default {
   HERO_ABILITY_MAGNUS_C_NAME: "magnus_c",
   HERO_ABILITY_YLVA_A_NAME: "ylva_a",
   HERO_ABILITY_YLVA_B_NAME: "ylva_b",
-  HERO_ABILITY_YLVA_C_NAME: "ylva_c"
+  HERO_ABILITY_YLVA_C_NAME: "ylva_c",
+  HERO_ABILITY_SANFENG_A_NAME: "sanfeng_a",
+  HERO_ABILITY_SANFENG_B_NAME: "sanfeng_b",
+  HERO_ABILITY_SANFENG_C_NAME: "sanfeng_c"
 };
