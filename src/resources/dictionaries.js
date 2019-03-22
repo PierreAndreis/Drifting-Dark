@@ -88,7 +88,7 @@ export const cleanActor = actor => {
     { token: "*Hero016*", name: "Rona" },
     {
       token: "*Sanfeng*",
-      name: "San Feng"
+      name: "SanFeng"
     }
   ];
   const match = badServerNames.filter(item => item.token === actor);
