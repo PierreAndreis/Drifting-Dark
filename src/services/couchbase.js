@@ -17,7 +17,7 @@ const cluster = new couchbase.Cluster(Config.COUCHBASE.HOST);
 class CouchBase {
   constructor(bucket) {
     this.bucket = cluster.openBucket(bucket, Config.COUCHBASE.PASSWORD);
-    this.bucket.operationTimeout = 120 * 1000;
+    this.bucket.operationTimeout = 300 * 1000;
     this.query = couchbase.N1qlQuery;
   }
 
