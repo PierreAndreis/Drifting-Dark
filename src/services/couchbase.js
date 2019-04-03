@@ -1,4 +1,4 @@
-import c       from "couchbase";
+import c from "couchbase";
 import Promise from "bluebird";
 
 import logger from "~/lib/logger";
@@ -15,37 +15,34 @@ const cluster = new couchbase.Cluster(Config.COUCHBASE.HOST);
 // cluster.authenticate(Config.COUCHBASE.USERNAME, Config.COUCHBASE.PASSWORD);
 
 class CouchBase {
-
   constructor(bucket) {
-    this.bucket   = cluster.openBucket(bucket, Config.COUCHBASE.PASSWORD);
-    this.query    = couchbase.N1qlQuery;
+    this.bucket = cluster.openBucket(bucket, Config.COUCHBASE.PASSWORD);
+    this.bucket.operationTimeout = 120 * 1000;
+    this.query = couchbase.N1qlQuery;
   }
 
   async nquery(query) {
-
     try {
       // console.log("** QUERYING FROM DATABASE **");
 
       //  Passing a new query as argument
-      const query_builder  = this.query.fromString(query);
+      const query_builder = this.query.fromString(query);
       const [result, meta] = await new Promise((resolve, reject) => {
         const req = this.bucket.query(query_builder);
         let res = [];
-        req.on('row', function(row) {
+        req.on("row", function(row) {
           res.push(row);
         });
-        req.on('error', function(err) {
+        req.on("error", function(err) {
           reject(err);
         });
-        req.on('end', function(meta) {
+        req.on("end", function(meta) {
           resolve([res, meta]);
         });
       });
       // TODO: something with meta
       return result;
-
-    }
-    catch (e) {
+    } catch (e) {
       console.log(e);
       throw new Error(e);
     }
@@ -55,41 +52,39 @@ class CouchBase {
     try {
       const rows = await this.bucket.upsertAsync(name, doc, options);
       return rows;
-
-    }
-    catch (e) {
+    } catch (e) {
       if (e.message === "bad cas passed") return false;
       // ERROR IS BEING SWALLED
-      logger.warn(`Error on couchbase upsert: ${e.message}`)
+      logger.warn(`Error on couchbase upsert: ${e.message}`);
       return e.message;
     }
   }
 
   async find(query) {
-
     try {
-
       let res;
-      if (typeof query === "object") res = await this.bucket.getMultiAsync(query);
+      if (typeof query === "object")
+        res = await this.bucket.getMultiAsync(query);
       else res = await this.bucket.getAsync(query);
 
       return res.value ? res.value : res;
-
-    }
-    catch (e) {
+    } catch (e) {
       // if (e.code !== 13) console.warn(e);
       return undefined;
     }
   }
 
   getAndLock(key) {
-    return this.bucket.getAndLockAsync(key, {lockTime: 20}).catch(err => {
-      if (err.message === "The key does not exist on the server") return [];
-      else {
-        console.log(err);
-        return false;
-      }
-    });
+    return this.bucket
+      .getAndLockAsync(key, { lockTime: 20 })
+      .catch(err => {
+        if (err.message === "The key does not exist on the server")
+          return [];
+        else {
+          console.log(err);
+          return false;
+        }
+      });
   }
 }
 
